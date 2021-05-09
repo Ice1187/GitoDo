@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import Avatar from '../components/avatar';
 
 export default function Header() {
   return (
     <>
-      <nav className='flex items-center flex-wrap bg-white p-3 shadow mb-5'>
+      <nav className='fixed flex mx-auto items-center flex-wrap bg-white p-3 shadow mb-10 inset-x-0 top-0'>
         <Link href='/'>
           <a className='inline-flex items-center p-2 mr-4 '>
             <svg
@@ -32,6 +33,8 @@ export default function Header() {
             </span>
           </a>
         </Link>
+        <div className="flex-grow" />
+        <Avatar></Avatar>
       </nav>
     </>
   )
