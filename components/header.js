@@ -18,6 +18,20 @@ export default function Header() {
             </span>
           </a>
         </Link>
+        <Link href='/'>
+          <a className='inline-flex items-center p-0.5 pt-1 mr-3 border-b-2 border-transparent hover:border-black transition-all'>
+            <span className='text-l text-black font-semibold tracking-wide'>
+              Task
+            </span>
+          </a>
+        </Link>
+        <Link href='/'>
+          <a className='inline-flex items-center p-0.5 pt-1 mr-3 border-b-2 border-transparent hover:border-black transition-all'>
+            <span className='text-l text-black font-semibold tracking-wide'>
+              Branch
+            </span>
+          </a>
+        </Link>
       </nav>
     </>
   )
