@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Avatar from '../components/avatar';
 import NavAdd from '../components/navAdd';
+import Search from '../components/search';
 
 export default function Header() {
   return (
@@ -34,7 +35,8 @@ export default function Header() {
             </span>
           </a>
         </Link>
-        <div className="flex-grow" />
+        <div className="flex-grow lg:flex-shrink" />
+        <Search></Search>
         <NavAdd></NavAdd>
         <Avatar></Avatar>
       </nav>

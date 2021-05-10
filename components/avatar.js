@@ -4,7 +4,7 @@ export default function Avatar() {
   return (
     <>
       <Link href='/'>
-        <a className='inline-flex items-end md:mr-10 mr-2'>
+        <a className='inline-flex items-end mr-2'>
           {/* TODO: modify code to get avatar from database */}
           <svg
             viewBox='0 0 24 24'
