@@ -9,7 +9,7 @@ export default class MainTaskDisplay extends React.Component{
   render() {
     return(
       <>
-        <div className='mt-40 ml-80 mr-10 p-5'>
+        <div className='pt-40 lg:ml-80 lg:mr-10 ml-20 mr-1 p-5'>
           <TaskDisplay></TaskDisplay>
           <TaskDisplay></TaskDisplay>
           <TaskDisplay></TaskDisplay>

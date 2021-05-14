@@ -14,14 +14,15 @@ export default class TaskDisplay extends React.Component{
     /* TODO: three dots svg and multipleitems icon */
     return(
       <>
-        <div className='container shadow rounded-lg p-5 my-3 flex-row flex items-center cursor-pointer'>
+        <div className='container shadow rounded-lg p-5 my-3 flex-row flex items-center cursor-pointer bg-white'>
           <button type='submit' className={`outline-none focus:outline-none ring-2 ring-${color}-500 rounded-sm w-4 h-4`}></button>
-          <div className={`ml-5 h-4 ring-2 ring-${color}-500`}></div>
-          <span className='ml-5 font-semibold w-24 overflow-hidden'>{branchName}</span>
-          <span className='ml-5 font-semibold'>|</span>
-          <span className='ml-5 font-semibold w-80 overflow-hidden'>{taskName}</span>
-          {haveMultipleItems && <button type='submit' className={`ml-5 outline-none focus:outline-none w-4 h-4 font-bold`}>*</button>}
-          <button type='submit' className={`ml-5 outline-none focus:outline-none w-4 h-4 font-bold`}>⋯</button>
+          <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
+          <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden'>{branchName}</span>
+          <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
+          <span className='ml-5 font-semibold sm:w-80 w-40 overflow-hidden'>{taskName}</span>
+          <div className="flex-grow" />
+          {haveMultipleItems && <button type='submit' className={`mr-5 outline-none focus:outline-none w-4 h-4 font-bold`}>*</button>}
+          <button type='submit' className={`mr-5 outline-none focus:outline-none w-4 h-4 font-bold`}>⋯</button>
         </div>
       </>
     );
