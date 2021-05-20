@@ -4,16 +4,14 @@ import { CirclePicker } from 'react-color';
 export default class BranchColor extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      color: '#f44336',
-    };
+
     this.handleChangeComplete = this.handleChangeComplete.bind(this);
   }
 
   render(){
     const stylebar = {
-      backgroundColor: this.state.color,
-      '--tw-ring-color': this.state.color
+      backgroundColor: this.props.color,
+      '--tw-ring-color': this.props.color
     }
     return (
       /* TODO: make all color bar have same color but use redux to manage state*/
@@ -24,7 +22,7 @@ export default class BranchColor extends React.Component {
             <span className='ml-5 font-semibold overflow-hidden'>Color</span>
           </div>
           <div className='container flex items-center mt-8 mb-4 md:ml-10 p-0 ml-5 mr-5 ring-gray-500'>
-            <CirclePicker color={this.state.color} width={''} circleSize={20} onChangeComplete={ this.handleChangeComplete }/>
+            <CirclePicker color={this.props.color} width={''} circleSize={20} onChangeComplete={ this.handleChangeComplete }/>
             {/*<span className='ml-5'>{this.state.color}</span>*/}
           </div>
         </div>
@@ -33,6 +31,6 @@ export default class BranchColor extends React.Component {
   }
 
   handleChangeComplete(color) {
-    this.setState({ color: color.hex, });
+    this.props.onColorChange(color);
   }
 }
