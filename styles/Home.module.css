@@ -1,17 +1,5 @@
-.container {
-  min-height: 100vh;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
 .main {
-  padding: 5rem 0;
-  flex: 1;
-  display: flex;
+  padding: 0 0 5rem 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -45,7 +33,7 @@
 }
 
 .title {
-  margin: 0;
+  margin-top: 5rem;
   line-height: 1.15;
   font-size: 4rem;
 }
@@ -118,4 +106,30 @@
     width: 100%;
     flex-direction: column;
   }
+}
+
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.material-icons {
+  align-self: baseline;
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-size: 16px;  /* Preferred icon size */
+  line-height: 0.8;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
 }
