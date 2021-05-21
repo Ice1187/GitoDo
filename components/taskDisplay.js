@@ -21,8 +21,12 @@ export default class TaskDisplay extends React.Component{
           <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
           <span className='ml-5 font-semibold sm:w-80 w-40 overflow-hidden'>{taskName}</span>
           <div className="flex-grow" />
-          {haveMultipleItems && <button type='submit' className={`mr-5 outline-none focus:outline-none w-4 h-4 font-bold`}>*</button>}
-          <button type='submit' className={`mr-5 outline-none focus:outline-none w-4 h-4 font-bold`}>⋯</button>
+          {haveMultipleItems && <button type='submit' className={`mr-5 outline-none focus:outline-none pt-2`}>
+            <span className='material-icons'>expand_more</span>
+          </button>}
+          <button type='submit' className={`mr-5 outline-none focus:outline-none pt-2`}>
+            <span className='material-icons'>more_horiz</span>
+          </button>
         </div>
       </>
     );

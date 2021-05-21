@@ -36,9 +36,9 @@ export default class NavAdd extends React.Component{
     /* TODO: replace url and svg */
     return(
       <>
-        <div className='mr-5'>
+        <div className='mr-3'>
           <button className={'p-1 pt-2 text-gray-500 hover:text-black focus:outline-none outline-none hover:rotate-45 transform delay-70 transition-all origin-center'+ (this.state.dropdown ? ' rotate-45' : ' rotate-0')} onClick={this.openMenu}>
-            <span className='material-icons'>add</span>
+            <span className='material-icons pt-1'>add</span>
           </button>
 
           {this.state.dropdown ? (

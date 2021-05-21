@@ -27,7 +27,7 @@ export default class ImportBranchView extends React.Component{
     return(
       <>
         <form onSubmit={this.handleSubmit}>
-          <div className='sm:pt-28 pt-32 lg:ml-80 lg:mr-20 ml-20 mr-1 p-5'>
+          <div className='sm:pt-28 pt-5 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5'>
             <h1 className='text-2xl'>Import a branch</h1>
             <p className='text-gray-500'>Import an existing branch, adjust it to your special branch or collaborate with others.</p>
             <hr className='my-2'></hr>
@@ -38,14 +38,14 @@ export default class ImportBranchView extends React.Component{
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
               {this.state.branchState == 'copy' && <ShareBlock color={this.state.branchColor}></ShareBlock>}
             </div>
-            {this.state.branchState == 'copy' && <button type='submit' className='bg-green-600 hover:bg-green-700 text-white rounded-lg shadow p-2 focus:outline-none my-3 mr-5'>
+            {this.state.branchState == 'copy' && <button type='submit' className='ring-2 ring-green-600 text-green-800 bg-green-200 hover:bg-green-600 hover:text-white rounded-lg shadow p-2 focus:outline-none my-3 mr-5'>
               <span>Copy</span>
             </button>}
-            {this.state.branchState == 'collaborate' && <button type='submit' className='bg-green-600 hover:bg-green-700 text-white rounded-lg shadow p-2 focus:outline-none my-3 mr-5'>
+            {this.state.branchState == 'collaborate' && <button type='submit' className='ring-2 ring-green-600 text-green-800 bg-green-200 hover:bg-green-600 hover:text-white rounded-lg shadow p-2 focus:outline-none my-3 mr-5'>
               <span>Collaborate</span>
             </button>}
             <Link href='/'>
-              <button className='bg-red-500 hover:bg-red-600 text-white rounded-lg shadow py-2 px-2.5 focus:outline-none mt-3'>
+              <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow py-2 px-2.5 focus:outline-none mt-3'>
                 <a>
                   <span>Discard</span>
                 </a>

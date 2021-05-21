@@ -6,7 +6,7 @@ import Search from '../components/search';
 export default function Header() {
   return (
     <>
-      <nav className='fixed flex mx-auto items-center flex-wrap bg-white px-3 py-1 shadow-lg mb-5 inset-x-0 top-0'>
+      <nav className='sm:fixed flex mx-auto items-center flex-wrap bg-white px-3 py-1 shadow-lg sm:mb-5 inset-x-0 top-0 z-10'>
         <Link href='/'>
           <a className='inline-flex items-center p-2 mr-4 '>
             <svg
