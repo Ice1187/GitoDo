@@ -37,14 +37,16 @@ export default class NavAdd extends React.Component{
     return(
       <>
         <div className='mr-5'>
-          <button className='p-1 border-b-2 border-transparent hover:border-red-500 transition-all focus:outline-none outline-none' onClick={this.openMenu}>Add</button>
+          <button className={'p-1 pt-2 text-gray-500 hover:text-black focus:outline-none outline-none hover:rotate-45 transform delay-70 transition-all origin-center'+ (this.state.dropdown ? ' rotate-45' : ' rotate-0')} onClick={this.openMenu}>
+            <span className='material-icons'>add</span>
+          </button>
 
           {this.state.dropdown ? (
-            <ul className='fixed top-15 right-10 bg-white shadow-lg py-3 my-6 mx-4 rounded-xl text-black ring-2 ring-red-500'>
-              <li className='px-4 py-2 hover:bg-red-500 hover:text-white'><a href='/'>New Branch</a></li>
-              <li className='px-4 py-2 hover:bg-red-500 hover:text-white'><a href='/'>Import Branch</a></li>
-              <li className='px-4 py-2 hover:bg-red-500 hover:text-white'><a href='/'>New Task</a></li>
-            </ul>
+            <div className='fixed top-13 right-5 bg-white shadow-lg py-2 my-6 mx-4 rounded-lg text-black ring-2 ring-red-500'>
+              <a href='/newbranch'><button className='block'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>New Branch</div></button></a>
+              <a href='/importbranch'><button className='block'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>Import Branch</div></button></a>
+              <a href='/'><button className='block'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>New Task</div></button></a>
+            </div>
           ) : (null)}
         </div>
       </>

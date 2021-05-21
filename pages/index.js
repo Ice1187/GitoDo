@@ -2,6 +2,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Header from '../components/header';
 import MainTaskDisplay from '../components/mainTaskTable';
+import Footer from '../components/footer';
 
 export default function Home() {
   return (
@@ -17,6 +18,8 @@ export default function Home() {
       <main className={styles.main + ' bg-gray-100'}>
         <MainTaskDisplay></MainTaskDisplay>
       </main>
+
+      <Footer></Footer>
     </div>
   );
 }
