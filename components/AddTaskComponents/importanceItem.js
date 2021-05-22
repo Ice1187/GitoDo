@@ -28,16 +28,16 @@ export default class ImportanceItem extends React.Component {
     return (
       <>
         <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center bg-white cursor-default group`}>
-          <div className='flex flex-row items-center'>
-            <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold overflow-hidden'>Importance</span>
-            <div className='flex-grow'/>
-            <span className='font-normal pb-0.5 mr-5 text-gray-500 overflow-hidden'>{importance[this.props.importance]}</span>
-            <span className={'material-icons text-gray-400 hover:text-gray-700 transform origin-center transition-all mr-12 cursor-pointer' + (this.state.open ? ' rotate-180' : ' rotate-0')} onClick={this.handleImportExpand}>expand_more</span>
+          <div className='flex flex-row items-center cursor-pointer' onClick={this.handleImportExpand}>
+            <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch} onClick={this.handleImportExpand}></div>
+            <span className='ml-5 font-semibold overflow-hidden' onClick={this.handleImportExpand}>Importance</span>
+            <div className='flex-grow' onClick={this.handleImportExpand}> </div>
+            <span className='font-normal pb-0.5 mr-5 text-gray-500 overflow-hidden' onClick={this.handleImportExpand}>{importance[this.props.importance]}</span>
+            <span className={'material-icons text-gray-400 hover:text-gray-700 transform origin-center transition-all sm:mr-12 cursor-pointer mr-7' + (this.state.open ? ' rotate-180' : ' rotate-0')} onClick={this.handleImportExpand}>expand_more</span>
           </div>
           {this.state.open &&
-            <div className='px-16 py-5'>
-              <SegmentedControl segments={segments}
+            <div className='sm:px-16 sm:py-5 py-2 px-4'>
+              <SegmentedControl segments={segments} selected={this.props.importance}
               variant='dark'
               onChangeSegment={this.handleImportPick }></SegmentedControl>
             </div>

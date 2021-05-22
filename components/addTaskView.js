@@ -3,6 +3,7 @@ import DateItem from '../components/AddTaskComponents/dateItem';
 import ImportanceItem from '../components/AddTaskComponents/importanceItem';
 import NoteItem from '../components/AddTaskComponents/noteItem';
 import UrlItem from '../components/AddTaskComponents/urlItem';
+import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import React from 'react';
 import Link from 'next/link';
 
@@ -11,13 +12,14 @@ export default class AddTaskView extends React.Component{
     super(props);
 
     this.state = {
-      taskName: null,
+      taskName: '',
       branchColor: '#f44336',
       isDate: false,
       dueDate: null,
       importance: 0,
-      note: null,
-      url: null,
+      note: '',
+      url: '',
+      subtask: [],
     };
 
     this.handleTitleChange = this.handleTitleChange.bind(this);
@@ -26,12 +28,16 @@ export default class AddTaskView extends React.Component{
     this.handleImportPick = this.handleImportPick.bind(this);
     this.handleNoteChange = this.handleNoteChange.bind(this);
     this.handleUrlChange = this.handleUrlChange.bind(this);
+    this.handleSubAdd = this.handleSubAdd.bind(this);
+    this.handleSubDel = this.handleSubDel.bind(this);
+    this.handleSubDone = this.handleSubDone.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   render() {
     return(
       <>
-        <form onSubmit={this.handleSubmit}>
+        <form>
           <div className='sm:pt-28 pt-5 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5'>
             <h1 className='text-2xl'>Add a new task</h1>
             <p className='text-gray-500'>A task contains notes, due dates, and sub-tasks ... etc.</p>
@@ -43,8 +49,9 @@ export default class AddTaskView extends React.Component{
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
               <UrlItem color={this.state.branchColor} url={this.state.url} urlChange={this.handleUrlChange}></UrlItem>
+              <SubtaskView color={this.state.branchColor} AddSub={this.handleSubAdd} subtask={this.state.subtask} DelSub={this.handleSubDel} DoneSub={this.handleSubDone}></SubtaskView>
             </div> 
-            <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
+            <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3' onClick={this.handleSubmit}>
               <span>Add Task</span>
             </button>
             <Link href='/'>
@@ -86,10 +93,39 @@ export default class AddTaskView extends React.Component{
   handleUrlChange(value) {
     this.setState({ url: value,});
   }
+
+  handleSubAdd(value) {
+    if(value != '') {
+      let newSub = {'task': value, 'done': false, 'id': this.state.subtask.length + 1};
+      this.setState({ subtask: [...this.state.subtask, newSub]});
+    }
+  }
+
+  handleSubDel(id) {
+    let ReSubtask = this.state.subtask;
+    for (let i = 0; i < ReSubtask.length; i++) {
+      if (ReSubtask[i].id === id) {
+        ReSubtask.splice(i, 1);
+        break;
+      }
+    }
+    this.setState({ subtask: ReSubtask});
+  }
+
+  handleSubDone(id) {
+    let ReSubtask = this.state.subtask;
+    for (let i = 0; i < ReSubtask.length; i++) {
+      if (ReSubtask[i].id === id) {
+        ReSubtask[i].done = !this.state.subtask[i].done;
+        break;
+      }
+    }
+    this.setState({ subtask: ReSubtask});
+  }
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    // alert('A name was submitted: ' + this.state.branchColor + this.state.branchName + this.state.permission);
+    alert('A name was submitted: ' + this.state.taskName, this.state.isDate, this.state.dueDate, this.state.importance, this.state.note, this.state.url, this.state.subtask);
     event.preventDefault();
   }
 }
