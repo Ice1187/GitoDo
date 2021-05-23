@@ -18,3 +18,11 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.hover-trigger .hover-target {
+  display: none;
+}
+
+.hover-trigger:hover .hover-target {
+  display: block;
+}

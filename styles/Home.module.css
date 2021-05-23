@@ -3,6 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 3.5rem;
 }
 
 .footer {
@@ -96,6 +97,15 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
+}
+
+.hover-trigger .hover-target {
+  background-color: #0070f3;
+  display: none;
+}
+
+.hover-trigger:hover .hover-target {
+  display: block;
 }
 
 @media (max-width: 600px) {
