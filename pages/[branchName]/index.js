@@ -6,10 +6,11 @@ import styles from '../../styles/Home.module.css';
 import Header from '../../components/header';
 import MainTaskDisplay from '../../components/mainTaskTable';
 import Footer from '../../components/footer';
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter()
-  const { branchName/*, id */} = router.query
+  const { branchName, id } = router.query
 
   return (
     <div className={styles.container}>
@@ -21,7 +22,19 @@ export default function Home() {
 
       <Header></Header>
 
-      <main className={styles.main + ' bg-gray-100'}>
+      <main className={styles.main + ' bg-gray-100 relative'}>
+        <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
+          <div className='container flex flex-row mx-auto items-center'>
+            <h1 className='text-2xl font-semibold'>Branch - {branchName}</h1>
+            <div className='flex-grow' />
+            <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
+              <Link href={{
+                pathname: '/[branchName]/edit',
+                query: { branchName: branchName, id: id },
+              }} as={`/${branchName}/edit`}>Edit</Link>
+            </button>
+          </div>
+        </div>
         <MainTaskDisplay></MainTaskDisplay>
       </main>
 
