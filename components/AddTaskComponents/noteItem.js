@@ -20,7 +20,7 @@ export default class NoteItem extends React.Component {
         <div className='container shadow rounded-lg p-4 my-3 sm:flex-row flex-col flex items-center cursor-default bg-white'>
           <div className='container items-center flex'>
             <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold overflow-hidden'>Note</span>
+            <span className='ml-5 font-semibold overflow-hidden'>Content</span>
             <div className='flex-grow' />
           </div>
           <div className='sm:ml-5 flex sm:flex-row flex-col p-5'>

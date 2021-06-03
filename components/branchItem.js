@@ -15,6 +15,10 @@ export default class BranchItem extends React.Component {
       backgroundColor: this.props.color,
       '--tw-ring-color': this.props.color
     }
+    let branchFrom = null;
+    if(this.props.branchFrom) {
+      branchFrom = this.props.branchFrom.replace(/ /g, "\u00a0");
+    }
     return (
       <>
         <div className='container shadow rounded-lg p-3 py-5 px-4 my-3 sm:flex-row flex-col flex items-center cursor-pointer bg-white' onClick={this.handleBranch}>
@@ -29,7 +33,7 @@ export default class BranchItem extends React.Component {
             !this.props.isMain &&
             <div className='relative hover-trigger sm:mx-2 mx-1 pt-2'>
               <span className='material-icons text-red-400'>call_split</span>
-              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 left-2 w-auto text-center z-10 hover-target'}>Origin{' ' + this.props.branchFrom}</span>
+              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 left-2 w-auto text-center z-10 hover-target'}>Branch&nbsp;From{' ' + branchFrom}</span>
             </div>
           }
           <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>

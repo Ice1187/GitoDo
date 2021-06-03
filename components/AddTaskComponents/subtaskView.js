@@ -38,7 +38,7 @@ export default class SubtaskView extends React.Component {
               <SubtaskForm color={this.props.color} value={this.state.addingSubTitle} AddSubChange={this.handleAddSubChange} AddSub={this.handleAddSubtask}></SubtaskForm>
             </div>
             <div className='sm:mx-8 sm:my-5 my-2 mx-4'>
-              <SubtaskList color={this.props.color} subtask={this.props.subtask} value={this.state.addingSubTitle} AddSubChange={this.handleAddSubChange} AddSub={this.handleAddSubtask} DelSub={this.handleDelSubtask} DoneSub={this.handleDoneSubtask}></SubtaskList>
+              <SubtaskList color={this.props.color} subtask={this.props.subtask} value={this.state.addingSubTitle} AddSubChange={this.handleAddSubChange} AddSub={this.handleAddSubtask} DelSub={this.handleDelSubtask} DoneSub={this.handleDoneSubtask} delete={true}></SubtaskList>
             </div>
             </div>)
           }

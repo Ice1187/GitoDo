@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head';
 import styles from '../../styles/Home.module.css';
 import Header from '../../components/header';
-import MainTaskDisplay from '../../components/mainTaskTable';
+import MainTaskView from '../../components/mainTaskView';
 import Footer from '../../components/footer';
 import Link from 'next/link';
 
@@ -35,7 +35,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-        <MainTaskDisplay></MainTaskDisplay>
+        <MainTaskView></MainTaskView>
       </main>
 
       <Footer></Footer>

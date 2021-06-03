@@ -27,7 +27,7 @@ export default class SubtaskItem extends React.Component {
           <button type='button' className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.done ? stylecomplete : stylebox} onClick={this.handleDoneSub}></button>
           <span className='ml-5 font-normal overflow-hidden'>{this.props.task}</span>
           <div className='flex-grow'/>
-          <span className={'material-icons text-gray-400 hover:text-gray-600 sm:mr-4 cursor-pointer mr-0 transform rotate-45'} onClick={this.handleDelSubtask}>add</span>
+          {this.props.delete && <span className={'material-icons text-gray-400 hover:text-gray-600 sm:mr-4 cursor-pointer mr-0 transform rotate-45'} onClick={this.handleDelSubtask}>add</span>}
         </div>
       </>
     )
