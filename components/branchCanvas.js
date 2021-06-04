@@ -7,10 +7,10 @@ class BranchCanvas extends React.Component {
   }
 
   componentDidMount() {
-    this.updateCanvas();
+    this.updateCanvas(7);
   }
 
-  updateCanvas() {
+  updateCanvas(numOfNode) {
     let HEIGHT = this.canvas.current.height;
     let WIDTH = this.canvas.current.width;
     /*
@@ -34,6 +34,7 @@ class BranchCanvas extends React.Component {
     let black = '#646464';
     let red = '#f44336';
     let yellow = '#ffc107';
+    let white = '#e5e7eb';
 
     // Dummy head node
     //ctx.fillStyle = black;
@@ -52,7 +53,7 @@ class BranchCanvas extends React.Component {
     // Nodes
     //ctx.fillStyle = red;
     //ctx.fillRect(linePlace(NODE_SIZE, 45, 30), 98, NODE_SIZE, NODE_SIZE);
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < numOfNode; i++) {
       this.drawCircle(
         circlePlace(45, 30),
         107 + 74 * i,
