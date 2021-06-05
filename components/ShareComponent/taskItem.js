@@ -1,10 +1,10 @@
 import React from 'react';
 import moment from 'moment';
 import Link from 'next/link';
-import SubtaskList from './AddTaskComponents/subtaskList';
+import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
 
-export default class TaskDisplay extends React.Component{
+export default class TaskItem extends React.Component{
   constructor(props) {
     super(props);
 
@@ -53,7 +53,7 @@ export default class TaskDisplay extends React.Component{
             {this.props.due_date && <span className='mr-1 text-sm font-normal sm:w-56 text-gray-500 hover:text-blue-700 overflow-hidde self-baseline pt-1'>{this.props.due_date}</span>}
             {this.props.importance >= 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.importance]}</span>}
             <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
-              <span className='material-icons text-xs'>mode_edit</span>
+              <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
             </button>
           </div>
           {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Avatar from '../components/avatar';
-import NavAdd from '../components/navAdd';
-import Search from '../components/search';
+import Avatar from './NavBarComponent/avatar';
+import NavAdd from './NavBarComponent/navAdd';
+import Search from './NavBarComponent/search';
 
 export default function Header() {
   return (

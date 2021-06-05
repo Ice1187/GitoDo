@@ -22,7 +22,7 @@ export default class UrlItem extends React.Component {
           <span className='ml-5 font-semibold overflow-hidden'>URL</span>
           <div className='flex-grow' />
           <input type='text' className='text-center sm:mr-10 mx-3 sm:w-60 w-40 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
-          placeholder='Type your URL' onChange={this.handleChange} value={this.props.url}
+          placeholder='Type your URL' onChange={this.handleChange} value={this.props.url} onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
           ></input>
         </div>
       </>

@@ -1,4 +1,4 @@
-import AddTitle from '../components/addTitle';
+import AddTitle from '../components/ShareComponent/addTitle';
 import DateItem from '../components/AddTaskComponents/dateItem';
 import ImportanceItem from '../components/AddTaskComponents/importanceItem';
 import NoteItem from '../components/AddTaskComponents/noteItem';

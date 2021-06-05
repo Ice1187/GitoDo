@@ -1,4 +1,4 @@
-import BranchItem from './branchItem';
+import BranchItem from './ShareComponent/branchItem';
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 
