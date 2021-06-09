@@ -8,8 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "moment": "^2.29.1",
-    "next": "10.2.0",
+    "next": "^10.2.3",
+    "qs": "^6.10.1",
     "react": "17.0.2",
     "react-color": "^2.19.3",
     "react-copy-to-clipboard": "^5.0.3",
@@ -25,6 +27,6 @@
     "eslint": "^7.25.0",
     "eslint-plugin-react": "^7.23.2",
     "postcss": "^8.2.13",
-    "tailwindcss": "^2.1.2"
+    "tailwindcss": "^2.0.4"
   }
 }

@@ -2,7 +2,7 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import { Button } from 'reactstrap';
+import LoginView from '../components/loginView';
 
 export default function Home() {
   return (
@@ -16,23 +16,7 @@ export default function Home() {
       <Header></Header>
 
       <main className={styles.main + ' bg-gray-100 relative'}>
-        <div className='sm:top-20 top-16 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
-          <div className='container flex flex-row mx-auto items-center'>
-            <h1 className='text-2xl font-semibold'></h1>
-            <div className='flex-grow' />
-          </div>
-        </div>
-        <div className='sm:pt-12 pt-10 lg:ml-40 lg:mr-10 md:ml-20 ml-16 mr-1 p-5'>
-          <div className='container flex flex-col shadow bg-white rounded-lg py-5'>
-            <h1 className='text-2xl font-semibold mx-auto my-5'>Welcome Back.</h1>
-            <Button className='m-5 mx-40 p-5 rounded-lg ring-2 ring-gray-200 font-semibold'>Sign in with Google</Button>
-            <hr className='mx-20'></hr>
-            <Button className='m-5 mx-40 p-5 rounded-lg ring-2 ring-gray-200 font-semibold'>Sign in with Email</Button>
-            <h1 className='text-md font-normal mx-auto mb-10'>First time?&nbsp;&nbsp;<span className='cursor-pointer text-blue-700 hover:underline'> Create one.</span></h1>
-            <span className='text-sm text-gray-500 mx-auto'>Sign in to GitoDo means you agree to GitoDo&apos;s Terms of Service and</span>
-            <span className='text-sm text-gray-500 mx-auto'>acknowledge that GitoDo&apos;s Privacy Policy applies to you.</span>
-          </div>
-        </div>
+        <LoginView></LoginView>
       </main>
       <Footer></Footer>
     </div>
