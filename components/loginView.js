@@ -1,11 +1,15 @@
 import React from 'react';
 import {logIn} from '../api/user';
 import { Button } from 'reactstrap';
-import Router from 'next/router'
+import Router from 'next/router';
+import {connect} from 'react-redux';
+import {loginSuccess} from '../redux/actions/loginAction';
 
 let qs = require('qs');
 
-export default class LoginView extends React.Component{
+class LoginView extends React.Component{
+  static getInitialProps() {}
+
   constructor(props) {
     super(props);
 
@@ -74,6 +78,7 @@ export default class LoginView extends React.Component{
     logIn(data).then(res => {
       //console.log(userId);
       if(res.status === 200) {
+        this.props.loginSuccess(res.data);
         Router.push({
           pathname: '/main',
           query: { userId: res.data},
@@ -89,3 +94,13 @@ export default class LoginView extends React.Component{
     event.preventDefault();
   }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId
+});
+
+const mapDispatchToProps = {
+  loginSuccess: loginSuccess,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginView);
