@@ -82,7 +82,7 @@ class LoginView extends React.Component{
         Router.push({
           pathname: '/main',
           query: { userId: res.data},
-        }, `/`);
+        }, `/main`);
       } else {
         window.location.reload();
       }
