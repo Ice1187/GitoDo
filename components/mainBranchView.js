@@ -8,6 +8,7 @@ export default class MainBranchDisplay extends React.Component{
   }
 
   render() {
+    /*
     let b = {
       'id' : 1933,
       'branchName': 'Main',
@@ -37,14 +38,15 @@ export default class MainBranchDisplay extends React.Component{
       'branchFrom': 'Software Studio',
     };
     let branch = [b, c, d, c, d, c, d];
+    */
     let children = (
       <ListGroupItem className='empty d-flex justify-content-center align-items-center'>
         <div></div>
       </ListGroupItem>
     );
-    if (branch.length) {
-      children = branch.map((p) => (
-        <ListGroupItem key={p.id} action>
+    if (this.props.mainLine.length > 0) {
+      children = this.props.mainLine.map((p) => (
+        <ListGroupItem key={p._id} action>
           <BranchItem {...p}/>
         </ListGroupItem>
       ));

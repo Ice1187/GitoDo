@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <>
       <nav className='backdrop-filter backdrop-blur-md bg-opacity-70 fixed flex mx-auto items-center flex-wrap bg-white px-3 py-1 shadow-lg sm:mb-5 inset-x-0 top-0 z-10'>
-        <Link href='/'>
+        <Link href='/main'>
           <a className='inline-flex items-center p-2 mr-4 '>
             <svg
               viewBox='0 0 24 24'
@@ -21,14 +21,14 @@ export default function Header() {
             </span>
           </a>
         </Link>
-        <Link href='/'>
+        <Link href='/main'>
           <a className='inline-flex items-center p-0.5 pt-1 mr-3 border-b-2 border-transparent hover:border-black transition-all'>
             <span className='text-l text-black font-semibold tracking-wide'>
               Task
             </span>
           </a>
         </Link>
-        <Link href='/branch'>
+        <Link href='/main/branch'>
           <a className='inline-flex items-center p-0.5 pt-1 mr-3 border-b-2 border-transparent hover:border-black transition-all'>
             <span className='text-l text-black font-semibold tracking-wide'>
               Branch

@@ -4,6 +4,7 @@ import { Button } from 'reactstrap';
 import Router from 'next/router';
 import {connect} from 'react-redux';
 import {loginSuccess} from '../redux/actions/loginAction';
+import {listMainBranch} from '../redux/actions/branchActions';
 
 let qs = require('qs');
 
@@ -79,6 +80,7 @@ class LoginView extends React.Component{
       //console.log(userId);
       if(res.status === 200) {
         this.props.loginSuccess(res.data);
+        this.props.listMainBranch(res.data);
         Router.push({
           pathname: '/main',
           query: { userId: res.data},
@@ -101,6 +103,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   loginSuccess: loginSuccess,
+  listMainBranch: listMainBranch,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginView);

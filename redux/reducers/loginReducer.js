@@ -1,6 +1,6 @@
 import {LOGIN_SUCCESS} from '../actions/loginAction'
 import {HYDRATE} from 'next-redux-wrapper';
-import {REHYDRATE} from 'redux-persist'
+import {REHYDRATE} from 'redux-persist';
 
 const loginReducer = (state = {userId: -1}, action) => {
   switch (action.type) {
