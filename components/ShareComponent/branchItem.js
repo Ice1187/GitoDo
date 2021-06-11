@@ -12,15 +12,16 @@ export default class BranchItem extends React.Component {
   }
 
   render() {
-    const {color_RGB, is_main, owner, sharer, title} = this.props;
+    /* FIXME: share people and branch from status */
+    const {color_RGB, is_main, title} = this.props.Line;
     const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
     const stylebranch = {
       backgroundColor: branch_color,
       '--tw-ring-color': branch_color
     }
-    let branchFrom = null;
-    if(this.props.branchFrom) {
-      branchFrom = this.props.branchFrom.replace(/ /g, "\u00a0");
+    let branchFrom = this.props.mother.title;
+    if(branchFrom) {
+      branchFrom = branchFrom.replace(/ /g, "\u00a0");
     }
     return (
       <>
@@ -33,47 +34,47 @@ export default class BranchItem extends React.Component {
           <div className='container flex-row flex items-center mr-0'>
           <div className='sm:flex-grow'/>
           {
-            !is_main &&
+            this.props.Line.sharer ?
+            (this.props.Line.sharer.length >= 1 && 
+            <div className='hover-trigger relative sm:mx-2 mx-1'>
+              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[1-1]}</span>*/}
+            </div>) : ''
+          }
+          {
+            this.props.Line.sharer ?
+            (this.props.Line.sharer.length >= 2 && 
+            <div className='hover-trigger relative sm:mx-2 mx-1'>
+              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[2-1]}</span>*/}
+            </div>) : ''
+          }
+          {
+            this.props.Line.sharer ?
+            (this.props.Line.sharer.length >= 3 && 
+            <div className='hover-trigger relative sm:mx-2 mx-1'>
+              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[3-1]}</span>*/}
+            </div>) : ''
+          }
+          {
+            this.props.Line.sharer ?
+            (this.props.Line.sharer.length > 3 && 
+            <div className='hover-trigger relative sm:mx-2 mx-1'>
+              <span className='text-white text-xs bg-gray-400 rounded-full p-1'>+{this.props.Line.sharer.length-3}</span>
+            </div>) : ''
+          }
+          {
+            is_main == 'false' &&
             <div className='relative hover-trigger sm:mx-2 mx-1 pt-2'>
               <span className='material-icons text-red-400'>call_split</span>
-              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-auto text-center z-10 hover-target'}>Branch&nbsp;From{' ' + branchFrom}</span>
+              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-40 text-center z-10 hover-target'}>Branch&nbsp;From<br/>{branchFrom}</span>
             </div>
           }
           <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
             <span className='material-icons text-green-600'>attribution</span>
             <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner{' ' + this.props.owner}</span>
           </div>
-          {
-            this.props.sharer ?
-            (this.props.sharer.length >= 1 && 
-            <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.sharer[1-1]}</span>
-            </div>) : ''
-          }
-          {
-            this.props.sharer ?
-            (this.props.sharer.length >= 2 && 
-            <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.sharer[2-1]}</span>
-            </div>) : ''
-          }
-          {
-            this.props.sharer ?
-            (this.props.sharer.length >= 3 && 
-            <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.sharer[3-1]}</span>
-            </div>) : ''
-          }
-          {
-            this.props.sharer ?
-            (this.props.sharer.length > 3 && 
-            <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='text-white text-xs bg-gray-400 rounded-full p-1'>+{this.props.sharer.length-3}</span>
-            </div>) : ''
-          }
           </div>
         </div>
       </>
@@ -83,8 +84,8 @@ export default class BranchItem extends React.Component {
   handleBranch () {
     Router.push({
       pathname: '/[branchName]',
-      query: { branchName: this.props.title, id: this.props._id },
-    }, `/${this.props.title}`);
+      query: { branchName: this.props.Line.title, id: this.props.Line._id },
+    }, `/${this.props.Line.title}`);
   }
 
   RGBToHex(r,g,b) {

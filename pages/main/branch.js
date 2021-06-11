@@ -1,22 +1,27 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {listMainBranch} from '../../redux/actions/branchActions';
+import {endListAllLineClear, listAllLine_more, listMainBranch} from '../../redux/actions/branchActions';
 import Head from 'next/head';
 import styles from '../../styles/Home.module.css';
 import Header from '../../components/header';
 import MainBranchDisplay from '../../components/mainBranchView';
 import Footer from '../../components/footer';
+import { getLine } from '../../api/line';
+import { getUser } from '../../api/user';
 
 class Home extends React.Component{
   
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {allLine: []};
+    
+    this.getAllBranches = this.getAllBranches.bind(this);
   }
 
   componentDidMount() {
     this.props.listMainBranch(this.props.userId);
+    this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
   }
 
   render() {
@@ -36,12 +41,33 @@ class Home extends React.Component{
               <h1 className='text-2xl font-semibold'>Branch</h1>
             </div>
           </div>
-          <MainBranchDisplay mainLine={this.props.mainLine}></MainBranchDisplay>
+          <MainBranchDisplay mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>
         </main>
   
         <Footer></Footer>
       </div>
     );
+  }
+
+  getAllBranches(LineObject, limit, now) {
+    if(LineObject == this.props.mainLine && now == 0) {
+      this.props.listAllLineClear();
+    }
+    if(now < limit) {
+      getLine(LineObject.branch_line_id[now]).then(Line => {
+        getUser(Line.owner).then(res => {
+          let owner = res.account;
+          this.props.listAllLineMore(Line, owner, LineObject)
+          if(Line.contain_branch)
+            this.getAllBranches(Line, Line.branch_line_id.length, 0);
+          this.getAllBranches(LineObject, limit, now+1)
+        }).catch(err => {
+          console.error('Error fetching owner', err);
+        })
+      }).catch(err => {
+        console.error('Error fetching branches', err);
+      })
+    }
   }
 }
 
@@ -49,10 +75,13 @@ const mapStateToProps = state => ({
   userId: state.login.userId,
   mainLine: state.branch.mainLine,
   branchLoading: state.branch.branchLoading,
+  allLine: state.branch.allLine,
 });
 
 const mapDispatchToProps = {
   listMainBranch: listMainBranch,
+  listAllLineClear: endListAllLineClear,
+  listAllLineMore: listAllLine_more
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

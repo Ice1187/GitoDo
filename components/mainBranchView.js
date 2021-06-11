@@ -5,48 +5,23 @@ import { ListGroup, ListGroupItem } from 'reactstrap';
 export default class MainBranchDisplay extends React.Component{
   constructor(props) {
     super(props);
+
+    this.state = ({});
+
   }
 
   render() {
-    /*
-    let b = {
-      'id' : 1933,
-      'branchName': 'Main',
-      'owner': 'Alice',
-      'sharer': [],
-      'color': '#f44336',
-      'isMain': true,
-      'permission': 'public'
-    };
-    let c = {
-      'id' : 1944,
-      'branchName': 'Software Studio',
-      'owner': 'Lucy',
-      'sharer': ['Bob', 'Chris', 'Edward', 'Fill', 'Alice'],
-      'color': '#ffc107',
-      'isMain': true,
-      'permission': 'public',
-    };
-    let d = {
-      'id' : 1955,
-      'branchName': 'Project',
-      'owner': 'Lucy',
-      'sharer': ['Bob', 'Chris', 'Edward', 'Fill', 'Alice'],
-      'color': '#00bcd4',
-      'permission': 'public',
-      'isMain': false,
-      'branchFrom': 'Software Studio',
-    };
-    let branch = [b, c, d, c, d, c, d];
-    */
+    let allLine = [...this.props.allLine]
+    if(!allLine) allLine = [];
     let children = (
       <ListGroupItem className='empty d-flex justify-content-center align-items-center'>
         <div></div>
       </ListGroupItem>
     );
-    if (this.props.mainLine.length > 0) {
-      children = this.props.mainLine.map((p) => (
-        <ListGroupItem key={p._id} action>
+    if (allLine.length > 1) {
+      allLine.shift();
+      children = allLine.map((p) => (
+        <ListGroupItem key={p.Line._id} action>
           <BranchItem {...p}/>
         </ListGroupItem>
       ));

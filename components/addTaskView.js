@@ -4,6 +4,7 @@ import ImportanceItem from '../components/AddTaskComponents/importanceItem';
 import NoteItem from '../components/AddTaskComponents/noteItem';
 import UrlItem from '../components/AddTaskComponents/urlItem';
 import SubtaskView from '../components/AddTaskComponents/subtaskView';
+import BranchChooseView from '../components/AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
 
@@ -12,9 +13,10 @@ export default class AddTaskView extends React.Component{
     super(props);
 
     this.state = {
+      branchTitle: '',
+      branchId: '',
       taskName: '',
       branchColor: '#f44336',
-      isDate: false,
       dueDate: null,
       importance: 0,
       note: '',
@@ -23,7 +25,7 @@ export default class AddTaskView extends React.Component{
     };
 
     this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleDateToggle = this.handleDateToggle.bind(this);
+    this.handleBranchChoose = this.handleBranchChoose.bind(this);
     this.handleDatePick = this.handleDatePick.bind(this);
     this.handleImportPick = this.handleImportPick.bind(this);
     this.handleNoteChange = this.handleNoteChange.bind(this);
@@ -45,7 +47,8 @@ export default class AddTaskView extends React.Component{
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange}></AddTitle>
               {/* TODO: insert branch item and edit func */}
-              <DateItem color={this.state.branchColor} isDate={this.state.isDate} dueDate={this.state.dueDate} dateToggle={this.handleDateToggle} datePick={this.handleDatePick}></DateItem>
+              <BranchChooseView color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
+              <DateItem color={this.state.branchColor} dueDate={this.state.dueDate} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
               <UrlItem color={this.state.branchColor} url={this.state.url} urlChange={this.handleUrlChange}></UrlItem>
@@ -67,15 +70,12 @@ export default class AddTaskView extends React.Component{
     );
   }
 
-  handleDateToggle(checked) {
-    if(!checked) {
-      this.setState({ dueDate: null });
-    }
-    this.setState({ isDate: checked, });
-  }
-
   handleTitleChange(value) {
     this.setState({ taskName: value,});
+  }
+
+  handleBranchChoose(title, id, color) {
+    this.setState({branchTitle: title, branchId: id, branchColor: color});
   }
 
   handleDatePick(moment) {

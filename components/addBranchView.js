@@ -4,15 +4,20 @@ import BranchColor from '../components/ShareComponent/branchColor';
 import ShareBlock from '../components/ShareComponent/shareBlcok';
 import React from 'react';
 import Link from 'next/link';
+import {connect} from 'react-redux';
+import {addLine} from '../api/line';
+import Router from 'next/router';
 
-export default class AddBranchView extends React.Component{
+let qs = require('qs');
+class AddBranchView extends React.Component{
   constructor(props) {
     super(props);
 
     this.state = {
-      branchName: null,
+      branchName: '',
       branchColor: '#f44336',
       permission: null,
+      colorRGB: null,
     };
 
     this.handleColorChange = this.handleColorChange.bind(this);
@@ -38,7 +43,7 @@ export default class AddBranchView extends React.Component{
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
               <span>Add Branch</span>
             </button>
-            <Link href='/'>
+            <Link href='/main'>
               <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow-md py-2 px-2.5 focus:outline-none my-3 ml-5'>
                 <a>
                   <span>Discard</span>
@@ -52,7 +57,7 @@ export default class AddBranchView extends React.Component{
   }
 
   handleColorChange(color) {
-    this.setState({ branchColor: color.hex, });
+    this.setState({ branchColor: color.hex, colorRGB: color.rgb});
   }
 
   handleTitleChange(value) {
@@ -65,7 +70,40 @@ export default class AddBranchView extends React.Component{
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    // alert('A name was submitted: ' + this.state.branchColor + this.state.branchName + this.state.permission);
+    /* TODO: still have permission to add */
+    /* FIXME: can't use api to finish it */
+    const now = new Date();
+    let data = qs.stringify({
+      'owner': this.props.userId,
+      'sharer': '',
+      'url': '',
+      'title': this.state.branchName,
+      'content': '',
+      'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
+      'create_date': `${now}`,
+      'due_date': `${now}`,
+      'importance': '0',
+      'is_main': 'false'
+    }); 
+    addLine(data).then(() => {
+      Router.push({
+        pathname: '/main',
+      }, `/main`);
+      // TODO: add status and show new line is added.
+    }).catch(err => {
+      console.error('Error while adding branch', err);
+      window.location.reload();
+    });
     event.preventDefault();
   }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddBranchView);

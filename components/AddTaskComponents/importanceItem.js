@@ -1,7 +1,7 @@
 import React from 'react';
 import { SegmentedControl } from 'segmented-control-react';
 
-export default class ImportanceItem extends React.Component {
+export default class BranchChooseItem extends React.Component {
   constructor(props) {
     super(props);
 
