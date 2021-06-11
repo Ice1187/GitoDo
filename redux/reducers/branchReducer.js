@@ -6,12 +6,15 @@ import {
   END_LIST_BRANCH,
   END_LIST_ALL_CLEAR,
   END_LIST_ALL_MORE,
+  END_LIST_TASK_CLEAR,
+  END_LIST_TASK_MORE,
 } from '../actions/branchActions'
 
 const initialMainBranchState = {
   mainLine: null,
   branchLoading: false,
   allLine: [{_id: '0'}],
+  task: [{_id: '0'}],
 }
 
 const branchReducer = (state = initialMainBranchState, action) => {
@@ -30,6 +33,10 @@ const branchReducer = (state = initialMainBranchState, action) => {
       return {...state, allLine: [{_id: '0'}]};
     case END_LIST_ALL_MORE:
       return {...state, allLine: [...state.allLine, {Line:action.allLine, owner:action.owner, mother:action.mother}]};
+    case END_LIST_TASK_CLEAR:
+      return {...state, task: [{_id: '0'}]};
+    case END_LIST_TASK_MORE:
+      return {...state, task: action.task};
     default:
       return {...state};
   }

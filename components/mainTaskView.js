@@ -55,15 +55,17 @@ export default class MainTaskView extends React.Component{
   }
 
   render() {
-    
+    let allTask = [...this.props.task]
+    if(!allTask) allTask = [];
     let children = (
       <ListGroupItem className='empty d-flex justify-content-center align-items-center'>
         <div></div>
       </ListGroupItem>
     );
-    if (this.state.task.length) {
-      children = this.state.task.map((p) => (
-        <ListGroupItem key={p.id} action>
+    if (allTask.length > 1) {
+      allTask.shift();
+      children = allTask.map((p) => (
+        <ListGroupItem key={p.task._id} action>
           <TaskItem {...p} onTaskDone={this.handleTaskDone} onSubtaskDone={this.handleSubtaskDone} />
         </ListGroupItem>
       ));

@@ -5,6 +5,9 @@ import styles from '../../styles/Home.module.css';
 import Header from '../../components/header';
 import MainTaskView from '../../components/mainTaskView';
 import Footer from '../../components/footer';
+import { getLine, getNodesByLine } from '../../api/line';
+import { getUser } from '../../api/user';
+import {endListAllLineClear, listAllLine_more, listMainBranch, endListTaskClear, listAllTask_more} from '../../redux/actions/branchActions';
 
 class Home extends React.Component{
   
@@ -12,6 +15,15 @@ class Home extends React.Component{
     super(props);
 
     this.state = {};
+
+    this.getAllBranches = this.getAllBranches.bind(this);
+    this.getAllTasks = this.getAllTasks.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.listMainBranch(this.props.userId);
+    this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0);
+    this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
   }
 
   render() {
@@ -32,19 +44,92 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView></MainTaskView>
+          <MainTaskView task={this.props.task}></MainTaskView>
         </main>
   
         <Footer></Footer>
       </div>
     );
   }
+
+  getAllBranches(LineObject, limit, now) {
+    if(LineObject == this.props.mainLine && now == 0) {
+      this.props.listAllLineClear();
+    }
+    if(now < limit) {
+      getLine(LineObject.branch_line_id[now]).then(Line => {
+        getUser(Line.owner).then(res => {
+          let owner = res.account;
+          this.props.listAllLineMore(Line, owner, LineObject)
+          if(Line.contain_branch)
+            this.getAllBranches(Line, Line.branch_line_id.length, 0);
+          this.getAllBranches(LineObject, limit, now+1)
+        }).catch(err => {
+          console.error('Error fetching owner', err);
+        })
+      }).catch(err => {
+        console.error('Error fetching branches', err);
+      })
+    }
+  }
+
+  getAllTasks(LineObject, limit, now) {
+    if(now == 1) {
+      this.props.listAllTaskClear();
+    }
+    if(now < limit && !this.props.loading){
+      /* inf as 1000 = anout */
+      getNodesByLine(LineObject[now].Line._id, 0, 1000, 0).then(task => {
+        /*inside here and compare */
+        let task_new = [{_id:'0'}];
+        let state_task = this.props.task
+        let state_i = 1;
+        let action_i = 0;
+        while (state_i < state_task.length || action_i < task.length) {
+          if(state_i >= state_task.length && action_i < task.length) {
+            task_new = [...task_new, {task:task[action_i], line:LineObject[now].Line}];
+            action_i++;
+          }
+          else if(state_i < state_task.length && action_i >= task.length) {
+            task_new = [...task_new, state_task[state_i]];
+            state_i++;
+          }
+          else {
+            let state_ms = Date.parse(state_task[state_i].task.due_date);
+            let action_ms = Date.parse(task[action_i].due_date);
+            if(state_ms <= action_ms) {
+              task_new = [...task_new, state_task[state_i]];
+              state_i++;
+            } else {
+              task_new = [...task_new, {task:task[action_i], line:LineObject[now].Line}];
+              action_i++;
+            }
+          }
+        }
+        // console.log('result', task_new);
+        this.props.listAllTaskMore(task_new);
+      })
+      if(this.props.loading == false)
+        this.getAllTasks(LineObject, limit, now+1)
+    }
+  }
 }
 
 const mapStateToProps = state => ({
   userId: state.login.userId,
+  mainLine: state.branch.mainLine,
+  branchLoading: state.branch.branchLoading,
+  allLine: state.branch.allLine,
+  task: state.branch.task,
+  loading: state.branch.branchLoading,
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  listMainBranch: listMainBranch,
+  listAllLineClear: endListAllLineClear,
+  listAllLineMore: listAllLine_more,
+  listAllTaskClear: endListTaskClear,
+  listAllTaskMore: listAllTask_more,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

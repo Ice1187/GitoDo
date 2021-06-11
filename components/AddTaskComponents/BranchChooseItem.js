@@ -12,23 +12,27 @@ class BranchChooseItem extends React.Component {
   }
 
   render() {
-    const {color_RGB} = this.props;
+    const {color_RGB} = this.props.Line;
     const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
     const stylebranch = {
       backgroundColor: branch_color,
       '--tw-ring-color': branch_color
     }
+    let branchFrom = this.props.mother.title;
+    if(branchFrom) {
+      branchFrom = branchFrom.replace(/ /g, "\u00a0");
+    }
     return (
       <>
         <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-3 flex-row flex items-center bg-white cursor-pointer' onClick={this.handleChooseBranch}>
           <button type='button' className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></button>
-          <span className='ml-5 font-normal overflow-hidden'>{this.props.title}</span>
+          <span className='ml-5 font-normal overflow-hidden'>{this.props.Line.title}</span>
           <div className='flex-grow'/>
           {
-            !this.props.is_main &&
+            this.props.Line.is_main == 'false' &&
             <div className='relative hover-trigger sm:mx-2 mx-1 pt-2'>
               <span className='material-icons text-red-400'>call_split</span>
-              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-auto text-center z-10 hover-target'}>Branch&nbsp;From{' ' + this.props.branchFrom}</span>
+              <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-40 text-center z-10 hover-target'}>Branch&nbsp;From<br/>{branchFrom}</span>
             </div>
           }
           <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
@@ -41,8 +45,8 @@ class BranchChooseItem extends React.Component {
   }
 
   handleChooseBranch() {
-    const branch_color = this.RGBToHex(this.props.color_RGB[0], this.props.color_RGB[1], this.props.color_RGB[2]);
-    this.props.ChooseBranch(this.props.title, this.props._id, branch_color);
+    const branch_color = this.RGBToHex(this.props.Line.color_RGB[0], this.props.Line.color_RGB[1], this.props.Line.color_RGB[2]);
+    this.props.ChooseBranch(this.props.Line.title, this.props.Line._id, branch_color);
   }
 
   RGBToHex(r,g,b) {

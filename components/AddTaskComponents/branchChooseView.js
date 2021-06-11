@@ -1,7 +1,11 @@
 import React from 'react';
 import BranchChooseList from './BranchChooseList'
+import { getLine } from '../../api/line';
+import { getUser } from '../../api/user';
+import {connect} from 'react-redux';
+import {endListAllLineClear, listAllLine_more, listMainBranch} from '../../redux/actions/branchActions';
 
-export default class ImportanceItem extends React.Component {
+class BranchChooseView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -9,6 +13,12 @@ export default class ImportanceItem extends React.Component {
 
     this.handleBranchChoose = this.handleBranchChoose.bind(this);
     this.handleExpand = this.handleExpand.bind(this);
+    this.getAllBranches = this.getAllBranches.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.listMainBranch(this.props.userId);
+    this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
   }
 
   render() {
@@ -28,7 +38,7 @@ export default class ImportanceItem extends React.Component {
           </div>
           {this.state.open &&
             <div className='sm:mx-8 sm:my-5 my-2 mx-4'>
-              <BranchChooseList ChooseBranch={this.handleBranchChoose}></BranchChooseList>
+              <BranchChooseList ChooseBranch={this.handleBranchChoose} allLine={this.props.allLine}></BranchChooseList>
             </div>
           }
         </div>
@@ -42,4 +52,40 @@ export default class ImportanceItem extends React.Component {
   handleExpand () {
     this.setState({ open: !this.state.open, });
   }
+
+  getAllBranches(LineObject, limit, now) {
+    if(LineObject == this.props.mainLine && now == 0) {
+      this.props.listAllLineClear();
+    }
+    if(now < limit) {
+      getLine(LineObject.branch_line_id[now]).then(Line => {
+        getUser(Line.owner).then(res => {
+          let owner = res.account;
+          this.props.listAllLineMore(Line, owner, LineObject)
+          if(Line.contain_branch)
+            this.getAllBranches(Line, Line.branch_line_id.length, 0);
+          this.getAllBranches(LineObject, limit, now+1)
+        }).catch(err => {
+          console.error('Error fetching owner', err);
+        })
+      }).catch(err => {
+        console.error('Error fetching branches', err);
+      })
+    }
+  }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId,
+  mainLine: state.branch.mainLine,
+  branchLoading: state.branch.branchLoading,
+  allLine: state.branch.allLine,
+});
+
+const mapDispatchToProps = {
+  listMainBranch: listMainBranch,
+  listAllLineClear: endListAllLineClear,
+  listAllLineMore: listAllLine_more
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BranchChooseView);

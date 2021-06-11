@@ -80,9 +80,7 @@ export function getLine(lineId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
-  
+
   return axios.get(url, {
     headers: headers
   })
@@ -170,14 +168,12 @@ export function getMainLine(userId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
   
   return axios.get(url, {
     headers: headers
   })
   .then((response) => {
-	return response.data;
+    return response.data;
   })
   .catch((error) => {
 	return error
@@ -194,8 +190,6 @@ export function copyLine(userId, lineId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
   
   return axios.get(url, {
     headers: headers
@@ -219,8 +213,6 @@ export function getNodesByLine(lineId, offset, amount, sortby) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
   
   return axios.get(url, {
     headers: headers
@@ -241,8 +233,6 @@ export function deleteLine(lineId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
   
   return axios.delete(url, {
     headers: headers

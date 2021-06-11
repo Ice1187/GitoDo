@@ -16,6 +16,7 @@ export default class TaskItem extends React.Component{
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleSubDone = this.handleSubDone.bind(this);
     this.handleTaskEdit = this.handleTaskEdit.bind(this);
+    this.RGBToHex = this.RGBToHex.bind(this);
   }
 
   render() {
@@ -23,23 +24,33 @@ export default class TaskItem extends React.Component{
     /* let taskName = 'Buy Milk';*/
     /* FIXME: fix the branchname and taskname overflow by server detecting */
     /* TODO: three dots svg and multipleitems icon */
+    const {color_RGB, title} = this.props.line;
+    branchName = title;
+    const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
     const stylebranch = {
-      backgroundColor: this.props.color,
-      '--tw-ring-color': this.props.color
+      backgroundColor: branch_color,
+      '--tw-ring-color': branch_color
     } 
     const stylebox = {
       backgroundColor: 'white',
-      '--tw-ring-color': this.props.color
+      '--tw-ring-color': branch_color
     }
     const stylecomplete = {
-      backgroundColor: this.props.color,
-      '--tw-ring-color': this.props.color,
+      backgroundColor: branch_color,
+      '--tw-ring-color': branch_color,
       border: '2px solid #fff',
-      'boxShadow': '0 0 0 2px this.props.color',
+      'boxShadow': '0 0 0 2px branch_color',
     }
     const importance = [
       '', '!', '!!', '!!!'
     ]
+    let time = new Date(this.props.task.due_date);
+    let now = new Date();
+    time = time.toLocaleString();
+    let expire = false;
+    if(Date.parse(this.props.task.due_date) < Date.parse(now)){
+      expire = true;
+    }
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
@@ -48,10 +59,10 @@ export default class TaskItem extends React.Component{
             <div className={`sm:inline hidden ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
             <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden'>{branchName}</span>
             <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden'>{this.props.title}</span>
+            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden'>{this.props.task.title}</span>
             <div className='md:flex-grow' />
-            {this.props.due_date && <span className='mr-1 text-sm font-normal sm:w-56 text-gray-500 hover:text-blue-700 overflow-hidde self-baseline pt-1'>{this.props.due_date}</span>}
-            {this.props.importance >= 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.importance]}</span>}
+            {this.props.task.due_date && <span className={`mr-1 text-sm font-normal sm:w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`}>{time}</span>}
+            {this.props.task.importance >= 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.task.importance]}</span>}
             <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
               <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
             </button>
@@ -60,25 +71,25 @@ export default class TaskItem extends React.Component{
           this.state.open &&
           <div className='container flex-col flex items-center bg-white py-2'>
             {
-              this.props.url && 
+              this.props.task.url && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>URL</span>
-                <Link href={this.props.url}><span className='font-normal overflow-hidden cursor-pointer text-blue-700 hover:underline'>{this.props.url}</span></Link>
+                <Link href={this.props.task.url}><a><span className='font-normal overflow-hidden cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a></Link>
                 <div className='flex-grow'/>
               </div>
             }
             {
-              this.props.content &&
+              this.props.task.content &&
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-                <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Content</span>
-                <p className='font-normal overflow-scroll sm:w-auto w-96 sm:ml-7 bg-gray-100 p-2 rounded-lg px-5'>{this.props.content}</p>
+                <span className='ml-5 font-medium overflow-hidden mr-2 w-24'>Content</span>
+                <p className='font-normal overflow-scroll sm:w-96 w-96 sm:ml-7 bg-gray-100 p-2 rounded-lg px-5'>{this.props.task.content}</p>
                 <div className='flex-grow'/>
               </div>
             }
             {
-              this.props.subtask.length > 0 && 
+              this.props.subtask && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Subtask</span>
@@ -116,5 +127,20 @@ export default class TaskItem extends React.Component{
       pathname: '/[branchName]/[taskId]/edit',
       query: { branchName: this.props.mother_line_id, taskId: this.props.id, title:this.props.title },
     }, `/${this.props.mother_line_id}/${this.props.title}/edit`);
+  }
+
+  RGBToHex(r,g,b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+  
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+  
+    return "#" + r + g + b;
   }
 }

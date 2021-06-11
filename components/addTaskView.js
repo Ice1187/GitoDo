@@ -7,7 +7,10 @@ import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import BranchChooseView from '../components/AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
+import {addNode} from '../api/node';
+import Router from 'next/router';
 
+let qs = require('qs');
 export default class AddTaskView extends React.Component{
   constructor(props) {
     super(props);
@@ -18,6 +21,7 @@ export default class AddTaskView extends React.Component{
       taskName: '',
       branchColor: '#f44336',
       dueDate: null,
+      dueDateJSON: null,
       importance: 0,
       note: '',
       url: '',
@@ -79,7 +83,8 @@ export default class AddTaskView extends React.Component{
   }
 
   handleDatePick(moment) {
-    this.setState({ dueDate: moment,});
+    let time = moment.format("YYYY-MM-DD HH:mm ddd");
+    this.setState({ dueDate: time, dueDateJSON: moment.toJSON()});
   }
 
   handleImportPick(index) {
@@ -96,7 +101,7 @@ export default class AddTaskView extends React.Component{
 
   handleSubAdd(value) {
     if(value != '') {
-      let newSub = {'task': value, 'done': false, 'id': this.state.subtask.length + 1};
+      let newSub = {'task': value, 'done': false};
       this.setState({ subtask: [...this.state.subtask, newSub]});
     }
   }
@@ -125,7 +130,32 @@ export default class AddTaskView extends React.Component{
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    alert('A name was submitted: ' + this.state.taskName, this.state.isDate, this.state.dueDate, this.state.importance, this.state.note, this.state.url, this.state.subtask);
+    if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '' || this.state.note == '')
+      alert('You should enter a title, choose a due time, and choose the branch to add.');
+    else {
+      /* TODO: add subtask data & importance and content*/
+      const now = new Date();
+      let data = qs.stringify({
+        'mother_line_id': this.state.branchId,
+        'create_date': `${now}`,
+        'due_date': this.state.dueDateJSON,
+        'title': `${this.state.taskName}`,
+        'url': this.state.url,
+        'content': this.state.note,
+        'importnce': this.state.importance,
+        'is_main': 'true' 
+      })
+      console.log(data)
+      addNode(data).then(() => {
+        Router.push({
+          pathname: '/main/branch',
+        }, `/main/branch`);
+        // TODO: add status and show new line is added.
+      }).catch(err => {
+        console.error('Error while adding branch', err);
+        window.location.reload();
+      });
+    }
     event.preventDefault();
   }
 }

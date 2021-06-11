@@ -27,7 +27,7 @@ export default class BranchChooseItem extends React.Component {
     ]
     return (
       <>
-        <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center bg-white cursor-default group`}>
+        <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center bg-white cursor-default group`} onClick={this.handleImportExpand}>
           <div className='flex flex-row items-center cursor-pointer' onClick={this.handleImportExpand}>
             <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch} onClick={this.handleImportExpand}></div>
             <span className='ml-5 font-semibold overflow-hidden' onClick={this.handleImportExpand}>Importance</span>

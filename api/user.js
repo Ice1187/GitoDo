@@ -58,8 +58,6 @@ export function getUser(userId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
   
   return axios.get(url, {
     headers: headers

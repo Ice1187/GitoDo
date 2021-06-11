@@ -36,7 +36,7 @@ export default class DateItem extends React.Component {
   )}
 
   handleDatePick (moment) {
-    this.props.datePick(moment.format("YYYY-MM-DD HH:mm ddd"));
+    this.props.datePick(moment);
   }
 
   handleDateExpand () {
