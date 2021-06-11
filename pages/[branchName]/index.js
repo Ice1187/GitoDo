@@ -9,7 +9,9 @@ import Link from 'next/link';
 import {connect} from 'react-redux';
 import { withRouter } from 'next/router'
 import { getLine, getNodesByLine } from '../../api/line';
+import { modifyNode } from '../../api/node';
 
+let qs = require('qs');
 class Home extends React.Component{
   constructor(props) {
     super(props);
@@ -24,6 +26,8 @@ class Home extends React.Component{
     this.getLinetoState = this.getLinetoState.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
     this.getLinetoState = this.getLinetoState.bind(this);
+    this.handleTaskDone = this.handleTaskDone.bind(this);
+    this.handleTaskUndone = this.handleTaskUndone.bind(this);
   }
 
   componentDidMount() {
@@ -31,7 +35,7 @@ class Home extends React.Component{
   }
 
   render(){
-    console.log(this.state.all_line, this.state.task, this.state.loading)
+    // console.log(this.state.all_line, this.state.task, this.state.loading)
     return (
       <div className={styles.container}>
         <Head>
@@ -55,7 +59,7 @@ class Home extends React.Component{
               </button>
             </div>
           </div>
-          {<MainTaskView task={this.state.task}></MainTaskView>}
+          {<MainTaskView task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
         </main>
   
         <Footer></Footer>
@@ -127,11 +131,46 @@ class Home extends React.Component{
   getAllTasks(){
     this.setState({
       loading: true,
+      task: [],
     }, () => {
       console.log('all', this.state.all_line)
       for(let i = 0; i < this.state.all_line.length; i++){
         this.getTasktoState(this.state.all_line[i])
       }
+      this.setState({
+        loading: false,
+      })
+    })
+  }
+
+  handleTaskDone(id, time) {
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': true,
+        'achieved_at': time
+      })
+      modifyNode(id, data).then(() => {
+        this.getAllTasks();
+      })
+      this.setState({
+        loading: false,
+      })
+    })
+  }
+
+  handleTaskUndone(id) {
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': false,
+        'achieved_at': null,
+      })
+      modifyNode(id, data).then(() => {
+        this.getAllTasks();
+      })
       this.setState({
         loading: false,
       })

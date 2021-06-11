@@ -24,7 +24,7 @@ class BranchChooseItem extends React.Component {
     }
     return (
       <>
-        <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-3 flex-row flex items-center bg-white cursor-pointer' onClick={this.handleChooseBranch}>
+        <div className={`container ring-2 ${this.props.nowChoose != this.props.Line._id ? ' ring-gray-200 hover:ring-red-200 ' : ' ring-red-400 '} rounded-lg p-3 px-4 my-3 flex-row flex items-center bg-white cursor-pointer`} onClick={this.handleChooseBranch}>
           <button type='button' className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></button>
           <span className='ml-5 font-normal overflow-hidden'>{this.props.Line.title}</span>
           <div className='flex-grow'/>

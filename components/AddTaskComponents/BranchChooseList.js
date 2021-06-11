@@ -23,7 +23,7 @@ class BranchChooseList extends React.Component {
       allLine.shift();
       children = allLine.map((p) => (
         <ListGroupItem key={p.Line._id} action>
-          <BranchChooseItem {...p} ChooseBranch={this.handleChooseBranch}/>
+          <BranchChooseItem {...p} ChooseBranch={this.handleChooseBranch} nowChoose={this.props.nowChoose}/>
         </ListGroupItem>
       ));
     }

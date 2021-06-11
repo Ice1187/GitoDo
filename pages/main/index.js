@@ -8,7 +8,9 @@ import Footer from '../../components/footer';
 import { getLine, getNodesByLine } from '../../api/line';
 import { getUser } from '../../api/user';
 import {endListAllLineClear, listAllLine_more, listMainBranch, endListTaskClear, listAllTask_more} from '../../redux/actions/branchActions';
+import { modifyNode } from '../../api/node';
 
+let qs = require('qs');
 class Home extends React.Component{
   
   constructor(props) {
@@ -24,6 +26,8 @@ class Home extends React.Component{
     this.props.listMainBranch(this.props.userId);
     this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0);
     this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
+    this.handleTaskDone = this.handleTaskDone.bind(this);
+    this.handleTaskUndone = this.handleTaskUndone.bind(this);
   }
 
   render() {
@@ -44,7 +48,7 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView task={this.props.task}></MainTaskView>
+          <MainTaskView task={this.props.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
         </main>
   
         <Footer></Footer>
@@ -112,6 +116,40 @@ class Home extends React.Component{
       if(this.props.loading == false)
         this.getAllTasks(LineObject, limit, now+1)
     }
+  }
+
+  handleTaskDone(id, time) {
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': true,
+        'achieved_at': time
+      })
+      modifyNode(id, data).then(() => {
+        this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
+      })
+      this.setState({
+        loading: false,
+      })
+    })
+  }
+
+  handleTaskUndone(id) {
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': false,
+        'achieved_at': null,
+      })
+      modifyNode(id, data).then(() => {
+        this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
+      })
+      this.setState({
+        loading: false,
+      })
+    })
   }
 }
 

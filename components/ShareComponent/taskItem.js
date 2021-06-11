@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 import Link from 'next/link';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
@@ -54,15 +53,15 @@ export default class TaskItem extends React.Component{
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
-          <div className='container flex-row flex items-center cursor-pointer bg-white my-3' onClick={this.handleSubExpand}>
-            <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.achieved ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+          <div className='container flex-row flex items-center cursor-pointer bg-white my-3'>
+            <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == 'true' ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
             <div className={`sm:inline hidden ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden'>{branchName}</span>
+            <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
             <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden'>{this.props.task.title}</span>
-            <div className='md:flex-grow' />
-            {this.props.task.due_date && <span className={`mr-5 text-sm font-normal w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`}>{time}</span>}
-            {this.props.task.importance > 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.task.importance]}</span>}
+            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+            <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
+            {this.props.task.due_date && <span className={`mx-2 text-sm font-normal w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{time}</span>}
+            {<span className='mr-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
             <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
               <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
             </button>
@@ -112,7 +111,12 @@ export default class TaskItem extends React.Component{
   }
 
   handleTaskDone() {
-    this.props.onTaskDone(moment().format("YYYY-MM-DD HH:mm ddd"));
+    if(this.props.task.achieved == 'true') {
+      this.props.onTaskUndone(this.props.task._id);
+    } else {
+      const now = new Date();
+      this.props.onTaskDone(this.props.task._id, now);
+    }
   }
 
   handleSubDone(id) {

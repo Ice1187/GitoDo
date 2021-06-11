@@ -38,7 +38,7 @@ class BranchChooseView extends React.Component {
           </div>
           {this.state.open &&
             <div className='sm:mx-8 sm:my-5 my-2 mx-4'>
-              <BranchChooseList ChooseBranch={this.handleBranchChoose} allLine={this.props.allLine}></BranchChooseList>
+              <BranchChooseList ChooseBranch={this.handleBranchChoose} allLine={this.props.allLine} nowChoose={this.props.branchId}></BranchChooseList>
             </div>
           }
         </div>
