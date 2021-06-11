@@ -61,8 +61,8 @@ export default class TaskItem extends React.Component{
             <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
             <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden'>{this.props.task.title}</span>
             <div className='md:flex-grow' />
-            {this.props.task.due_date && <span className={`mr-1 text-sm font-normal sm:w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`}>{time}</span>}
-            {this.props.task.importance >= 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.task.importance]}</span>}
+            {this.props.task.due_date && <span className={`mr-5 text-sm font-normal w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`}>{time}</span>}
+            {this.props.task.importance > 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.task.importance]}</span>}
             <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
               <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
             </button>

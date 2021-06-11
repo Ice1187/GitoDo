@@ -8,19 +8,30 @@ import Footer from '../../components/footer';
 import Link from 'next/link';
 import {connect} from 'react-redux';
 import { withRouter } from 'next/router'
+import { getLine, getNodesByLine } from '../../api/line';
 
 class Home extends React.Component{
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      all_line: [],
+      task: [],
+      loading: false,
+    };
 
+    this.getAllLines = this.getAllLines.bind(this)
+    this.getLinetoState = this.getLinetoState.bind(this);
+    this.getAllTasks = this.getAllTasks.bind(this);
+    this.getLinetoState = this.getLinetoState.bind(this);
   }
 
   componentDidMount() {
+    this.getAllLines();
   }
 
   render(){
+    console.log(this.state.all_line, this.state.task, this.state.loading)
     return (
       <div className={styles.container}>
         <Head>
@@ -34,7 +45,7 @@ class Home extends React.Component{
         <main className={styles.main + ' bg-gray-100 relative'}>
           <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
             <div className='container flex flex-row mx-auto items-center'>
-              <h1 className='text-2xl font-semibold'>Branch -  {this.props.router.query.branchName} {this.props.router.query.id} {this.props.branchLoading ? 'true' : 'false'}</h1>
+              <h1 className='text-2xl font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
               <div className='flex-grow' />
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
@@ -44,12 +55,87 @@ class Home extends React.Component{
               </button>
             </div>
           </div>
-          {/*<MainTaskView task={this.props.task}></MainTaskView>*/}
+          {<MainTaskView task={this.state.task}></MainTaskView>}
         </main>
   
         <Footer></Footer>
       </div>
     );
+  }
+
+  getLinetoState(LineId) {
+    getLine(LineId).then(Line => {
+      this.setState({
+        all_line: [...this.state.all_line, Line],
+      }, () => {
+        if(Line.branch_line_id) {
+          for(let i = 0; i < Line.branch_line_id.length; i++) {
+            this.getLinetoState(Line.branch_line_id[i])
+          }
+        }
+      })
+    }).catch(err => {
+      console.error('Error fetching branches', err);
+    })
+  }
+
+  getAllLines(){
+    this.setState({
+        loading: true,
+    }, () => {
+      this.getLinetoState(this.props.router.query.id);
+      this.setState({
+        loading: false,
+      }, () => {
+        setTimeout(() => {this.getAllTasks();}, 300);
+      })
+    })
+  }
+
+  getTasktoState(LineObject){
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      /*inside here and compare */
+      let task_new = [{_id:'0'}];
+      let state_task = this.state.task
+      let state_i = 1;
+      let action_i = 0;
+      while (state_i < state_task.length || action_i < task.length) {
+        if(state_i >= state_task.length && action_i < task.length) {
+          task_new = [...task_new, {task:task[action_i], line:LineObject}];
+          action_i++;
+        }
+        else if(state_i < state_task.length && action_i >= task.length) {
+          task_new = [...task_new, state_task[state_i]];
+          state_i++;
+        }
+        else {
+          let state_ms = Date.parse(state_task[state_i].task.due_date);
+          let action_ms = Date.parse(task[action_i].due_date);
+          if(state_ms <= action_ms) {
+            task_new = [...task_new, state_task[state_i]];
+            state_i++;
+          } else {
+            task_new = [...task_new, {task:task[action_i], line:LineObject}];
+            action_i++;
+          }
+        }
+      }
+      this.setState({task: task_new});
+    })
+  }
+
+  getAllTasks(){
+    this.setState({
+      loading: true,
+    }, () => {
+      console.log('all', this.state.all_line)
+      for(let i = 0; i < this.state.all_line.length; i++){
+        this.getTasktoState(this.state.all_line[i])
+      }
+      this.setState({
+        loading: false,
+      })
+    })
   }
 }
 
