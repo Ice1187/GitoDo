@@ -34,6 +34,6 @@
     "eslint": "^7.25.0",
     "eslint-plugin-react": "^7.23.2",
     "postcss": "^8.2.13",
-    "tailwindcss": "^2.0.4"
+    "tailwindcss": "^2.1.4"
   }
 }

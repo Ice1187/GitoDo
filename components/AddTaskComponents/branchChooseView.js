@@ -33,7 +33,7 @@ class BranchChooseView extends React.Component {
             <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
             <span className='ml-5 font-semibold overflow-hidden'>Branch</span>
             <div className='flex-grow'></div>
-            <span className='pb-0.5 mr-5 overflow-hidden items-center font-medium'>{this.props.branchTitle}</span>
+            <span className='mr-5 overflow-hidden items-center font-medium'>{this.props.branchTitle}</span>
             <span className={'material-icons text-gray-400 hover:text-gray-700 transform origin-center transition-all sm:mr-12 cursor-pointer mr-7' + (this.state.open ? ' rotate-180' : ' rotate-0')} onClick={this.handleImportExpand}>expand_more</span>
           </div>
           {this.state.open &&

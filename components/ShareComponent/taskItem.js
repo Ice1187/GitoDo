@@ -20,7 +20,6 @@ export default class TaskItem extends React.Component{
 
   render() {
     let branchName = 'Main';
-    /* let taskName = 'Buy Milk';*/
     /* FIXME: fix the branchname and taskname overflow by server detecting */
     /* TODO: three dots svg and multipleitems icon */
     const {color_RGB, title} = this.props.line;
@@ -53,18 +52,23 @@ export default class TaskItem extends React.Component{
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
-          <div className='container flex-row flex items-center cursor-pointer bg-white my-3'>
-            <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == 'true' ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
-            <div className={`sm:inline hidden ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
-            <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+          <div className='container md:flex-row flex-col flex items-center cursor-pointer bg-white my-3'>
+            <div className='container flex flex-row items-center'>
+              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == 'true' ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-24 overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
+              <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-40 w-24 overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+              <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
+            </div>
             <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
-            {this.props.task.due_date && <span className={`mx-2 text-sm font-normal w-56 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{time}</span>}
-            {<span className='mr-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
-            <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
-              <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
-            </button>
+            <div className='flex flex-row items-center'>
+              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm font-normal w-40 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{time}</span>}
+              {<span className='sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
+              <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
+                <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
+              </button>
+            </div>
           </div>
           {
           this.state.open &&
@@ -74,17 +78,20 @@ export default class TaskItem extends React.Component{
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>URL</span>
-                <Link href={this.props.task.url}><a><span className='font-normal overflow-hidden cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a></Link>
+                <Link href={this.props.task.url}><a><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a></Link>
                 <div className='flex-grow'/>
               </div>
             }
             {
               this.props.task.content &&
-              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-                <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-                <span className='ml-5 font-medium overflow-hidden mr-2 w-24'>Content</span>
-                <p className='font-normal overflow-scroll sm:w-96 w-96 sm:ml-7 bg-gray-100 p-2 rounded-lg px-5'>{this.props.task.content}</p>
-                <div className='flex-grow'/>
+              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
+                <div className='container flex flex-row items-center justify-start ml-5'>
+                  <div className={`h-4 w-0.5 ring-2`} style={stylebranch}></div>
+                  <span className='ml-5 font-medium overflow-hidden w-32'>Content</span>
+                </div>
+                <div className='container flex flex-row items-center mx-auto justify-around'>
+                  <p className='font-normal overflow-scroll w-96 sm:my-0 my-2 bg-gray-100 p-2 rounded-lg px-5'>{this.props.task.content}</p>
+                </div>
               </div>
             }
             {

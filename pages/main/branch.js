@@ -8,6 +8,7 @@ import MainBranchDisplay from '../../components/mainBranchView';
 import Footer from '../../components/footer';
 import { getLine } from '../../api/line';
 import { getUser } from '../../api/user';
+import Router from 'next/router';
 
 class Home extends React.Component{
   
@@ -17,15 +18,23 @@ class Home extends React.Component{
     this.state = {allLine: []};
     
     this.getAllBranches = this.getAllBranches.bind(this);
+    this.checkLogin = this.checkLogin.bind(this);
+
+    this.checkLogin();
   }
 
   componentDidMount() {
-    this.props.listMainBranch(this.props.userId);
-    this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
+    if(this.props.userId != -1) {
+      this.props.listMainBranch(this.props.userId);
+      this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
+    }
   }
 
   render() {
     return (
+      <>
+      {
+      this.props.userId != -1 && 
       <div className={styles.container}>
         <Head>
           <title>GitoDo</title>
@@ -46,7 +55,18 @@ class Home extends React.Component{
   
         <Footer></Footer>
       </div>
+      }
+      </>
     );
+  }
+
+  checkLogin(){
+    if(this.props.userId == -1){
+      Router.push({
+        pathname: '/login',
+        query: {},
+      }, `/login`);
+    }
   }
 
   getAllBranches(LineObject, limit, now) {

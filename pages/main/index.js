@@ -9,6 +9,7 @@ import { getLine, getNodesByLine } from '../../api/line';
 import { getUser } from '../../api/user';
 import {endListAllLineClear, listAllLine_more, listMainBranch, endListTaskClear, listAllTask_more} from '../../redux/actions/branchActions';
 import { modifyNode } from '../../api/node';
+import Router from 'next/router';
 
 let qs = require('qs');
 class Home extends React.Component{
@@ -20,18 +21,26 @@ class Home extends React.Component{
 
     this.getAllBranches = this.getAllBranches.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
+    this.handleTaskDone = this.handleTaskDone.bind(this);
+    this.handleTaskUndone = this.handleTaskUndone.bind(this);
+    this.checkLogin = this.checkLogin.bind(this);
+
+    this.checkLogin();
   }
 
   componentDidMount() {
-    this.props.listMainBranch(this.props.userId);
-    this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0);
-    this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
-    this.handleTaskDone = this.handleTaskDone.bind(this);
-    this.handleTaskUndone = this.handleTaskUndone.bind(this);
+    if(this.props.userId != -1) {
+      this.props.listMainBranch(this.props.userId);
+      setTimeout(() => {this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0);
+      setTimeout(() => {this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);}, 400);}, 100);
+    }
   }
 
   render() {
     return (
+      <>
+      {
+      this.props.userId != -1 && 
       <div className={styles.container}>
         <Head>
           <title>GitoDo</title>
@@ -53,7 +62,18 @@ class Home extends React.Component{
   
         <Footer></Footer>
       </div>
+      }
+      </>  
     );
+  }
+
+  checkLogin(){
+    if(this.props.userId == -1){
+      Router.push({
+        pathname: '/login',
+        query: {},
+      }, `/login`);
+    }
   }
 
   getAllBranches(LineObject, limit, now) {

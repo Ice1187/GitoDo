@@ -10,6 +10,7 @@ import {connect} from 'react-redux';
 import { withRouter } from 'next/router'
 import { getLine, getNodesByLine } from '../../api/line';
 import { modifyNode } from '../../api/node';
+import Router from 'next/router';
 
 let qs = require('qs');
 class Home extends React.Component{
@@ -28,15 +29,30 @@ class Home extends React.Component{
     this.getLinetoState = this.getLinetoState.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleTaskUndone = this.handleTaskUndone.bind(this);
+    this.checkLogin = this.checkLogin.bind(this);
+
+    this.checkLogin();
   }
 
   componentDidMount() {
-    this.getAllLines();
+    if(this.props.userId != -1){
+      if(this.props.router.query.id){
+        this.getAllLines();
+      } else{
+        Router.push({
+          pathname: '/main/branch',
+          query: {},
+        }, `/main/branch`);
+      }
+    }
   }
 
   render(){
     // console.log(this.state.all_line, this.state.task, this.state.loading)
     return (
+      <>
+      {
+      this.props.userId != -1 && this.props.router.query.id &&  
       <div className={styles.container}>
         <Head>
           <title>{this.props.router.query.branchName}</title>
@@ -64,7 +80,18 @@ class Home extends React.Component{
   
         <Footer></Footer>
       </div>
+      }
+      </>
     );
+  }
+
+  checkLogin(){
+    if(this.props.userId == -1){
+      Router.push({
+        pathname: '/login',
+        query: {},
+      }, `/login`);
+    }
   }
 
   getLinetoState(LineId) {
@@ -91,6 +118,7 @@ class Home extends React.Component{
       this.setState({
         loading: false,
       }, () => {
+        /* FIXME: add mask otherwie if have many branches, we will have no acurate tasks*/
         setTimeout(() => {this.getAllTasks();}, 300);
       })
     })
@@ -178,8 +206,8 @@ class Home extends React.Component{
   }
 }
 
-const mapStateToProps = () => ({
-
+const mapStateToProps = state => ({
+  userId: state.login.userId
 });
 
 const mapDispatchToProps = {

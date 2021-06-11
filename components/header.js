@@ -4,9 +4,12 @@ import NavAdd from './NavBarComponent/navAdd';
 import Search from './NavBarComponent/search';
 
 export default function Header() {
+  const glass = {
+    'backdrop-filter': 'blur(8px)',
+  }
   return (
     <>
-      <nav className='backdrop-filter backdrop-blur-md bg-opacity-70 fixed flex mx-auto items-center flex-wrap bg-white px-3 py-1 shadow-lg sm:mb-5 inset-x-0 top-0 z-10'>
+      <nav className='fixed flex mx-auto items-center flex-wrap bg-white px-3 py-1 shadow-lg sm:mb-5 inset-x-0 top-0 z-10' style={glass}>
         <Link href='/main'>
           <a className='inline-flex items-center p-2 mr-4 '>
             <svg

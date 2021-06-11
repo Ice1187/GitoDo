@@ -24,7 +24,7 @@ export default class NoteItem extends React.Component {
             <div className='flex-grow' />
           </div>
           <div className='sm:ml-5 flex sm:flex-row flex-col p-5'>
-            <textarea type='textarea' className='text-left rounded-md mx-1 sm:w-96 w-64 bg-white border-gray-200 border-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
+            <textarea type='textarea' className='text-left rounded-md mx-1 md:w-96 w-64 bg-white border-gray-200 border-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
             placeholder='Type your note' onChange={this.handleChange} value={this.props.note}
             ></textarea>
           </div>

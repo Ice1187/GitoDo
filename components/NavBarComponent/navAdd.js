@@ -42,7 +42,7 @@ export default class NavAdd extends React.Component{
           </button>
 
           {this.state.dropdown ? (
-            <div className='backdrop-filter backdrop-blur-md bg-opacity-60 bg-white absolute top-13 right-0 shadow-lg py-2 my-6 mx-4 rounded-lg text-black ring-2 ring-red-500'>
+            <div className='backdrop-filter backdrop-blur-md bg-white absolute top-13 right-0 shadow-lg py-2 my-6 mx-4 rounded-lg text-black ring-2 ring-red-500'>
               <a href='/main/newbranch'><button className='block focus:outline-none outline-none'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>New Branch</div></button></a>
               <a href='/main/importbranch'><button className='block focus:outline-none outline-none'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>Import Branch</div></button></a>
               <a href='/main/newtask'><button className='block focus:outline-none outline-none'><div className='px-3 py-1 hover:bg-red-500 hover:text-white w-36 text-left text-sm'>New Task</div></button></a>

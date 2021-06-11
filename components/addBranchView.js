@@ -17,7 +17,7 @@ class AddBranchView extends React.Component{
       branchName: '',
       branchColor: '#f44336',
       permission: null,
-      colorRGB: null,
+      colorRGB: {'r': 244, 'g': 67, 'b': 54},
     };
 
     this.handleColorChange = this.handleColorChange.bind(this);
@@ -72,28 +72,32 @@ class AddBranchView extends React.Component{
     /* TODO: add redirect after submit*/
     /* TODO: still have permission to add */
     /* FIXME: can't use api to finish it */
-    const now = new Date();
-    let data = qs.stringify({
-      'owner': this.props.userId,
-      'sharer': '',
-      'url': '',
-      'title': this.state.branchName,
-      'content': '',
-      'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
-      'create_date': `${now}`,
-      'due_date': `${now}`,
-      'importance': '0',
-      'is_main': 'false'
-    }); 
-    addLine(data).then(() => {
-      Router.push({
-        pathname: '/main',
-      }, `/main`);
-      // TODO: add status and show new line is added.
-    }).catch(err => {
-      console.error('Error while adding branch', err);
-      window.location.reload();
-    });
+    if(this.state.branchName == '' || !this.state.permission)
+      alert('You should enter a title, choose a due time, and choose the branch to add.');
+    else {
+      const now = new Date();
+      let data = qs.stringify({
+        'owner': this.props.userId,
+        'sharer': '',
+        'url': '',
+        'title': this.state.branchName,
+        'content': '',
+        'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
+        'create_date': `${now}`,
+        'due_date': `${now}`,
+        'importance': '0',
+        'is_main': 'false'
+      }); 
+      addLine(data).then(() => {
+        Router.push({
+          pathname: '/main',
+        }, `/main`);
+        // TODO: add status and show new line is added.
+      }).catch(err => {
+        console.error('Error while adding branch', err);
+        window.location.reload();
+      });
+    }
     event.preventDefault();
   }
 }
