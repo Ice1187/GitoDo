@@ -7,7 +7,10 @@ import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
+import { modifyNode } from '../api/node';
+import Router from 'next/router';
 
+let qs = require('qs');
 class EditTaskView extends React.Component{
   constructor(props) {
     super(props);
@@ -17,11 +20,13 @@ class EditTaskView extends React.Component{
       branchColor: '',
       isDate: false,
       dueDate: null,
+      dueDateJSON: null,
       importance: 0,
       note: '',
       url: '',
       subtask: [],
       achieved: false,
+      achieved_at: null,
     };
 
     this.handleTaskDone = this.handleTaskDone.bind(this);
@@ -35,21 +40,23 @@ class EditTaskView extends React.Component{
     this.handleSubDel = this.handleSubDel.bind(this);
     this.handleSubDone = this.handleSubDone.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.RGBToHex = this.RGBToHex.bind(this);
   }
 
   componentDidMount() {
-    // const { branchName, id } = this.props.router.query;
-    console.log(this.props.router.query);
+    const branch_color = this.RGBToHex(this.props.line.color_RGB[0], this.props.line.color_RGB[1], this.props.line.color_RGB[2]);
     this.setState({ 
       taskName: this.props.title,
-      branchColor: this.props.color,
+      branchColor: branch_color,
       isDate: (this.props.due_date ? true : false),
       dueDate: this.props.due_date,
+      dueDateJSON: this.props.due_date,
       importance: this.props.importance,
       note: this.props.content,
       url: this.props.url,
       subtask: this.props.subtask,
-      achieved: this.props.achieved
+      achieved: this.props.achieved,
+      achieved_at: this.props.achieved_at,
     });
   }
 
@@ -64,7 +71,7 @@ class EditTaskView extends React.Component{
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange} achieved={this.state.achieved} onDone={this.handleTaskDone}></AddTitle>
               {/* TODO: insert branch item and edit func */}
-              <DateItem color={this.state.branchColor} isDate={this.state.isDate} dueDate={this.state.dueDate} dateToggle={this.handleDateToggle} datePick={this.handleDatePick}></DateItem>
+              <DateItem color={this.state.branchColor} isDate={this.state.isDate} dueDate={this.state.dueDateJSON} dateToggle={this.handleDateToggle} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
               <UrlItem color={this.state.branchColor} url={this.state.url} urlChange={this.handleUrlChange}></UrlItem>
@@ -73,7 +80,7 @@ class EditTaskView extends React.Component{
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3' onClick={this.handleSubmit}>
               <span>Save Change</span>
             </button>
-            <Link href='/'>
+            <Link href='/main'>
               <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow-md py-2 px-2.5 focus:outline-none my-3 ml-5'>
                 <a>
                   <span>Discard</span>
@@ -86,8 +93,27 @@ class EditTaskView extends React.Component{
     );
   }
 
+  RGBToHex(r,g,b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+  
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+  
+    return "#" + r + g + b;
+  }
+
   handleTaskDone() {
-    this.setState({ achieved: !this.state.achieved, })
+    let now = new Date();
+    this.setState({ 
+      achieved: `${this.state.achieved == 'true' ? 'false' : 'true'}`, 
+      achieved_at: `${this.state.achieved == 'true' ? null : now}`
+    })
   }
 
   handleDateToggle(checked) {
@@ -102,7 +128,8 @@ class EditTaskView extends React.Component{
   }
 
   handleDatePick(moment) {
-    this.setState({ dueDate: moment,});
+    let time = moment.format("YYYY-MM-DD HH:mm ddd");
+    this.setState({ dueDate: time, dueDateJSON: moment.toJSON()});
   }
 
   handleImportPick(index) {
@@ -148,7 +175,30 @@ class EditTaskView extends React.Component{
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    alert('A name was submitted: ' + this.state.taskName, this.state.isDate, this.state.dueDate, this.state.importance, this.state.note, this.state.url, this.state.subtask);
+    if(this.state.taskName == '' || !this.state.dueDateJSON)
+      alert('You should enter a title, choose a due time to modify.');
+    else {
+      /* TODO: add subtask data & importance and content*/
+      let data = qs.stringify({
+        'due_date': this.state.dueDateJSON,
+        'title': `${this.state.taskName}`,
+        'url': `${this.state.url ? this.state.url : null}`,
+        'content': `${this.state.note ? this.state.note : null}`,
+        'importance': this.state.importance,
+        'achieved': this.state.achieved,
+        'achieved_at': `${this.state.achieved_at ? this.state.achieved_at : null}`,
+      })
+      console.log(data)
+      modifyNode(this.props._id, data).then(() => {
+        Router.push({
+          pathname: '/main',
+        }, `/main`);
+        // TODO: add status and show new line is added.
+      }).catch(err => {
+        console.error('Error while edit node', err);
+        window.location.reload();
+      });
+    }
     event.preventDefault();
   }
 }

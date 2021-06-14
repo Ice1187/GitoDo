@@ -72,7 +72,7 @@ export function modifyNode(nodeId,data) {
 // getNode
 // '/node/getNode/:id'
 export function getNode(nodeId) {
-  let url = `${postBaseUrl}/line/getNode/`;
+  let url = `${postBaseUrl}/node/getNode/`;
   url = url + nodeId;
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'

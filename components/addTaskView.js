@@ -51,8 +51,8 @@ export default class AddTaskView extends React.Component{
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange}></AddTitle>
               {/* TODO: insert branch item and edit func */}
-              <BranchChooseView color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
-              <DateItem color={this.state.branchColor} dueDate={this.state.dueDate} datePick={this.handleDatePick}></DateItem>
+              <BranchChooseView view={'task'} color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
+              <DateItem color={this.state.branchColor} dueDate={this.state.dueDateJSON} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
               <UrlItem color={this.state.branchColor} url={this.state.url} urlChange={this.handleUrlChange}></UrlItem>
@@ -130,7 +130,7 @@ export default class AddTaskView extends React.Component{
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '' || this.state.note == '')
+    if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {
       /* TODO: add subtask data & importance and content*/
@@ -142,7 +142,7 @@ export default class AddTaskView extends React.Component{
         'title': `${this.state.taskName}`,
         'url': this.state.url,
         'content': this.state.note,
-        'importnce': this.state.importance,
+        'importance': this.state.importance,
         'is_main': 'true' 
       })
       console.log(data)

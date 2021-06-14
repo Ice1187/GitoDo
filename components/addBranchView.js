@@ -2,6 +2,7 @@ import AddTitle from '../components/ShareComponent/addTitle';
 import Permission from '../components/ShareComponent/permission';
 import BranchColor from '../components/ShareComponent/branchColor';
 import ShareBlock from '../components/ShareComponent/shareBlcok';
+import BranchChooseView from './AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
 import {connect} from 'react-redux';
@@ -18,8 +19,11 @@ class AddBranchView extends React.Component{
       branchColor: '#f44336',
       permission: null,
       colorRGB: {'r': 244, 'g': 67, 'b': 54},
+      branchFromTitle: '',
+      branchFromId: '',
     };
 
+    this.handleBranchChoose = this.handleBranchChoose.bind(this);
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handlePermissionChange = this.handlePermissionChange.bind(this);
@@ -36,6 +40,7 @@ class AddBranchView extends React.Component{
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
+              <BranchChooseView view={'branch'} color={this.state.branchColor} branchTitle={this.state.branchFromTitle} branchId={this.state.branchFromId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
               <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
               <ShareBlock color={this.state.branchColor}></ShareBlock>
@@ -54,6 +59,10 @@ class AddBranchView extends React.Component{
         </form>
       </>
     );
+  }
+
+  handleBranchChoose(title, id) {
+    this.setState({branchFromTitle: title, branchFromId: id});
   }
 
   handleColorChange(color) {
@@ -86,7 +95,8 @@ class AddBranchView extends React.Component{
         'create_date': `${now}`,
         'due_date': `${now}`,
         'importance': '0',
-        'is_main': 'false'
+        'is_main': 'false',
+        'permission': `${this.state.permission == 'private' ? 'false' : 'true'}`,
       }); 
       addLine(data).then(() => {
         Router.push({

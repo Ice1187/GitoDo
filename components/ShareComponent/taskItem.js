@@ -52,7 +52,7 @@ export default class TaskItem extends React.Component{
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
-          <div className='container md:flex-row flex-col flex items-center cursor-pointer bg-white my-3'>
+          <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.props.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
               <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == 'true' ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
@@ -71,7 +71,7 @@ export default class TaskItem extends React.Component{
             </div>
           </div>
           {
-          this.state.open &&
+          this.state.open && (this.props.task.url || this.props.task.content || this.props.subtask) &&
           <div className='container flex-col flex items-center bg-white py-2'>
             {
               this.props.task.url && 
@@ -117,7 +117,9 @@ export default class TaskItem extends React.Component{
     this.setState({ open: !this.state.open, });
   }
 
-  handleTaskDone() {
+  handleTaskDone(event) {
+    event.cancelBubble = true;
+    if(event.stopPropagation) event.stopPropagation();
     if(this.props.task.achieved == 'true') {
       this.props.onTaskUndone(this.props.task._id);
     } else {
@@ -132,12 +134,12 @@ export default class TaskItem extends React.Component{
 
   handleTaskEdit () {
     // TODO: with api
-    console.log('Edit: ' + this.props.id);
+    console.log('Edit: ' + this.props.task._id);
     // Dynamic Routing
     Router.push({
-      pathname: '/[branchName]/[taskId]/edit',
-      query: { branchName: this.props.mother_line_id, taskId: this.props.id, title:this.props.title },
-    }, `/${this.props.mother_line_id}/${this.props.title}/edit`);
+      pathname: '/task-edit/[taskId]',
+      query: { taskId: this.props.task._id },
+    }, '/task-edit/[taskId]');
   }
 
   RGBToHex(r,g,b) {

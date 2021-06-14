@@ -22,6 +22,7 @@ class BranchChooseItem extends React.Component {
     if(branchFrom) {
       branchFrom = branchFrom.replace(/ /g, "\u00a0");
     }
+    console.log(this.props.Line.owner)
     return (
       <>
         <div className={`container ring-2 ${this.props.nowChoose != this.props.Line._id ? ' ring-gray-200 hover:ring-red-200 ' : ' ring-red-400 '} rounded-lg p-3 px-4 my-3 flex-row flex items-center bg-white cursor-pointer`} onClick={this.handleChooseBranch}>
@@ -29,16 +30,19 @@ class BranchChooseItem extends React.Component {
           <span className='ml-5 font-normal overflow-hidden'>{this.props.Line.title}</span>
           <div className='flex-grow'/>
           {
-            this.props.Line.is_main == 'false' &&
+            this.props.mother._id != this.props.mainLine._id &&
             <div className='relative hover-trigger sm:mx-2 mx-1 pt-2'>
               <span className='material-icons text-red-400'>call_split</span>
               <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-40 text-center z-10 hover-target'}>Branch&nbsp;From<br/>{branchFrom}</span>
             </div>
           }
-          <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
-            <span className='material-icons text-green-600'>attribution</span>
-            <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner{' ' + this.props.owner}</span>
-          </div>
+          {
+            this.props.Line.owner != 0 &&
+            <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
+              <span className='material-icons text-green-600'>attribution</span>
+              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner {this.props.owner}</span>
+            </div>
+          }
         </div>
       </>
     )
@@ -68,6 +72,7 @@ class BranchChooseItem extends React.Component {
 
 const mapStateToProps = state => ({
   userId: state.login.userId,
+  mainLine: state.branch.mainLine
 });
 
 const mapDispatchToProps = {};

@@ -8,6 +8,8 @@ export const END_LOADING = 'END_LOADING';
 export const END_LIST_BRANCH = 'END_LIST_BRANCH';
 export const END_LIST_ALL_CLEAR = 'END_LIST_ALL_CLEAR';
 export const END_LIST_ALL_MORE = 'END_LIST_ALL_MORE';
+export const END_LIST_MAIN_CLEAR = 'END_LIST_MAIN_CLEAR';
+export const END_LIST_MAIN_MORE = 'END_LIST_MAIN_MORE';
 export const END_LIST_TASK_CLEAR = 'END_LIST_TASK_CLEAR';
 export const END_LIST_TASK_MORE = 'END_LIST_TASK_MORE';
 export const BUFFER_LINE = 'BUFFER_LINE';
@@ -40,6 +42,17 @@ export const endListAllLineMore = (allLine, owner, mother) => ({
   mother
 })
 
+export const endListAllMainClear = () => ({
+  type: END_LIST_MAIN_CLEAR,
+})
+
+export const endListAllMainMore = (allLine, owner, mother) => ({
+  type: END_LIST_MAIN_MORE,
+  allLine, 
+  owner,
+  mother
+})
+
 export const endListTaskClear = () => ({
   type: END_LIST_TASK_CLEAR,
 })
@@ -66,6 +79,14 @@ export function listAllLine_more (allLine, owner, mother) {
   return (dispatch) => {
     dispatch(startLoading());
     dispatch(endListAllLineMore(allLine, owner, mother));
+    dispatch(endLoading());
+  };
+}
+
+export function listAllMain_more (allLine, owner, mother) {
+  return (dispatch) => {
+    dispatch(startLoading());
+    dispatch(endListAllMainMore(allLine, owner, mother));
     dispatch(endLoading());
   };
 }
