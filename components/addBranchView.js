@@ -74,12 +74,12 @@ class AddBranchView extends React.Component{
   }
 
   handlePermissionChange(value) {
-    this.setState({ permission: value,});
+    this.setState({ permission: `${value == 'public' ? 'true' : 'false'}`,});
   }
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    /* TODO: still have permission to add */
+    /* TODO: still have permission, url ,branchFrom a node, sharer to add */
     /* FIXME: can't use api to finish it */
     if(this.state.branchName == '' || !this.state.permission)
       alert('You should enter a title, choose a due time, and choose the branch to add.');

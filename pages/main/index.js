@@ -161,7 +161,7 @@ class Home extends React.Component{
     }, () => {
       let data = qs.stringify({
         'achieved': false,
-        'achieved_at': null,
+        'achieved_at': 'null',
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);

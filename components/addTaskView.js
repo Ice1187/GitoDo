@@ -15,16 +15,17 @@ export default class AddTaskView extends React.Component{
   constructor(props) {
     super(props);
 
+    let now = new Date();
     this.state = {
       branchTitle: '',
       branchId: '',
       taskName: '',
       branchColor: '#f44336',
-      dueDate: null,
-      dueDateJSON: null,
+      dueDate: now,
+      dueDateJSON: now.toJSON(),
       importance: 0,
-      note: '',
-      url: '',
+      note: null,
+      url: null,
       subtask: [],
     };
 
@@ -130,6 +131,7 @@ export default class AddTaskView extends React.Component{
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
+    console.log(this.state.taskName, this.state.dueDateJSON, this.state.branchId)
     if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {
@@ -140,16 +142,16 @@ export default class AddTaskView extends React.Component{
         'create_date': `${now}`,
         'due_date': this.state.dueDateJSON,
         'title': `${this.state.taskName}`,
-        'url': this.state.url,
-        'content': this.state.note,
+        'url': `${this.state.url ? `"${this.state.url}"` : null}`,
+        'content': `${this.state.note ? `"${this.state.note}"` : null}`,
         'importance': this.state.importance,
         'is_main': 'true' 
       })
       console.log(data)
       addNode(data).then(() => {
         Router.push({
-          pathname: '/main/branch',
-        }, `/main/branch`);
+          pathname: '/main',
+        }, `/main`);
         // TODO: add status and show new line is added.
       }).catch(err => {
         console.error('Error while adding branch', err);

@@ -69,9 +69,9 @@ class Home extends React.Component{
               <div className='flex-grow' />
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
-                  pathname: '/[branchName]/edit',
-                  query: { branchName: this.state.branchName, id: this.state.id },
-                }} as={`/${this.state.branchName}/edit`}>Edit</Link>
+                  pathname: '/branch-edit/[branchId]',
+                  query: { branchId: this.props.router.query.id },
+                }} as={`/branch-edit/[branchId]`}>Edit</Link>
               </button>
             </div>
           </div>

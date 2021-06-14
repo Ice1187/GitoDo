@@ -54,7 +54,7 @@ export default class TaskItem extends React.Component{
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
           <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.props.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
-              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == 'true' ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
               <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-24 overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
               <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
@@ -120,7 +120,7 @@ export default class TaskItem extends React.Component{
   handleTaskDone(event) {
     event.cancelBubble = true;
     if(event.stopPropagation) event.stopPropagation();
-    if(this.props.task.achieved == 'true') {
+    if(this.props.task.achieved == true) {
       this.props.onTaskUndone(this.props.task._id);
     } else {
       const now = new Date();

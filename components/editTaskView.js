@@ -111,8 +111,8 @@ class EditTaskView extends React.Component{
   handleTaskDone() {
     let now = new Date();
     this.setState({ 
-      achieved: `${this.state.achieved == 'true' ? 'false' : 'true'}`, 
-      achieved_at: `${this.state.achieved == 'true' ? null : now}`
+      achieved: this.state.achieved == true ? false : true, 
+      achieved_at: this.state.achieved == true ? null : now,
     })
   }
 
@@ -174,7 +174,6 @@ class EditTaskView extends React.Component{
   }
   
   handleSubmit(event) {
-    /* TODO: add redirect after submit*/
     if(this.state.taskName == '' || !this.state.dueDateJSON)
       alert('You should enter a title, choose a due time to modify.');
     else {
@@ -182,11 +181,11 @@ class EditTaskView extends React.Component{
       let data = qs.stringify({
         'due_date': this.state.dueDateJSON,
         'title': `${this.state.taskName}`,
-        'url': `${this.state.url ? this.state.url : null}`,
-        'content': `${this.state.note ? this.state.note : null}`,
+        'url': `${this.state.url ? `"${this.state.url}"` : null}`,
+        'content': `${this.state.note ? `"${this.state.note}"` : null}`,
         'importance': this.state.importance,
         'achieved': this.state.achieved,
-        'achieved_at': `${this.state.achieved_at ? this.state.achieved_at : null}`,
+        'achieved_at': `${this.state.achieved_at ? this.state.achieved_at : 'null'}`,
       })
       console.log(data)
       modifyNode(this.props._id, data).then(() => {
