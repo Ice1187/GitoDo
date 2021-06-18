@@ -25,6 +25,7 @@ export default class MainTaskView extends React.Component{
     if (allTask.length > 1) {
       allTask.shift();
       children = allTask.map((p) => (
+        !p.task.branch_line_id && 
         <ListGroupItem key={p.task._id} action>
           <TaskItem {...p} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone} onSubtaskDone={this.handleSubtaskDone} />
         </ListGroupItem>

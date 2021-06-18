@@ -35,7 +35,34 @@ const branchReducer = (state = initialMainBranchState, action) => {
     case END_LIST_ALL_CLEAR:
       return {...state, allLine: [{_id: '0'}]};
     case END_LIST_ALL_MORE:
-      return {...state, allLine: [...state.allLine, {Line:action.allLine, owner:action.owner, mother:action.mother}]};
+      {
+        let task_new = [{_id:'0'}];
+        let state_task = [...state.allLine];
+        let state_i = 1;
+        let action_i = 0;
+        while (state_i < state_task.length || action_i < 1) {
+          if(state_i >= state_task.length && action_i < 1) {
+            task_new = [...task_new, {Line:action.allLine, owner:action.owner, mother:action.mother, time:action.time}];
+            action_i++;
+          }
+          else if(state_i < state_task.length && action_i >= 1) {
+            task_new = [...task_new, state_task[state_i]];
+            state_i++;
+          }
+          else {
+            let state_ms = state_task[state_i].time;
+            let action_ms = action.time
+            if(state_ms <= action_ms) {
+              task_new = [...task_new, state_task[state_i]];
+              state_i++;
+            } else {
+              task_new = [...task_new, {Line:action.allLine, owner:action.owner, mother:action.mother, time:action.time}];
+              action_i++;
+            }
+          }
+        }
+        return {...state, allLine: [...task_new]};
+      }
     case END_LIST_MAIN_CLEAR:
       return {...state, allMain: [{_id: '0'}, {Line:{'_id':'0', 'title':'Set as Main Branch', 'color_RGB': [0, 0, 0], 'owner': '0'} , owner:'' ,mother:state.mainLine}]};
     case END_LIST_MAIN_MORE:

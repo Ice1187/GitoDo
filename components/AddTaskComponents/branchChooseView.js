@@ -1,6 +1,6 @@
 import React from 'react';
 import BranchChooseList from './BranchChooseList'
-import { getLine } from '../../api/line';
+import { getLine, getNodesByLine } from '../../api/line';
 import { getUser } from '../../api/user';
 import {connect} from 'react-redux';
 import {endListAllLineClear, listAllLine_more, listMainBranch, endListAllMainClear, listAllMain_more} from '../../redux/actions/branchActions';
@@ -20,9 +20,9 @@ class BranchChooseView extends React.Component {
   componentDidMount() {
     this.props.listMainBranch(this.props.userId);
     if(this.props.view == 'task')
-      this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
+      this.getAllBranches(this.props.mainLine)
     else
-      this.getAllBranches_without(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0)
+      this.getAllBranches_without(this.props.mainLine)
   }
 
   render() {
@@ -45,11 +45,20 @@ class BranchChooseView extends React.Component {
               <BranchChooseList ChooseBranch={this.handleBranchChoose} allLine={this.props.view == 'task' ? this.props.allLine : this.props.allMain} nowChoose={this.props.branchId}></BranchChooseList>
             </div>
           }
+          {
+            this.state.open && this.props.view == 'task' && this.props.allLine.length == 1 &&
+            <div className={`sm:mx-8 sm:my-5 my-2 mx-4 ring-gray-200 ring-2 rounded-lg p-3 px-4 flex items-center bg-white cursor-pointer`}>
+              <span className='ml-5 font-normal overflow-hidden'>Please add a branch first.</span>
+            </div>
+          }
         </div>
       </>
   )}
   
   handleBranchChoose (title, id, color) {
+    if(id == '0'){
+      id = this.props.mainLine._id
+    }
     this.props.ChooseBranch(title, id, color);
   }
 
@@ -57,44 +66,43 @@ class BranchChooseView extends React.Component {
     this.setState({ open: !this.state.open, });
   }
 
-  getAllBranches(LineObject, limit, now) {
-    if(LineObject == this.props.mainLine && now == 0) {
+  getAllBranches(LineObject) {
+    if(LineObject == this.props.mainLine) {
       this.props.listAllLineClear();
     }
-    if(now < limit) {
-      getLine(LineObject.branch_line_id[now]).then(Line => {
-        getUser(Line.owner).then(res => {
-          let owner = res.account;
-          this.props.listAllLineMore(Line, owner, LineObject)
-          if(Line.contain_branch)
-            this.getAllBranches(Line, Line.branch_line_id.length, 0);
-          this.getAllBranches(LineObject, limit, now+1)
-        }).catch(err => {
-          console.error('Error fetching owner', err);
-        })
-      }).catch(err => {
-        console.error('Error fetching branches', err);
-      })
-    }
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      for(let i = 0; i < task.length; i++) {
+        if(task[i].branch_line_id) {
+          getLine(task[i].branch_line_id[0]).then(Line => {
+            getUser(Line.owner).then(res => {
+              let owner = res.name;
+              this.props.listAllLineMore(Line, owner, LineObject)
+              if(Line.contain_branch > 0) {
+                this.getAllBranches(Line)
+              }
+            })
+          })
+        }
+      }
+    })
   }
 
-  getAllBranches_without(LineObject, limit, now) {
-    if(LineObject == this.props.mainLine && now == 0) {
-      this.props.listAllMoreClear();
+  getAllBranches_without(LineObject) {
+    if(LineObject == this.props.mainLine) {
+      this.props.listAllMainClear();
     }
-    if(now < limit) {
-      getLine(LineObject.branch_line_id[now]).then(Line => {
-        getUser(Line.owner).then(res => {
-          let owner = res.account;
-          this.props.listAllMainMore(Line, owner, this.props.mainLine)
-          this.getAllBranches_without(LineObject, limit, now+1)
-        }).catch(err => {
-          console.error('Error fetching owner', err);
-        })
-      }).catch(err => {
-        console.error('Error fetching branches', err);
-      })
-    }
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      for(let i = 0; i < task.length; i++) {
+        if(task[i].branch_line_id) {
+          getLine(task[i].branch_line_id[0]).then(Line => {
+            getUser(Line.owner).then(res => {
+              let owner = res.name;
+              this.props.listAllMainMore(Line, owner, LineObject)
+            })
+          })
+        }
+      }
+    })
   }
 }
 
@@ -110,7 +118,7 @@ const mapDispatchToProps = {
   listMainBranch: listMainBranch,
   listAllLineClear: endListAllLineClear,
   listAllLineMore: listAllLine_more,
-  listAllMoreClear: endListAllMainClear,
+  listAllMainClear: endListAllMainClear,
   listAllMainMore: listAllMain_more,
 };
 

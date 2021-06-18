@@ -5,7 +5,7 @@ import Search from './NavBarComponent/search';
 
 export default function Header() {
   const glass = {
-    'backdrop-filter': 'blur(8px)',
+    'backdropFilter': 'blur(8px)',
   }
   return (
     <>

@@ -17,7 +17,7 @@ class EditBranchView extends React.Component{
       branchName: null,
       branchColor: '#f44336',
       permission: null,
-      colorRGB: [{'r': 244, 'g': 67, 'b': 54}],
+      colorRGB: {'r': 244, 'g': 67, 'b': 54},
       branchFromTitle: '',
       branchFromId: '',
       sharer: [],
@@ -41,7 +41,7 @@ class EditBranchView extends React.Component{
       branchName: this.props.title,
       branchColor: branch_color,
       permission: this.props.permission,
-      colorRGB: this.props.color_RGB,
+      colorRGB: {'r': this.props.color_RGB[0], 'g': this.props.color_RGB[1], 'b': this.props.color_RGB[2]},
       sharer: this.props.sharer,
       sharer_progress: this.props.sharer_progress,
       url: this.props.url,
@@ -49,6 +49,7 @@ class EditBranchView extends React.Component{
       contain_branch: this.props.contain_branch,
       branch_line_id: this.props.branch_line_id,
     });
+    console.log(this.props.permission)
   }
 
   render() {
@@ -116,12 +117,12 @@ class EditBranchView extends React.Component{
       console.log(this.state.colorRGB)
       /* TODO: add subtask data & importance and content*/
       let data = qs.stringify({
-        'title': this.state.branchName,
-        'owner': this.props.owner,
-        'permission': this.state.permission,
+        'title': `${this.state.branchName}`,
+        'owner': `${this.props.owner}`,
+        'permission': `${this.state.permission}`,
         'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
       })
-      console.log(data, this.props._id)
+      console.log(data)
       modifyLine(this.props._id, data).then(() => {
         Router.push({
           pathname: '/main/branch',

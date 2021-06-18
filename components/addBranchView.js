@@ -6,7 +6,8 @@ import BranchChooseView from './AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
 import {connect} from 'react-redux';
-import {addLine} from '../api/line';
+import {addBranch} from '../api/line';
+import {addNode} from '../api/node';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -74,35 +75,52 @@ class AddBranchView extends React.Component{
   }
 
   handlePermissionChange(value) {
-    this.setState({ permission: `${value == 'public' ? 'true' : 'false'}`,});
+    console.log(value)
+    this.setState({ permission: value});
   }
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
     /* TODO: still have permission, url ,branchFrom a node, sharer to add */
     /* FIXME: can't use api to finish it */
-    if(this.state.branchName == '' || !this.state.permission)
+    if(this.state.branchName == '' || this.state.permission == null)
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {
       const now = new Date();
-      let data = qs.stringify({
-        'owner': this.props.userId,
-        'sharer': '',
-        'url': '',
-        'title': this.state.branchName,
-        'content': '',
-        'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
+      let node_data = qs.stringify({
+        'mother_line_id': `${this.state.branchFromId}`,
         'create_date': `${now}`,
         'due_date': `${now}`,
+        'title': `${this.state.branchName}`,
+        'url': `${null}`,
+        'content': `${null}`,
         'importance': '0',
-        'is_main': 'false',
-        'permission': `${this.state.permission == 'private' ? 'false' : 'true'}`,
-      }); 
-      addLine(data).then(() => {
-        Router.push({
-          pathname: '/main',
-        }, `/main`);
-        // TODO: add status and show new line is added.
+      })
+      console.log(node_data)
+      addNode(node_data).then(node => {
+        console.log(node)
+        let branch_data = qs.stringify({
+          'url': 'null',
+          'content': 'null',
+          'title': `${this.state.branchName}`,
+          'owner': `${this.props.userId}`,
+          'create_date': `${now}`,
+          'due_date': `${now}`,
+          'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
+          'is_main': this.state.branchFromTitle == 'Set as Main Branch' ? true : false,
+          'permission': this.state.permission,
+          'nodeId': `${node._id}`
+        }); 
+        addBranch(branch_data).then(line => {
+          console.log(line)
+          Router.push({
+            pathname: '/main',
+          }, `/main`);
+          // TODO: add status and show new line is added.
+        }).catch(err => {
+          console.error('Error while adding branch', err);
+          window.location.reload();
+        });
       }).catch(err => {
         console.error('Error while adding branch', err);
         window.location.reload();

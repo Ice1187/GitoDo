@@ -133,7 +133,7 @@ export default class AddTaskView extends React.Component{
     /* TODO: add redirect after submit*/
     console.log(this.state.taskName, this.state.dueDateJSON, this.state.branchId)
     if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
-      alert('You should enter a title, choose a due time, and choose the branch to add.');
+      alert('You should enter a title, choose a due time, and choose the branch to add. If you do not have a branch, please add a branch first.');
     else {
       /* TODO: add subtask data & importance and content*/
       const now = new Date();

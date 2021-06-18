@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import {logIn} from '../api/user';
 import { Button } from 'reactstrap';
 import Router from 'next/router';
@@ -25,6 +26,7 @@ class LoginView extends React.Component{
   }
 
   render() {
+    // TODO: forget password!
     return(
       <>
         <form onSubmit={this.handleSubmit}>
@@ -38,7 +40,7 @@ class LoginView extends React.Component{
             <div className='container flex flex-col shadow bg-white rounded-lg py-5'>
               <h1 className='text-2xl font-semibold mx-auto my-5'>Welcome Back.</h1>
               <div className='container flex flex-col ring-2 ring-gray-200 mx-auto sm:w-96 w-auto rounded-lg p-2 mb-5'>
-                <span className='ml-5 my-2'>Username</span>
+                <span className='ml-5 my-2'>Account</span>
                 <input type='text' className='text-left mx-5 my-3 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
                 value={this.state.username} onChange={this.handleUserChange} required></input>
                 <div className='flex-row flex ml-5 my-2 mr-5 items-center'>
@@ -50,7 +52,13 @@ class LoginView extends React.Component{
                 value={this.state.password} onChange={this.handlePassChange} required></input>
                 <Button className='ring-2 ring-green-500 mx-5 my-2 rounded-md py-2 bg-green-200 text-green-800 hover:bg-green-600 hover:text-white'>Sign in</Button>
               </div>
-              <h1 className='text-md font-normal mx-auto mb-10'>First time?&nbsp;&nbsp;<span className='cursor-pointer text-blue-700 hover:underline'> Create one.</span></h1>
+              <h1 className='text-md font-normal mx-auto mb-10'>First time?&nbsp;&nbsp;
+                <Link href='/signup'>
+                  <a>
+                   <span className='cursor-pointer text-blue-700 hover:underline'> Create one.</span>
+                  </a>
+                </Link>
+              </h1>
               <p className='text-sm text-gray-500 sm:w-96 text-center mx-auto sm:px-1 px-5'>Sign in to GitoDo means you agree to GitoDo&apos;s Terms of Service and
               acknowledge that GitoDo&apos;s Privacy Policy applies to you.</p>
             </div>

@@ -1,5 +1,8 @@
 import {
-  getMainLine,
+  getUser,
+} from '../../api/user';
+import {
+  getLine, 
 } from '../../api/line';
 
 
@@ -35,11 +38,12 @@ export const endListAllLineClear = () => ({
   type: END_LIST_ALL_CLEAR,
 })
 
-export const endListAllLineMore = (allLine, owner, mother) => ({
+export const endListAllLineMore = (allLine, owner, mother, time) => ({
   type: END_LIST_ALL_MORE,
   allLine, 
   owner,
-  mother
+  mother,
+  time
 })
 
 export const endListAllMainClear = () => ({
@@ -65,8 +69,10 @@ export const endListTaskMore = (task) => ({
 export function listMainBranch (userId) {
   return (dispatch) => {
     dispatch(startLoading());
-    return getMainLine(userId).then(branch => {
-        dispatch(endListMainBranch(branch));
+    return getUser(userId).then(user => {
+        getLine(user.todo_host).then(line => {
+          dispatch(endListMainBranch(line));
+        })
     }).catch(err => {
         console.error('Error listing branches', err);
     }).then(() => {
@@ -75,10 +81,10 @@ export function listMainBranch (userId) {
   };
 }
 
-export function listAllLine_more (allLine, owner, mother) {
+export function listAllLine_more (allLine, owner, mother, time = Date.now()) {
   return (dispatch) => {
     dispatch(startLoading());
-    dispatch(endListAllLineMore(allLine, owner, mother));
+    dispatch(endListAllLineMore(allLine, owner, mother, time));
     dispatch(endLoading());
   };
 }

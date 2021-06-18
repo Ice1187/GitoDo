@@ -22,7 +22,6 @@ class BranchChooseItem extends React.Component {
     if(branchFrom) {
       branchFrom = branchFrom.replace(/ /g, "\u00a0");
     }
-    console.log(this.props.Line.owner)
     return (
       <>
         <div className={`container ring-2 ${this.props.nowChoose != this.props.Line._id ? ' ring-gray-200 hover:ring-red-200 ' : ' ring-red-400 '} rounded-lg p-3 px-4 my-3 flex-row flex items-center bg-white cursor-pointer`} onClick={this.handleChooseBranch}>

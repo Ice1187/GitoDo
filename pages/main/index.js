@@ -31,7 +31,7 @@ class Home extends React.Component{
   componentDidMount() {
     if(this.props.userId != -1) {
       this.props.listMainBranch(this.props.userId);
-      setTimeout(() => {this.getAllBranches(this.props.mainLine, this.props.mainLine.branch_line_id.length, 0);
+      setTimeout(() => {this.getAllBranches(this.props.mainLine, Date.now(), 0);
       setTimeout(() => {this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);}, 400);}, 100);
     }
   }
@@ -76,32 +76,33 @@ class Home extends React.Component{
     }
   }
 
-  getAllBranches(LineObject, limit, now) {
-    if(LineObject == this.props.mainLine && now == 0) {
+  getAllBranches(LineObject, comtime, level) {
+    if(LineObject == this.props.mainLine) {
       this.props.listAllLineClear();
+      this.props.listAllLineMore(LineObject, 'you', LineObject, comtime - 100)
     }
-    if(now < limit) {
-      getLine(LineObject.branch_line_id[now]).then(Line => {
-        getUser(Line.owner).then(res => {
-          let owner = res.account;
-          this.props.listAllLineMore(Line, owner, LineObject)
-          if(Line.contain_branch)
-            this.getAllBranches(Line, Line.branch_line_id.length, 0);
-          this.getAllBranches(LineObject, limit, now+1)
-        }).catch(err => {
-          console.error('Error fetching owner', err);
-        })
-      }).catch(err => {
-        console.error('Error fetching branches', err);
-      })
-    }
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      for(let i = 0; i < task.length; i++) {
+        if(task[i].branch_line_id) {
+          getLine(task[i].branch_line_id[0]).then(Line => {
+            getUser(Line.owner).then(res => {
+              let owner = res.name;
+              this.props.listAllLineMore(Line, owner, LineObject, comtime + i * Math.pow(1000, 1-level))
+            })
+            if(Line.contain_branch > 0) {
+              this.getAllBranches(Line, comtime + 1, level+1)
+            }
+          })
+        }
+      }
+    })
   }
 
   getAllTasks(LineObject, limit, now) {
     if(now == 1) {
       this.props.listAllTaskClear();
     }
-    if(now < limit && !this.props.loading){
+    if(now < limit){
       /* inf as 1000 = anout */
       getNodesByLine(LineObject[now].Line._id, 0, 1000, 0).then(task => {
         /*inside here and compare */

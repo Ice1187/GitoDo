@@ -56,6 +56,6 @@ export default class Permission extends React.Component {
   )}
 
   handleChange (event) {
-    this.props.permissionChange(event.target.value);
+    this.props.permissionChange(event.target.value == 'true' ? true : false);
   }
 }

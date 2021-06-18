@@ -20,6 +20,7 @@ export default class MainBranchDisplay extends React.Component{
     );
     if (allLine.length > 1) {
       allLine.shift();
+      allLine.shift();
       children = allLine.map((p) => (
         <ListGroupItem key={p.Line._id} action>
           <BranchItem {...p}/>

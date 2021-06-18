@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
 
@@ -24,7 +23,7 @@ export default class TaskItem extends React.Component{
     /* TODO: three dots svg and multipleitems icon */
     const {color_RGB, title} = this.props.line;
     branchName = title;
-    const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
+    const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
     const stylebranch = {
       backgroundColor: branch_color,
       '--tw-ring-color': branch_color
@@ -56,9 +55,9 @@ export default class TaskItem extends React.Component{
             <div className='container flex flex-row items-center'>
               <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-24 overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
               <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-              <span className='sm:ml-5 ml-3 font-semibold sm:w-40 w-24 overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-40 w-auto overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
               <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
             </div>
             <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
@@ -78,7 +77,7 @@ export default class TaskItem extends React.Component{
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>URL</span>
-                <Link href={this.props.task.url}><a><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a></Link>
+                <a target='_blank' rel='noreferrer' href={'//'+this.props.task.url}><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a>
                 <div className='flex-grow'/>
               </div>
             }

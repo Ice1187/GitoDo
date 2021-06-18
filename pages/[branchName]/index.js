@@ -99,11 +99,13 @@ class Home extends React.Component{
       this.setState({
         all_line: [...this.state.all_line, Line],
       }, () => {
-        if(Line.branch_line_id) {
-          for(let i = 0; i < Line.branch_line_id.length; i++) {
-            this.getLinetoState(Line.branch_line_id[i])
+        getNodesByLine(Line._id, 0, 1000, 0).then(task => {
+          for(let i = 0; i < task.length; i++) {
+            if(task[i].branch_line_id) {
+              this.getLinetoState(task[i].branch_line_id[0])
+            }
           }
-        }
+        })
       })
     }).catch(err => {
       console.error('Error fetching branches', err);
