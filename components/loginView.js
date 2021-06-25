@@ -26,7 +26,7 @@ class LoginView extends React.Component{
   }
 
   render() {
-    // TODO: forget password!
+    // TODO: forget password! clear all memory!
     return(
       <>
         <form onSubmit={this.handleSubmit}>

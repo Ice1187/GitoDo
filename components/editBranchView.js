@@ -128,7 +128,7 @@ class EditBranchView extends React.Component{
         'permission': `${this.state.permission}`,
         'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
       })
-      console.log(data)
+      // console.log(data)
       modifyLine(this.props._id, data).then(() => {
         Router.push({
           pathname: '/main/branch',

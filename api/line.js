@@ -116,18 +116,45 @@ export function setMainLine(userId, lineId) {
 }
 
 // shareLine
-// '/line/shareLine/:lineId/:userId'
+// /line/shareLine
+/* 
+data should like this 
+You only need to put what you want to change into it
+NO INTEGRITY CHECK!!!
+BE CAREFUL ABOUT WHAT YOU DOING!!!
+NO DUPLICATE CHECK IF YOU DO TWICE IT GIVES YOU TWO!!!
+var data = qs.stringify({
+  'sharerLineId': '60ca08a4c485203114aa7389',
+  'sharederUserId': '60ccbb70e2b953f80f847287',
+  'sharederNodeId': '60ccc70a9b24c43dffbcc592' 
+}); */
+export function shareLine(data) {
+  let url = `${postBaseUrl}/line/shareLine`;
+  let headers = { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  
+  return axios.post(url, data, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
+}
+
+// setShareProgress
+// '/line/setShareProgress/:sharerLineId/:sharederUserId/:sharederUserProgress'
 // for instance
-// /line/shareLine/60bb739ed1ca181d8cecbaa3/60bb236fb6ced33c4c9b3e80
-export function shareLine(lineId, userId) {
-  let url = `${postBaseUrl}/line/shareLine/`;
-  url = url + lineId + '/' + userId;
+// /line/setShareProgress/60ca08a4c485203114aa7389/60ccbb70e2b953f80f847287/17
+export function setShareProgress(sharerLineId, sharederUserId, sharederUserProgress) {
+  let url = `${postBaseUrl}/line/setShareProgress/`;
+  url = url + sharerLineId + '/' + sharederUserId + '/' + sharederUserProgress;
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-
-  // console.log(url)
-  // console.log(headers)
   
   return axios.put(url, {
     headers: headers
@@ -141,18 +168,18 @@ export function shareLine(lineId, userId) {
 
 }
 
-// setShareProgress
-// '/line/setShareProgress/:lineId/:userId/:nodeId'
+// getShareProgress
+// '/line/getShareProgress/:sharerLineId'
 // for instance
-// /line/setShareProgress/60bb739ed1ca181d8cecbaa3/60bb236fb6ced33c4c9b3e80/60bb739ed1ca181d8cecbab8
-export function setShareProgress(lineId, userId, nodeId) {
-  let url = `${postBaseUrl}/line/setShareProgress/`;
-  url = url + lineId + '/' + userId + '/' + nodeId;
+// /line/getShareProgress/60ca08a4c485203114aa7389
+export function getShareProgress(sharerLineId) {
+  let url = `${postBaseUrl}/line/getShareProgress/`;
+  url = url + sharerLineId;
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
   
-  return axios.put(url, {
+  return axios.get(url, {
     headers: headers
   })
   .then((response) => {

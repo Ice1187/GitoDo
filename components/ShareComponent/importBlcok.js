@@ -29,7 +29,7 @@ export default class ImportBlock extends React.Component {
     )
   }
 
-  handleChange () {
-    /* add fetch data api*/
+  handleChange (e) {
+    this.props.handleUrl(e.target.value);
   }
 }
