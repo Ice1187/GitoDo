@@ -5,7 +5,7 @@ import ShareBlock from '../components/ShareComponent/shareBlcok';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
-import { modifyLine, getLine } from '../api/line';
+import { modifyLine, getLine, deleteBranch } from '../api/line';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -28,6 +28,7 @@ class EditBranchView extends React.Component{
       branch_line_id: [],
     };
 
+    this.handleBranchDelete = this.handleBranchDelete.bind(this);
     this.handleColorChange = this.handleColorChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handlePermissionChange = this.handlePermissionChange.bind(this);
@@ -50,7 +51,6 @@ class EditBranchView extends React.Component{
       contain_branch: this.props.contain_branch,
       branch_line_id: this.props.branch_line_id,
     });
-    console.log(this.props.permission)
   }
 
   render() {
@@ -58,8 +58,16 @@ class EditBranchView extends React.Component{
       <>
         <form onSubmit={this.handleSubmit}>
           <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
-            <h1 className='text-2xl'>Edit branch</h1>
-            <p className='text-gray-500'>A branch contains many tasks, can also include multiple branches.</p>
+            <div className='flex flex-row justify-between'>
+              <div>
+                <h1 className='text-2xl'>Edit branch</h1>
+                <p className='text-gray-500'>A branch contains many tasks, can also include multiple branches.</p>
+              </div>
+              <div className='relative hover-trigger flex flex-row cursor-pointer' onClick={this.handleBranchDelete}>
+                <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-10 right-7'>Delete</span>
+                <span className='pt-5 material-icons text-md transform scale-90 text-gray-400 hover:text-red-500'>delete</span>
+              </div>
+            </div>
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
@@ -96,6 +104,11 @@ class EditBranchView extends React.Component{
       b = "0" + b;
   
     return "#" + r + g + b;
+  }
+
+  handleBranchDelete() {
+    // TODO: link api with fixed deleteBranch
+    console.log('delete');
   }
 
   handleColorChange(color) {

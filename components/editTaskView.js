@@ -7,7 +7,7 @@ import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
-import { modifyNode, addSubtask, getNode, deleteSubTask, modifySubTask } from '../api/node';
+import { modifyNode, addSubtask, getNode, deleteSubTask, modifySubTask, deleteNode} from '../api/node';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -29,6 +29,7 @@ class EditTaskView extends React.Component{
       achieved_at: null,
     };
 
+    this.handleTaskDelete = this.handleTaskDelete.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleDateToggle = this.handleDateToggle.bind(this);
@@ -65,12 +66,19 @@ class EditTaskView extends React.Component{
       <>
         <form>
           <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
-            <h1 className='text-2xl'>Edit task</h1>
-            <p className='text-gray-500'>A task contains notes, due dates, and sub-tasks ... etc.</p>
+            <div className='flex flex-row justify-between'>
+              <div>
+                <h1 className='text-2xl'>Edit task</h1>
+                <p className='text-gray-500'>A task contains notes, due dates, and sub-tasks ... etc.</p>
+              </div>
+              <div className='relative hover-trigger flex flex-row cursor-pointer' onClick={this.handleTaskDelete}>
+                <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-10 right-7'>Delete</span>
+                <span className='pt-5 material-icons text-md transform scale-90 text-gray-400 hover:text-red-500'>delete</span>
+              </div>
+            </div>
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange} achieved={this.state.achieved} onDone={this.handleTaskDone}></AddTitle>
-              {/* TODO: insert branch item and edit func */}
               <DateItem color={this.state.branchColor} isDate={this.state.isDate} dueDate={this.state.dueDateJSON} dateToggle={this.handleDateToggle} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
@@ -106,6 +114,15 @@ class EditTaskView extends React.Component{
       b = "0" + b;
   
     return "#" + r + g + b;
+  }
+
+  handleTaskDelete() {
+    deleteNode(this.props.line._id, this.props._id).then(() => {
+      Router.push({
+        pathname: '/main',
+      }, `/main`);
+      // TODO: add status and show new line is deleted.
+    })
   }
 
   handleTaskDone() {
