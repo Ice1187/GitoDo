@@ -102,7 +102,7 @@ class TaskItem extends React.Component{
               {this.state.progress_users && 
                 <div className='hover-trigger relative mr-3 w-5'>
                   {this.state.progress_users.length > 0 && <span className={'material-icons pt-2 text-gray-400 group-hover:text-gray-500'}>supervised_user_circle</span>}
-                  {this.state.progress_users.length > 0 && <ul className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{userList}</ul>}
+                  {this.state.progress_users.length > 0 && <ul className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 hover-target'>{userList}</ul>}
                 </div>
               }
               <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>

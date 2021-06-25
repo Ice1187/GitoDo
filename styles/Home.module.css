@@ -5,6 +5,7 @@
   align-items: center;
   margin-top: 3.5rem;
   min-height: 77vh;
+  position: relative;
 }
 
 .header {
@@ -125,6 +126,8 @@
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
+  z-index: 10;
+  position: relative;
 
   /* Support for all WebKit browsers. */
   -webkit-font-smoothing: antialiased;

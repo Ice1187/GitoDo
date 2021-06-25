@@ -5,6 +5,7 @@ import styles from '../../styles/Home.module.css';
 import Header from '../../components/header';
 import MainTaskView from '../../components/mainTaskView';
 import Footer from '../../components/footer';
+import ShareBlock from '../../components/ShareComponent/shareBlcok';
 import Link from 'next/link';
 import {connect} from 'react-redux';
 import { withRouter } from 'next/router'
@@ -21,6 +22,9 @@ class Home extends React.Component{
       all_line: [],
       task: [],
       loading: false,
+      share_open: false,
+      color: null,
+      title: '',
     };
 
     this.getAllLines = this.getAllLines.bind(this)
@@ -30,6 +34,8 @@ class Home extends React.Component{
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleTaskUndone = this.handleTaskUndone.bind(this);
     this.checkLogin = this.checkLogin.bind(this);
+    this.handleUpdateSharer = this.handleUpdateSharer.bind(this);
+    this.handleShareOpen = this.handleShareOpen.bind(this);
 
     this.checkLogin();
   }
@@ -48,7 +54,6 @@ class Home extends React.Component{
   }
 
   render(){
-    // console.log(this.state.all_line, this.state.task, this.state.loading)
     return (
       <>
       {
@@ -67,6 +72,12 @@ class Home extends React.Component{
             <div className='container flex flex-row mx-auto items-center'>
               <h1 className='text-2xl font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
               <div className='flex-grow' />
+              <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
+                {!this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Share</span>}
+                {!this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>ios_share</span>}
+                {this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Show&nbsp;tasks</span>}
+                {this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>splitscreen</span>}
+              </div>
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
                   pathname: '/branch-edit/[branchId]',
@@ -74,8 +85,9 @@ class Home extends React.Component{
                 }} as={`/branch-edit/[branchId]`}>Edit</Link>
               </button>
             </div>
+            {this.state.share_open && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
           </div>
-          {<MainTaskView task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {!this.state.share_open && <MainTaskView task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
         </main>
   
         <Footer></Footer>
@@ -96,6 +108,9 @@ class Home extends React.Component{
 
   getLinetoState(LineId) {
     getLine(LineId).then(Line => {
+      if(!this.state.color){
+        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id})
+      }
       this.setState({
         all_line: [...this.state.all_line, Line],
       }, () => {
@@ -170,6 +185,16 @@ class Home extends React.Component{
       this.setState({
         loading: false,
       })
+    })
+  }
+
+  handleShareOpen() {
+    this.setState({share_open: !this.state.share_open})
+  }
+
+  handleUpdateSharer() {
+    getLine(this.props._id).then(line => {
+      this.setState({sharer: line.sharer})
     })
   }
 

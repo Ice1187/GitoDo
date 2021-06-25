@@ -96,3 +96,28 @@ export function modifyUser(userId, data) {
 	return error
   });
 }
+
+// searchUsers
+// '/user/searchUsers/:string/:offset/:amount'
+// for instance
+// /user/searchUsers/Alice/0/5
+// this will get you 5 matched data start from 0 of User name contain 'Alice'
+export function searchUsers(string, offset, amount) {
+  let url = `${postBaseUrl}/user/searchUsers/`;
+  url = url + string + '/' + offset + '/' + amount;
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  console.log(url)
+  console.log(headers)
+  
+  return axios.get(url, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
+}
