@@ -19,10 +19,10 @@ export default class SubtaskList extends React.Component {
         <div></div>
       </ListGroupItem>
     );
-    if (this.props.subtask.length) {
+    if (this.props.subtask) {
       children = this.props.subtask.map((p, index) => (
         <ListGroupItem key={index} action>
-          <SubtaskItem {...p} DelSub={this.handleDelSubtask} DoneSub={this.handleDoneSubtask} color={this.props.color} delete={this.props.delete}/>
+          <SubtaskItem {...p} id={index} DelSub={this.handleDelSubtask} DoneSub={this.handleDoneSubtask} color={this.props.color} delete={this.props.delete}/>
         </ListGroupItem>
       ));
     }
@@ -40,7 +40,7 @@ export default class SubtaskList extends React.Component {
     this.props.DelSub(id);
   }
 
-  handleDoneSubtask(id) {
-    this.props.DoneSub(id);
+  handleDoneSubtask(value, done, id) {
+    this.props.DoneSub(value, done, id);
   }
 }

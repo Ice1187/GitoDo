@@ -63,7 +63,7 @@ export default class SubtaskView extends React.Component {
     this.props.DelSub(value);
   }
 
-  handleDoneSubtask(value) {
-    this.props.DoneSub(value);
+  handleDoneSubtask(value, done, id) {
+    this.props.DoneSub(value, done, id);
   }
 }

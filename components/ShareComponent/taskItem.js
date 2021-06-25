@@ -1,6 +1,8 @@
 import React from 'react';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
+import { getNode, modifySubTask } from '../../api/node';
+let qs = require('qs');
 
 export default class TaskItem extends React.Component{
   constructor(props) {
@@ -8,6 +10,7 @@ export default class TaskItem extends React.Component{
 
     this.state = {
       open: false,
+      subtask: [],
     }
 
     this.handleSubExpand = this.handleSubExpand.bind(this);
@@ -15,6 +18,12 @@ export default class TaskItem extends React.Component{
     this.handleSubDone = this.handleSubDone.bind(this);
     this.handleTaskEdit = this.handleTaskEdit.bind(this);
     this.RGBToHex = this.RGBToHex.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ 
+      subtask: this.props.task.subtask,
+    });
   }
 
   render() {
@@ -51,7 +60,7 @@ export default class TaskItem extends React.Component{
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
-          <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.props.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
+          <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.state.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
               <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
@@ -70,7 +79,7 @@ export default class TaskItem extends React.Component{
             </div>
           </div>
           {
-          this.state.open && (this.props.task.url || this.props.task.content || this.props.subtask) &&
+          this.state.open && (this.props.task.url || this.props.task.content || this.state.subtask) &&
           <div className='container flex-col flex items-center bg-white py-2'>
             {
               this.props.task.url && 
@@ -94,12 +103,12 @@ export default class TaskItem extends React.Component{
               </div>
             }
             {
-              this.props.subtask && 
+              this.state.subtask && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Subtask</span>
                 <div className='container pr-2'>
-                  <SubtaskList color={this.props.color} subtask={this.props.subtask} DoneSub={this.handleSubDone} delete={false}></SubtaskList> 
+                  <SubtaskList color={branch_color} subtask={this.state.subtask} DoneSub={this.handleSubDone} delete={false}></SubtaskList> 
                 </div>
               </div>
             }
@@ -127,8 +136,17 @@ export default class TaskItem extends React.Component{
     }
   }
 
-  handleSubDone(id) {
-    this.props.onSubtaskDone(id, this.props.id);
+  handleSubDone(value, done, id) {
+    let data = qs.stringify({
+      'subtask': `${value}`,
+      'done': `${done}`,
+      'subtaskIdx': `${id}`,
+    });
+    modifySubTask(this.props.task._id, data).then(() => {
+      getNode(this.props.task._id).then(node => {
+        this.setState({subtask: [...node.subtask],})
+      })
+    });
   }
 
   handleTaskEdit () {

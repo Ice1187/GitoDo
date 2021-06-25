@@ -125,6 +125,9 @@ export function shareLine(lineId, userId) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
+
+  // console.log(url)
+  // console.log(headers)
   
   return axios.put(url, {
     headers: headers

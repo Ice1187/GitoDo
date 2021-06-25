@@ -7,7 +7,7 @@ import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import BranchChooseView from '../components/AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
-import {addNode} from '../api/node';
+import {addNode, addSubtask} from '../api/node';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -102,30 +102,21 @@ export default class AddTaskView extends React.Component{
 
   handleSubAdd(value) {
     if(value != '') {
-      let newSub = {'task': value, 'done': false};
+      let newSub = {'subtask': value, 'done': 'false'};
       this.setState({ subtask: [...this.state.subtask, newSub]});
     }
   }
 
   handleSubDel(id) {
     let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask.splice(i, 1);
-        break;
-      }
-    }
+    ReSubtask.splice(id, 1);
     this.setState({ subtask: ReSubtask});
   }
 
-  handleSubDone(id) {
+  handleSubDone(value, done, id) {
     let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask[i].done = !this.state.subtask[i].done;
-        break;
-      }
-    }
+    console.log(ReSubtask)
+    ReSubtask[id].done = done;
     this.setState({ subtask: ReSubtask});
   }
   
@@ -147,8 +138,15 @@ export default class AddTaskView extends React.Component{
         'importance': this.state.importance,
         'is_main': 'true' 
       })
-      console.log(data)
-      addNode(data).then(() => {
+      addNode(data).then(node => {
+        for(let i = 0; i < this.state.subtask.length; i++){
+          let data = qs.stringify({
+            'subtask': `${this.state.subtask[i].subtask}`,
+            'done': `${this.state.subtask[i].done}`,
+            'nodeId': `${node._id}`, 
+          });
+          addSubtask(data);
+        }
         Router.push({
           pathname: '/main',
         }, `/main`);

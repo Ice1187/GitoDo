@@ -10,7 +10,6 @@ export default class MainTaskView extends React.Component{
     }
 
     this.handleTaskDone = this.handleTaskDone.bind(this);
-    this.handleSubtaskDone = this.handleSubtaskDone.bind(this);
     this.handleTaskUndone = this.handleTaskUndone.bind(this);
   }
 
@@ -27,7 +26,7 @@ export default class MainTaskView extends React.Component{
       children = allTask.map((p) => (
         !p.task.branch_line_id && 
         <ListGroupItem key={p.task._id} action>
-          <TaskItem {...p} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone} onSubtaskDone={this.handleSubtaskDone} />
+          <TaskItem {...p} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}/>
         </ListGroupItem>
       ));
     }
@@ -49,10 +48,5 @@ export default class MainTaskView extends React.Component{
 
   handleTaskUndone(id) {
     this.props.onTaskUndone(id);
-  }
-
-  handleSubtaskDone(id, bid) {
-    /* TODO: call api change node state and rerender */
-    console.log('branch' + {bid} + 'Subtask' + {id} + ' Done');
   }
 }

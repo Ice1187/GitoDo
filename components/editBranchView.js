@@ -5,7 +5,7 @@ import ShareBlock from '../components/ShareComponent/shareBlcok';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
-import { modifyLine } from '../api/line';
+import { modifyLine, getLine } from '../api/line';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -33,6 +33,7 @@ class EditBranchView extends React.Component{
     this.handlePermissionChange = this.handlePermissionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.RGBToHex = this.RGBToHex.bind(this);
+    this.handleUpdateSharer = this.handleUpdateSharer.bind(this);
   }
 
   componentDidMount() {
@@ -64,7 +65,7 @@ class EditBranchView extends React.Component{
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
               <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
-              <ShareBlock color={this.state.branchColor}></ShareBlock>
+              <ShareBlock color={this.state.branchColor} lineId={this.props._id} sharer={this.state.sharer} update={this.handleUpdateSharer}></ShareBlock>
             </div>
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
               <span>Save Change</span>
@@ -109,13 +110,18 @@ class EditBranchView extends React.Component{
     let bool = value == 'true' ? true : false
     this.setState({ permission: bool,});
   }
+
+  handleUpdateSharer() {
+    getLine(this.props._id).then(line => {
+      this.setState({sharer: line.sharer})
+    })
+  }
   
   handleSubmit(event) {
     if(this.state.taskName == '' || this.state.permission == null)
       alert('You should enter a title, choose a due time to modify.');
     else {
       console.log(this.state.colorRGB)
-      /* TODO: add subtask data & importance and content*/
       let data = qs.stringify({
         'title': `${this.state.branchName}`,
         'owner': `${this.props.owner}`,

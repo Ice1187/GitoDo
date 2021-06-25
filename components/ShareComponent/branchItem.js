@@ -65,7 +65,7 @@ export default class BranchItem extends React.Component {
             </div>) : ''
           }
           {
-            is_main == false &&
+            is_main == 'false' &&
             <div className='relative hover-trigger sm:mx-2 mx-1 pt-2'>
               <span className='material-icons text-red-400'>call_split</span>
               <span className={'backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 w-40 text-center z-10 hover-target'}>Branch&nbsp;From<br/>{branchFrom}</span>

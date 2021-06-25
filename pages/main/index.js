@@ -17,7 +17,11 @@ class Home extends React.Component{
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      /* TODO: change to state not redux */
+      all_line: [],
+      task: [],
+    };
 
     this.getAllBranches = this.getAllBranches.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
@@ -32,7 +36,7 @@ class Home extends React.Component{
     if(this.props.userId != -1) {
       this.props.listMainBranch(this.props.userId);
       setTimeout(() => {this.getAllBranches(this.props.mainLine, Date.now(), 0);
-      setTimeout(() => {this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);}, 400);}, 100);
+      setTimeout(() => {this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);}, 500);}, 100);
     }
   }
 

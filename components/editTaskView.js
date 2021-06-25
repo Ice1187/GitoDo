@@ -7,7 +7,7 @@ import SubtaskView from '../components/AddTaskComponents/subtaskView';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
-import { modifyNode } from '../api/node';
+import { modifyNode, addSubtask, getNode, deleteSubTask, modifySubTask } from '../api/node';
 import Router from 'next/router';
 
 let qs = require('qs');
@@ -146,31 +146,43 @@ class EditTaskView extends React.Component{
 
   handleSubAdd(value) {
     if(value != '') {
+      /*
       let newSub = {'task': value, 'done': false, 'id': this.state.subtask.length + 1};
       this.setState({ subtask: [...this.state.subtask, newSub]});
+      */
+      let data = qs.stringify({
+        'subtask': `${value}`,
+        'done': false,
+        'nodeId': `${this.props._id}`, 
+      });
+      addSubtask(data).then(() => {
+        getNode(this.props._id).then(node => {
+          this.setState({subtask: [...node.subtask],})
+        })
+      });
     }
   }
 
   handleSubDel(id) {
-    let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask.splice(i, 1);
-        break;
-      }
-    }
-    this.setState({ subtask: ReSubtask});
+    deleteSubTask(this.props._id, id).then(() => {
+      getNode(this.props._id).then(node => {
+        this.setState({subtask: [...node.subtask],})
+        console.log(node.subtask)
+      })
+    });
   }
 
-  handleSubDone(id) {
-    let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask[i].done = !this.state.subtask[i].done;
-        break;
-      }
-    }
-    this.setState({ subtask: ReSubtask});
+  handleSubDone(value, done, id) {
+    let data = qs.stringify({
+      'subtask': `${value}`,
+      'done': `${done}`,
+      'subtaskIdx': `${id}`,
+    });
+    modifySubTask(this.props._id, data).then(() => {
+      getNode(this.props._id).then(node => {
+        this.setState({subtask: [...node.subtask],})
+      })
+    });
   }
   
   handleSubmit(event) {

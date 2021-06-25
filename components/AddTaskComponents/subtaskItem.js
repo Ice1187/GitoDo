@@ -24,8 +24,8 @@ export default class SubtaskItem extends React.Component {
     return (
       <>
         <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-3 flex-row flex items-center cursor-default bg-white'>
-          <button type='button' className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.done ? stylecomplete : stylebox} onClick={this.handleDoneSub}></button>
-          <span className='ml-5 font-normal overflow-hidden'>{this.props.task}</span>
+          <button type='button' className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.done == 'true' ? stylecomplete : stylebox} onClick={this.handleDoneSub}></button>
+          <span className='ml-5 font-normal overflow-hidden'>{this.props.subtask}</span>
           <div className='flex-grow'/>
           {this.props.delete && <span className={'material-icons text-gray-400 hover:text-gray-600 sm:mr-4 cursor-pointer mr-0 transform rotate-45'} onClick={this.handleDelSubtask}>add</span>}
         </div>
@@ -38,6 +38,6 @@ export default class SubtaskItem extends React.Component {
   }
 
   handleDoneSub() {
-    this.props.DoneSub(this.props.id);
+    this.props.DoneSub(this.props.subtask, this.props.done == 'true' ? 'false' : 'true', this.props.id);
   }
 }
