@@ -89,7 +89,7 @@ class SignupView extends React.Component{
       'password': this.state.password,
       'email': this.state.email,
       'name': this.state.name,
-      'avatar_url': null,
+      'avatar_url': 'http://140.114.91.242:3000/upload_1df0a74177f39b7bb53160b68e500564.jpg',
     });
     signIn(data).then(() => {
       Router.push({

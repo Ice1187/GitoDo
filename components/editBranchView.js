@@ -65,7 +65,7 @@ class EditBranchView extends React.Component{
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
               <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
-              <ShareBlock color={this.state.branchColor} lineId={this.props._id} sharer={this.state.sharer} update={this.handleUpdateSharer}></ShareBlock>
+              <ShareBlock color={this.state.branchColor} branchName={this.props.title} lineId={this.props._id} sharer={this.state.sharer} update={this.handleUpdateSharer}></ShareBlock>
             </div>
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
               <span>Save Change</span>
@@ -107,8 +107,7 @@ class EditBranchView extends React.Component{
   }
 
   handlePermissionChange(value) {
-    let bool = value == 'true' ? true : false
-    this.setState({ permission: bool,});
+    this.setState({ permission: value,});
   }
 
   handleUpdateSharer() {

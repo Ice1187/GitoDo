@@ -1,7 +1,11 @@
 import React from 'react';
-import {shareLine, setShareProgress} from '../../api/line'
+import {getUser} from '../../api/user'
+import {addNode} from '../../api/node'
+import {shareLine} from '../../api/line'
+import {connect} from 'react-redux'
 
-export default class ShareBlock extends React.Component {
+let qs = require('qs');
+class ShareBlock extends React.Component {
   constructor(props) {
     super(props);
 
@@ -42,8 +46,27 @@ export default class ShareBlock extends React.Component {
   }
   
   handleShare() {
-    shareLine(`${this.props.lineId}`, `${this.state.value}`).then(()=>{
-      setShareProgress(`${this.props.lineId}`, `${this.state.value}`, '-1')
+    const now = new Date();
+    getUser(this.state.value).then(user => {
+      let node_data = qs.stringify({
+        'mother_line_id': `${user.todo_host}`,
+        'create_date': `${now}`,
+        'due_date': `${now}`,
+        'title': `${this.props.branchName}`,
+        'url': `${null}`,
+        'content': `${null}`,
+        'importance': '0',
+      })
+      addNode(node_data).then(node => {
+        let data = qs.stringify({
+          'sharerLineId': `${this.props.lineId}`,
+          'sharederUserId': `${this.state.value}`,
+          'sharederNodeId': `${node._id}` 
+        });
+        shareLine(data).then(shareObj=>{
+          console.log(shareObj)
+        })
+      })
     })
     this.props.update();
     event.preventDefault();
@@ -54,3 +77,14 @@ export default class ShareBlock extends React.Component {
     this.setState({value: event.target.value})
   }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId,
+  mainLine: state.branch.mainLine,
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShareBlock);

@@ -4,19 +4,16 @@
   justify-content: center;
   align-items: center;
   margin-top: 3.5rem;
+  min-height: 77vh;
+}
+
+.header {
+  min-height: 7vh;
+  max-height: 15vh;
 }
 
 .footer {
-  height: 100px;
-  border-top: 1px solid #5d5d5d;
-  align-items: center;
-}
-
-.footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+  min-height: 13vh;
 }
 
 .title a {

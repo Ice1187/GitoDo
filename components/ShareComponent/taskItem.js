@@ -2,15 +2,21 @@ import React from 'react';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
 import { getNode, modifySubTask } from '../../api/node';
+import { connect } from 'react-redux';
+import { getNodesByLine, getShareProgress, setShareProgress} from '../../api/line';
+import { getUser } from '../../api/user';
 let qs = require('qs');
+import moment from 'moment';
 
-export default class TaskItem extends React.Component{
+class TaskItem extends React.Component{
   constructor(props) {
     super(props);
 
     this.state = {
       open: false,
       subtask: [],
+      index: -1,
+      progress_users: [],
     }
 
     this.handleSubExpand = this.handleSubExpand.bind(this);
@@ -24,6 +30,24 @@ export default class TaskItem extends React.Component{
     this.setState({ 
       subtask: this.props.task.subtask,
     });
+    getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+      const index = task.map((p) => {return p._id}).indexOf(this.props.task._id)
+      this.setState({index: index})
+      if(this.props.line.is_share) {
+        getShareProgress(this.props.line.sharerLineId).then(progress => {
+          const usersObj = progress.shareder.filter(element => element.shareder_progress == index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+          let user_new = []
+          for(let i = 0; i < usersObj.length; i++) {
+            getUser(usersObj[i]).then(user => {
+              user_new = [...user_new, user.name]
+              if(i == usersObj.length - 1) {
+                this.setState({progress_users: user_new})
+              }
+            })
+          }
+        })
+      }
+    })
   }
 
   render() {
@@ -50,9 +74,11 @@ export default class TaskItem extends React.Component{
     const importance = [
       '', '!', '!!', '!!!'
     ]
+    const userList = this.state.progress_users.map((user) => {
+      return (<li key={user}>{user}</li>)
+    })
     let time = new Date(this.props.task.due_date);
     let now = new Date();
-    time = time.toLocaleString();
     let expire = false;
     if(Date.parse(this.props.task.due_date) < Date.parse(now)){
       expire = true;
@@ -70,9 +96,15 @@ export default class TaskItem extends React.Component{
               <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
             </div>
             <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
-            <div className='flex flex-row items-center'>
-              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm font-normal w-40 overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{time}</span>}
-              {<span className='sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
+            <div className='container flex flex-row items-center lg:justify-end justify-around'>
+              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm text-center font-normal lg:w-36 md:w-24 w-36  overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{moment(time).format('MM-DD ddd hh:mm')}</span>}
+              {<span className='pt-1 sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
+              {this.state.progress_users && 
+                <div className='hover-trigger relative mr-3 w-5'>
+                  {this.state.progress_users.length > 0 && <span className={'material-icons pt-2 text-gray-400 group-hover:text-gray-500'}>supervised_user_circle</span>}
+                  {this.state.progress_users.length > 0 && <ul className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{userList}</ul>}
+                </div>
+              }
               <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
                 <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
               </button>
@@ -113,10 +145,8 @@ export default class TaskItem extends React.Component{
               </div>
             }
           </div>
-          }
-          
+          }   
         </div>
-         
       </>
     );
   }
@@ -130,9 +160,50 @@ export default class TaskItem extends React.Component{
     if(event.stopPropagation) event.stopPropagation();
     if(this.props.task.achieved == true) {
       this.props.onTaskUndone(this.props.task._id);
+
+      // if the line is shared!
+      if(this.props.line.is_share) {
+        getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+          task[this.state.index].achieved = !task[this.state.index].achieved
+          let consecutive = task.map((p) => {return p.achieved}).indexOf(false)
+          if(consecutive != -1) {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, consecutive - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          }
+        })
+      }
+
     } else {
       const now = new Date();
       this.props.onTaskDone(this.props.task._id, now);
+      
+      // if the line is shared!
+      if(this.props.line.is_share) {
+        getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+          task[this.state.index].achieved = !task[this.state.index].achieved
+          let consecutive = task.map((p) => {return p.achieved}).indexOf(false)
+          if(consecutive != -1) {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, consecutive - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          } else {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, task.length - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                // filter self: add one more .filter(element => element.shareder_progress == this.state.index)
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          }
+        })
+      }
     }
   }
 
@@ -174,3 +245,13 @@ export default class TaskItem extends React.Component{
     return "#" + r + g + b;
   }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TaskItem);

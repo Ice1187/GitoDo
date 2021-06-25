@@ -1,14 +1,38 @@
 import React from 'react';
 import Router from 'next/router'
+import {getShareProgress, getLine} from '../../api/line';
+import {getUser} from '../../api/user'
+import {connect} from 'react-redux'
 
-export default class BranchItem extends React.Component {
+class BranchItem extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {owner: '', shareder: null, shareder_name: []};
 
     this.handleBranch = this.handleBranch.bind(this);
     this.RGBToHex = this.RGBToHex.bind(this);
+  }
+
+  componentDidMount() {
+    if(this.props.Line.is_share) {
+      getShareProgress(this.props.Line.sharerLineId).then(progress => {
+        getLine(progress.sharerLineId).then(line => {
+          getUser(line.owner).then(user => {
+            this.setState({owner: user.name})
+          })
+          const shareder_filter = progress.shareder.filter(element => element.shareder_user_id != this.props.userId);
+          this.setState({shareder: shareder_filter})
+          for(let i = 0; i < shareder_filter.length; i++) {
+            getUser(shareder_filter[i].shareder_user_id).then(user => {
+              this.setState({shareder_name: [...this.state.shareder_name, user.name]})
+            })
+          }
+        })
+      })
+    } else {
+      this.setState({owner: this.props.owner})
+    }
   }
 
   render() {
@@ -34,34 +58,34 @@ export default class BranchItem extends React.Component {
           <div className='container flex-row flex items-center mr-0'>
           <div className='sm:flex-grow'/>
           {
-            this.props.Line.sharer ?
-            (this.props.Line.sharer.length >= 1 && 
+            this.state.shareder ?
+            (this.state.shareder.length >= 1 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
               <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[1-1]}</span>*/}
+              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[1-1]}</span>
             </div>) : ''
           }
           {
-            this.props.Line.sharer ?
-            (this.props.Line.sharer.length >= 2 && 
+            this.state.shareder ?
+            (this.state.shareder.length >= 2 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
               <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[2-1]}</span>*/}
+              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[2-1]}</span>
             </div>) : ''
           }
           {
-            this.props.Line.sharer ?
-            (this.props.Line.sharer.length >= 3 && 
+            this.state.shareder ?
+            (this.state.shareder.length >= 3 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
               <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
-              {/*<span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.props.Line.sharer[3-1]}</span>*/}
+              <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[3-1]}</span>
             </div>) : ''
           }
           {
-            this.props.Line.sharer ?
-            (this.props.Line.sharer.length > 3 && 
+            this.state.shareder ?
+            (this.state.shareder.length > 3 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='text-white text-xs bg-gray-400 rounded-full p-1'>+{this.props.Line.sharer.length-3}</span>
+              <span className='text-white text-xs bg-gray-400 rounded-full p-1'>+{this.state.shareder.length-3}</span>
             </div>) : ''
           }
           {
@@ -73,7 +97,7 @@ export default class BranchItem extends React.Component {
           }
           <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
             <span className='material-icons text-green-600'>attribution</span>
-            <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner{' ' + this.props.owner}</span>
+            <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner{' ' + this.state.owner}</span>
           </div>
           </div>
         </div>
@@ -102,63 +126,14 @@ export default class BranchItem extends React.Component {
   
     return "#" + r + g + b;
   }
-
-  /*
-  import Router from 'next/router'
-
-      this.state = {
-      dropdown: false
-    };
-
-    this.openMenu = this.openMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
-    this.handleBranchEdit = this.handleBranchEdit.bind(this);
-    this.handleBranchDelete = this.handleBranchDelete.bind(this);
-
-  componentWillUnmount() {
-    window.removeEventListener('click', this.closeMenu)
-  }
-
-  openMenu(syntheticEvent){
-    syntheticEvent.stopPropagation()
-    this.setState({dropdown: !this.state.dropdown}, () => {
-      if(this.state.dropdown) {
-        window.addEventListener('click', this.closeMenu)
-      }
-    });
-  }
-
-  closeMenu() {
-    this.setState({dropdown: false}, () => {
-      window.removeEventListener('click', this.closeMenu)
-    });
-  }
-
-  <div className='relative'>
-            <button onClick={this.openMenu} className={`sm:ml-5 ml-2 mr-5 outline-none focus:outline-none pt-2 text-gray-500 hover:text-gray-700`}>
-              <span className='material-icons'>more_horiz</span>
-            </button>
-            {this.state.dropdown ? (
-              <div className='backdrop-filter backdrop-blur-md bg-opacity-40 absolute top-5 right-2 bg-white shadow-lg py-2 my-6 mx-4 rounded-lg text-black ring-2 ring-gray-500 z-30'>
-                <button onClick={this.handleBranchEdit} className='block focus:outline-none outline-none'><div className='px-3 py-1 hover:bg-gray-500 hover:text-white w-20 text-left'>Edit</div></button>
-                <button onClick={this.handleBranchDelete} className='block focus:outline-none outline-none'><div className='px-3 py-1 text-red-500 hover:bg-red-500 hover:text-white w-20 text-left'>Delete</div></button>
-              </div>
-            ) : (null)}
-          </div>
-
-  handleBranchEdit () {
-    // TODO: with api
-    console.log('Edit: ' + this.props.id);
-    // Dynamic Routing
-    Router.push({
-      pathname: '/[branchName]',
-      query: { branchName: this.props.branchName, id: this.props.id },
-    }, `/${this.props.branchName}`);
-  }
-
-  handleBranchDelete () {
-    // TODO: with api
-    console.log('Delete: ' + this.props.id);
-  }
-  */
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BranchItem);
