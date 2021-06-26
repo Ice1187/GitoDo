@@ -13,8 +13,9 @@ const LINE = {
   begin_x: 40,
   begin_y: 33,
   space: 40,
+  width: 5,
   curve: NODE.space / 2,
-  opacity: 0.5,
+  opacity: 0.8,
   branchView_y_space: 0,
 };
 
@@ -79,7 +80,7 @@ class Line {
         //this.x1 + LINE.space,
         this.x2,
         //this.y1 + NODE.space / 2 + NODE.radius / 2,
-        this.y1 + NODE.radius / 2 - 2,
+        this.y1 + NODE.radius / 2 - LINE.width / 2,
         this.y2
       );
       return { curve, subline };
@@ -87,9 +88,11 @@ class Line {
   }
 
   _drawLine(x, y1, y2) {
-    let line = this.snap
-      .line(x, y1, x, y2)
-      .attr({ stroke: this.color, strokeWidth: 5, opacity: LINE.opacity });
+    let line = this.snap.line(x, y1, x, y2).attr({
+      stroke: this.color,
+      strokeWidth: LINE.width,
+      opacity: LINE.opacity,
+    });
 
     return line;
   }
@@ -102,10 +105,10 @@ class Line {
       //}`
       //`m ${x} ${y} S ${x + LINE.space} ${y} ${this.x2} ${y + NODE.space / 2}`
       //      )
-      .line(x, y, this.x2, y)
+      .line(x + LINE.width / 2, y, this.x2 + LINE.width / 2, y)
       .attr({
         stroke: this.color,
-        strokeWidth: 5,
+        strokeWidth: LINE.width,
         opacity: LINE.opacity,
         fill: 'none',
         filter: 'none',
