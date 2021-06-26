@@ -2,7 +2,6 @@ import React from 'react';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
 import { getNode, modifySubTask } from '../../api/node';
-import { connect } from 'react-redux';
 import { getNodesByLine, getShareProgress, setShareProgress} from '../../api/line';
 import { getUser } from '../../api/user';
 let qs = require('qs');
@@ -17,8 +16,10 @@ class TaskItem extends React.Component{
       subtask: [],
       index: -1,
       progress_users: [],
+      re: false,
     }
 
+    this.handleDraw = this.handleDraw.bind(this);
     this.handleSubExpand = this.handleSubExpand.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleSubDone = this.handleSubDone.bind(this);
@@ -27,8 +28,14 @@ class TaskItem extends React.Component{
   }
 
   componentDidMount() {
-    let xy = this.node.getBoundingClientRect()
-    console.log('xy',xy)
+    if(!this.state.re) {
+      const {color_RGB} = this.props.line;
+      const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
+      let rect = this.node.getBoundingClientRect()
+      this.setState({re: true}, () => {
+        this.handleDraw(this.props.index, this.props.task._id, branch_color, this.props.line._id, rect.x, rect.y)
+      })
+    }
     this.setState({ 
       subtask: this.props.task.subtask,
     });
@@ -152,6 +159,10 @@ class TaskItem extends React.Component{
     );
   }
 
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    this.props.onDraw(index, task_id, branch_color, mother_id, x, y);
+  }
+
   handleSubExpand () {
     this.setState({ open: !this.state.open, });
   }
@@ -247,12 +258,4 @@ class TaskItem extends React.Component{
   }
 }
 
-const mapStateToProps = state => ({
-  userId: state.login.userId
-});
-
-const mapDispatchToProps = {
-  
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TaskItem);
+export default (TaskItem);

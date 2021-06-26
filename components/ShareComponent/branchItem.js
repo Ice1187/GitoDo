@@ -1,20 +1,28 @@
 import React from 'react';
-import Router from 'next/router'
+import Router from 'next/router';
 import {getShareProgress, getLine} from '../../api/line';
-import {getUser} from '../../api/user'
-import {connect} from 'react-redux'
+import {getUser} from '../../api/user';
 
 class BranchItem extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {owner: '', shareder: null, shareder_name: []};
+    this.state = {owner: '', shareder: null, shareder_name: [], re: false};
 
+    this.handleDraw = this.handleDraw.bind(this);
     this.handleBranch = this.handleBranch.bind(this);
     this.RGBToHex = this.RGBToHex.bind(this);
   }
 
   componentDidMount() {
+    if(!this.state.re) {
+      const {color_RGB} = this.props.Line;
+      const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
+      let rect = this.node.getBoundingClientRect()
+      this.setState({re: true}, () => {
+        this.handleDraw(this.props.index, this.props.Line._id, branch_color, rect.x, rect.y)
+      })
+    }
     if(this.props.Line.is_share) {
       getShareProgress(this.props.Line.sharerLineId).then(progress => {
         getLine(progress.sharerLineId).then(line => {
@@ -50,7 +58,7 @@ class BranchItem extends React.Component {
       <>
         <div className='container shadow rounded-lg p-3 py-5 px-4 my-3 sm:flex-row flex-col flex items-center cursor-pointer bg-white' onClick={this.handleBranch}>
           <div className='container flex-row flex items-center'>
-            <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
+            <div ref={node => this.node = node} className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
             <span className='ml-5 font-semibold overflow-hidden text-lg'>{title}</span>
           </div>
           <div className='sm:flex-grow'/>
@@ -104,6 +112,10 @@ class BranchItem extends React.Component {
     );
   }
 
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    this.props.onDraw(index, task_id, branch_color, mother_id, x, y);
+  }
+
   handleBranch () {
     Router.push({
       pathname: '/[branchName]',
@@ -127,12 +139,4 @@ class BranchItem extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  userId: state.login.userId
-});
-
-const mapDispatchToProps = {
-  
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BranchItem);
+export default (BranchItem);

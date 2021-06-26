@@ -21,8 +21,11 @@ class Home extends React.Component{
       /* TODO: change to state not redux */
       all_line: [],
       task: [],
+      position: [],
     };
 
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
     this.getAllBranches = this.getAllBranches.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
@@ -41,6 +44,7 @@ class Home extends React.Component{
   }
 
   render() {
+    console.log(this.state.position)
     return (
       <>
       {
@@ -61,7 +65,7 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView task={this.props.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.props.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
         </main>
   
         <Footer></Footer>
@@ -69,6 +73,15 @@ class Home extends React.Component{
       }
       </>  
     );
+  }
+
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
+    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  }
+
+  handleStore(obj) {
+    this.setState({position: [...this.state.position, obj]});
   }
 
   checkLogin(){

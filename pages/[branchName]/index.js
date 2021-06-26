@@ -21,13 +21,16 @@ class Home extends React.Component{
     this.state = {
       all_line: [],
       task: [],
+      position: [],
       loading: false,
       share_open: false,
       color: null,
       title: '',
     };
 
-    this.getAllLines = this.getAllLines.bind(this)
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
+    this.getAllLines = this.getAllLines.bind(this);
     this.getLinetoState = this.getLinetoState.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
     this.getLinetoState = this.getLinetoState.bind(this);
@@ -54,6 +57,7 @@ class Home extends React.Component{
   }
 
   render(){
+    console.log(this.state.position)
     return (
       <>
       {
@@ -87,7 +91,7 @@ class Home extends React.Component{
             </div>
             {this.state.share_open && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
           </div>
-          {!this.state.share_open && <MainTaskView task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {!this.state.share_open && <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
         </main>
   
         <Footer></Footer>
@@ -95,6 +99,15 @@ class Home extends React.Component{
       }
       </>
     );
+  }
+
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
+    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  }
+
+  handleStore(obj) {
+    this.setState({position: [...this.state.position, obj]});
   }
 
   checkLogin(){

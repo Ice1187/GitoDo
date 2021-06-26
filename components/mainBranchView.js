@@ -8,6 +8,7 @@ export default class MainBranchDisplay extends React.Component{
 
     this.state = ({});
 
+    this.handleDraw = this.handleDraw.bind(this);
   }
 
   render() {
@@ -21,9 +22,9 @@ export default class MainBranchDisplay extends React.Component{
     if (allLine.length > 1) {
       allLine.shift();
       allLine.shift();
-      children = allLine.map((p) => (
+      children = allLine.map((p, index) => (
         <ListGroupItem key={p.Line._id} action>
-          <BranchItem {...p}/>
+          <BranchItem {...p} index={index} userId={this.props.userId} onDraw={this.handleDraw}/>
         </ListGroupItem>
       ));
     }
@@ -35,5 +36,12 @@ export default class MainBranchDisplay extends React.Component{
         </ListGroup>
       </div>
     );
+  }
+
+  handleDraw(index, line_id, branch_color, x, y) {
+    let allLine = [...this.props.allLine]
+    allLine.shift();
+    allLine.shift();
+    this.props.onDraw(index, line_id, branch_color, x, y, allLine.length);
   }
 }

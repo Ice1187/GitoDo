@@ -15,8 +15,10 @@ class Home extends React.Component{
   constructor(props) {
     super(props);
 
-    this.state = {allLine: []};
+    this.state = {allLine: [], position: []};
     
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
     this.getAllBranches = this.getAllBranches.bind(this);
     this.checkLogin = this.checkLogin.bind(this);
 
@@ -31,6 +33,7 @@ class Home extends React.Component{
   }
 
   render() {
+    console.log(this.state.position)
     return (
       <>
       {
@@ -50,7 +53,7 @@ class Home extends React.Component{
               <h1 className='text-2xl font-semibold'>Branch</h1>
             </div>
           </div>
-          <MainBranchDisplay mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>
+          <MainBranchDisplay userId={this.props.userId} onDraw={this.handleDraw} mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>
         </main>
   
         <Footer></Footer>
@@ -58,6 +61,15 @@ class Home extends React.Component{
       }
       </>
     );
+  }
+
+  handleDraw(index, line_id, branch_color, x, y) {
+    let obj = {index:index, line_id: line_id, branch_color: branch_color, x: x, y: y};
+    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  }
+
+  handleStore(obj) {
+    this.setState({position: [...this.state.position, obj]});
   }
 
   checkLogin(){
