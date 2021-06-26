@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React from 'react';
 
-class HeadInfo extends React.Component {
+class SnapInfo extends React.Component {
   render() {
     return (
       <Head>
@@ -16,4 +16,4 @@ class HeadInfo extends React.Component {
   }
 }
 
-export default HeadInfo;
+export default SnapInfo;

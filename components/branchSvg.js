@@ -267,6 +267,7 @@ class BranchSvg extends React.Component {
   }
 
   componentDidMount() {
+    const Snap = require('snapsvg-cjs');
     this.svgRender();
   }
   componentDidUpdate() {
@@ -280,7 +281,7 @@ class BranchSvg extends React.Component {
     let LEFT = this.svg.current.getBoundingClientRect().left;
     console.log(this.svg.current.getBoundingClientRect());
 
-    let snap = Snap(this.svg.current);
+    //    let snap = Snap(this.svg.current);
     // snap.filter(Snap.filter.shadow(-3, 2, 0.3));
 
     let lineObj = {
