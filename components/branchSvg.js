@@ -1,10 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 const COLOR = {
-  black: '#333333',
-  red: '#f44336',
-  yellow: '#ffc107',
-  background: '#e5e7eb',
   white: '#ffffff',
 };
 const NODE = {
@@ -42,7 +39,7 @@ class Node {
 }
 
 class Line {
-  constructor(snap, x1, y1, x2, y2, color, is_main = false) {
+  constructor(snap, x1, y1, x2, y2, color) {
     this.snap = snap;
     this.x1 = x1;
     this.y1 = y1;
@@ -50,7 +47,6 @@ class Line {
     this.y2 = y2;
     this.color = color;
     this.nodes = [];
-    this.is_main = is_main;
 
     this._drawLine = this._drawLine.bind(this);
     this.draw = this.draw.bind(this);
@@ -58,8 +54,8 @@ class Line {
     this.pushNode = this.pushNode.bind(this);
   }
 
-  draw() {
-    if (this.is_main) {
+  draw(is_main = false) {
+    if (is_main) {
       let head_node = new Node(
         this.snap,
         this.x1,
@@ -118,145 +114,23 @@ class Drawer {
     this.snap = Snap(svg);
     this.buttom = buttom;
 
-    this.x = 0;
-    this.y = 0;
+    // Constants
+    this.radius = 10;
 
-    this.draw = this.draw.bind(this);
-    this.getLineByLineId = this.getLineObjByLineId.bind(this);
-    this.getColorByLineId = this.getColorByLineId.bind(this);
+    this.snap.clear();
+
+    this.draw_line = this.drawLine.bind(this);
+    this.draw_node = this.drawNode.bind(this);
   }
 
-  draw(lineObj) {
-    let { color, is_main } = lineObj;
-    // Draw Line
-    if (is_main) {
-      this.x = this.x + 80;
-      this.y = this.y + 33;
-      color = COLOR.black;
-    }
-
-    let line = new Line(
-      this.snap,
-      this.x,
-      this.y,
-      this.x,
-      this.buttom,
-      color,
-      is_main
-    );
-    line.draw();
-
-    // Draw Nodes
-    if (!is_main) {
-      this.x = this.x + LINE.space;
-    }
-
-    let items = this.getAllItemsByLineObj(lineObj);
-    items.sort((a, b) => a.due_date - b.due_date);
-
-    for (let i = 0; i < items.length; i++) {
-      this.y = this.y + NODE.space;
-      let item = items[i];
-
-      if (item.type == 'node') {
-        let node = new Node(
-          this.snap,
-          this.x,
-          this.y,
-          NODE.radius,
-          this.getColorByLineId(item.branch_line_id)
-        );
-        node.draw(item.done);
-        line.pushNode(node);
-      } else if (item.type == 'line') {
-        this.draw(item);
-        this.x = this.x - LINE.space;
-      }
-    }
+  drawLine(x, y, color, isMain) {
+    let line = new Line(this.snap, x, y, x, this.buttom, color);
+    line.draw(isMain);
   }
 
-  // TODO: Put child line before parent
-  // TODO: A event handle the (x,y) list from expanding task
-
-  getAllItemsByLineObj(lineObj) {
-    let items = [];
-    items = items.concat(
-      lineObj.nodes.map((node) => {
-        node.type = 'node';
-        return node;
-      })
-    );
-    items = items.concat(
-      lineObj.branch_line_id.map((lineId) => {
-        let line = this.getLineObjByLineId(lineId);
-        line.type = 'line';
-        return line;
-      })
-    );
-
-    return items;
-  }
-
-  getColorByLineId(id) {
-    let colors = {
-      0: COLOR.black,
-      1: COLOR.red,
-      2: COLOR.yellow,
-    };
-    return colors[id];
-  }
-
-  getLineObjByLineId(id) {
-    let lineObjs = {
-      1: {
-        title: 'Branch 1',
-        content: '11111 ~~~',
-        color: COLOR.red,
-        create_date: new Date(2),
-        is_main: false,
-        contain_branch: false,
-        branch_line_id: [2],
-        nodes: [
-          {
-            done: false,
-            branch_line_id: 1,
-            create_date: new Date(2),
-          },
-          {
-            done: true,
-            branch_line_id: 1,
-            create_date: Date.now(6),
-          },
-        ],
-      },
-      2: {
-        title: 'Branch 2',
-        content: '22222 ~~~',
-        color: COLOR.yellow,
-        create_date: new Date(3),
-        is_main: false,
-        contain_branch: false,
-        branch_line_id: [],
-        nodes: [
-          {
-            done: false,
-            branch_line_id: 2,
-            create_date: new Date(3),
-          },
-          {
-            done: true,
-            branch_line_id: 2,
-            create_date: new Date(5),
-          },
-          {
-            done: true,
-            branch_line_id: 2,
-            create_date: new Date(7),
-          },
-        ],
-      },
-    };
-    return lineObjs[id];
+  drawNode(x, y, color, isDone) {
+    let node = new Node(this.snap, x, y, 10, color);
+    node.draw(isDone);
   }
 }
 class BranchSvg extends React.Component {
@@ -275,45 +149,61 @@ class BranchSvg extends React.Component {
   }
 
   svgRender() {
+    function toColorCode(arr) {
+      let colorCode =
+        '#' +
+        arr.map((c) => ('0' + (c & 0xff).toString(16)).slice(-2)).join('');
+      //      console.log(colorCode);
+      return colorCode;
+    }
+
     let TOP = this.svg.current.getBoundingClientRect().top;
     let RIGHT = this.svg.current.getBoundingClientRect().right;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
     let LEFT = this.svg.current.getBoundingClientRect().left;
-    console.log(this.svg.current.getBoundingClientRect());
 
-    //    let snap = Snap(this.svg.current);
-    // snap.filter(Snap.filter.shadow(-3, 2, 0.3));
+    let OFFSET_X = 30,
+      OFFSET_Y = 45;
 
-    let lineObj = {
-      title: 'Test',
-      content: 'I am test ~~~',
-      color: COLOR.black,
-      create_date: Date.now(),
-      is_main: true,
-      contain_branch: false,
-      branch_line_id: [1],
-      // dev only
-      nodes: [
-        {
-          done: false,
-          branch_line_id: 0,
-          create_date: new Date(1),
-        },
-        {
-          done: true,
-          branch_line_id: 0,
-          create_date: new Date(4),
-        },
-        {
-          done: true,
-          branch_line_id: 0,
-          create_date: new Date(8),
-        },
-      ],
-    };
+    let x = 80,
+      y = 33;
+    let is_main = true;
+    let tasks = this.props.tasks;
+    let lines = {};
 
     let drawer = new Drawer(this.svg.current, BOTTOM);
-    drawer.draw(lineObj);
+    for (let task of tasks) {
+      // Skip head node
+      if (
+        task._id == '0' ||
+        task.line.color_RGB == null ||
+        task.task.achieved_at == null
+      )
+        continue;
+
+      // Draw line if haven't
+      let color = toColorCode(task.line.color_RGB);
+      let line_id = task.line._id;
+      console.log(task.task.title, line_id);
+      let line = lines[line_id];
+      if (line == null) {
+        drawer.drawLine(x, y, color, is_main);
+        line = lines[line_id] = {
+          x: x,
+          color: color,
+        };
+        if (is_main) {
+          y = y + OFFSET_Y;
+          is_main = false;
+        }
+        x = x + OFFSET_X;
+      }
+
+      // Draw node
+      drawer.drawNode(line.x, y, color, task.task.achieved);
+      console.log(task.task.title, y);
+      y = y + OFFSET_Y;
+    }
   }
 
   render() {
@@ -327,4 +217,10 @@ class BranchSvg extends React.Component {
   }
 }
 
-export default BranchSvg;
+const mapStateToProps = (state) => ({
+  tasks: state.branch.task,
+});
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BranchSvg);
