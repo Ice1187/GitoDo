@@ -210,7 +210,7 @@ class Home extends React.Component{
     })
   }
 
-  handleTaskDone(id, time) {
+  handleTaskDone(id, time, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -220,6 +220,10 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
+        let task = this.state.task;
+        task[index].achieved = true;
+        task[index].achieved_at = time;
+        this.setState({task: task});
       })
       this.setState({
         loading: false,
@@ -227,7 +231,7 @@ class Home extends React.Component{
     })
   }
 
-  handleTaskUndone(id) {
+  handleTaskUndone(id, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -237,6 +241,10 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
+        let task = this.state.task;
+        task[index].achieved = false;
+        task[index].achieved_at = null;
+        this.setState({task: task});
       })
       this.setState({
         loading: false,

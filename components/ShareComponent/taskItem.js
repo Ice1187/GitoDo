@@ -17,6 +17,7 @@ class TaskItem extends React.Component{
       index: -1,
       progress_users: [],
       re: false,
+      achieved: false,
     }
 
     this.handleDraw = this.handleDraw.bind(this);
@@ -38,6 +39,7 @@ class TaskItem extends React.Component{
     }
     this.setState({ 
       subtask: this.props.task.subtask,
+      achieved: this.props.task.achieved,
     });
     getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
       const index = task.map((p) => {return p._id}).indexOf(this.props.task._id)
@@ -96,7 +98,7 @@ class TaskItem extends React.Component{
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
           <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.state.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
-              <button ref={node => this.node = node} type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <button ref={node => this.node = node} type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.state.achieved== true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
               <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
               <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
@@ -170,9 +172,9 @@ class TaskItem extends React.Component{
   handleTaskDone(event) {
     event.cancelBubble = true;
     if(event.stopPropagation) event.stopPropagation();
-    if(this.props.task.achieved == true) {
-      this.props.onTaskUndone(this.props.task._id);
-
+    if(this.state.achieved == true) {
+      this.props.onTaskUndone(this.props.task._id, this.props.index);
+      this.setState({achieved: false})
       // if the line is shared!
       if(this.props.line.is_share) {
         getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
@@ -191,8 +193,8 @@ class TaskItem extends React.Component{
 
     } else {
       const now = new Date();
-      this.props.onTaskDone(this.props.task._id, now);
-      
+      this.props.onTaskDone(this.props.task._id, now, this.props.index);
+      this.setState({achieved: true})
       // if the line is shared!
       if(this.props.line.is_share) {
         getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {

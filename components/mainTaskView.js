@@ -48,11 +48,11 @@ export default class MainTaskView extends React.Component{
     this.props.onDraw(index, task_id, branch_color, mother_id, x, y, task.length);
   }
 
-  handleTaskDone(id, time) {
-    this.props.onTaskDone(id, time);
+  handleTaskDone(id, time, index) {
+    this.props.onTaskDone(id, time, index);
   }
 
-  handleTaskUndone(id) {
-    this.props.onTaskUndone(id);
+  handleTaskUndone(id, index) {
+    this.props.onTaskUndone(id, index);
   }
 }
