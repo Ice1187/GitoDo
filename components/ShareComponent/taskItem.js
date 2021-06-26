@@ -27,6 +27,8 @@ class TaskItem extends React.Component{
   }
 
   componentDidMount() {
+    let xy = this.node.getBoundingClientRect()
+    console.log('xy',xy)
     this.setState({ 
       subtask: this.props.task.subtask,
     });
@@ -53,7 +55,6 @@ class TaskItem extends React.Component{
   render() {
     let branchName = 'Main';
     /* FIXME: fix the branchname and taskname overflow by server detecting */
-    /* TODO: three dots svg and multipleitems icon */
     const {color_RGB, title} = this.props.line;
     branchName = title;
     const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
@@ -84,11 +85,11 @@ class TaskItem extends React.Component{
       expire = true;
     }
     return(
-      <>
+      <div>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
           <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.state.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
-              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <button ref={node => this.node = node} type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
               <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
               <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
@@ -147,7 +148,7 @@ class TaskItem extends React.Component{
           </div>
           }   
         </div>
-      </>
+      </div>
     );
   }
 

@@ -81,7 +81,7 @@ class Home extends React.Component{
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
                   pathname: '/branch-edit/[branchId]',
-                  query: { branchId: this.props.router.query.id },
+                  query: { branchId: this.props.router.query.id, node_id: this.props.router.query.node_id },
                 }} as={`/branch-edit/[branchId]`}>Edit</Link>
               </button>
             </div>
@@ -178,7 +178,6 @@ class Home extends React.Component{
       loading: true,
       task: [],
     }, () => {
-      console.log('all', this.state.all_line)
       for(let i = 0; i < this.state.all_line.length; i++){
         this.getTasktoState(this.state.all_line[i])
       }

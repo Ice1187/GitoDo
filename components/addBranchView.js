@@ -79,7 +79,6 @@ class AddBranchView extends React.Component{
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
     /* TODO: still have permission, url ,branchFrom a node, sharer to add */
-    /* FIXME: can't use api to finish it */
     if(this.state.branchName == '' || this.state.permission == null)
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {

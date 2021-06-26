@@ -72,15 +72,16 @@ class Home extends React.Component{
   getAllBranches(LineObject, comtime, level) {
     if(LineObject == this.props.mainLine) {
       this.props.listAllLineClear();
-      this.props.listAllLineMore(LineObject, 'you', LineObject, comtime - 100)
+      this.props.listAllLineMore(LineObject, '0', 'you', LineObject, comtime - 100)
     }
     getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
       for(let i = 0; i < task.length; i++) {
         if(task[i].branch_line_id) {
+          let node = task[i]
           getLine(task[i].branch_line_id[0]).then(Line => {
             getUser(Line.owner).then(res => {
               let owner = res.name;
-              this.props.listAllLineMore(Line, owner, LineObject, comtime + i * Math.pow(1000, 1-level))
+              this.props.listAllLineMore(Line, node._id, owner, LineObject, comtime + i * Math.pow(1000, 1-level))
             })
             if(Line.contain_branch > 0) {
               this.getAllBranches(Line, comtime + 1, level+1)

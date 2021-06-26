@@ -38,9 +38,10 @@ export const endListAllLineClear = () => ({
   type: END_LIST_ALL_CLEAR,
 })
 
-export const endListAllLineMore = (allLine, owner, mother, time) => ({
+export const endListAllLineMore = (allLine, node_id, owner, mother, time) => ({
   type: END_LIST_ALL_MORE,
   allLine, 
+  node_id,
   owner,
   mother,
   time
@@ -81,10 +82,10 @@ export function listMainBranch (userId) {
   };
 }
 
-export function listAllLine_more (allLine, owner, mother, time = Date.now()) {
+export function listAllLine_more (allLine, node_id, owner, mother, time = Date.now()) {
   return (dispatch) => {
     dispatch(startLoading());
-    dispatch(endListAllLineMore(allLine, owner, mother, time));
+    dispatch(endListAllLineMore(allLine, node_id, owner, mother, time));
     dispatch(endLoading());
   };
 }

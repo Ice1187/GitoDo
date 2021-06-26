@@ -36,7 +36,6 @@ class BranchItem extends React.Component {
   }
 
   render() {
-    /* FIXME: share people and branch from status */
     const {color_RGB, is_main, title} = this.props.Line;
     const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
     const stylebranch = {
@@ -108,7 +107,7 @@ class BranchItem extends React.Component {
   handleBranch () {
     Router.push({
       pathname: '/[branchName]',
-      query: { branchName: this.props.Line.title, id: this.props.Line._id },
+      query: { branchName: this.props.Line.title, id: this.props.Line._id, node_id: this.props.node_id },
     }, `/${this.props.Line.title}`);
   }
 
