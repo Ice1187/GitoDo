@@ -10,7 +10,8 @@ const NODE = {
   head_radius: 15,
 };
 const LINE = {
-  space: 60,
+  space: 40,
+  curve: NODE.space / 2,
 };
 
 class Node {
@@ -72,7 +73,7 @@ class Line {
       let curve = this.drawCurve(this.x1, this.y1 + NODE.radius / 2);
       let subline = this._drawLine(
         this.x1 + LINE.space,
-        this.y1 + NODE.space + NODE.radius / 2,
+        this.y1 + NODE.space / 2 + NODE.radius / 2,
         this.y2
       );
       return { curve, subline };
@@ -91,7 +92,7 @@ class Line {
     let curve = this.snap
       .path(
         `m ${x} ${y} S ${x + LINE.space} ${y} ${x + LINE.space} ${
-          y + NODE.space
+          y + NODE.space / 2
         }`
       )
       .attr({
@@ -123,8 +124,8 @@ class Drawer {
     this.draw_node = this.drawNode.bind(this);
   }
 
-  drawLine(x, y, color, isMain) {
-    let line = new Line(this.snap, x, y, x, this.buttom, color);
+  drawLine(x1, y1, x2, color, isMain) {
+    let line = new Line(this.snap, x1, y1, x2, this.buttom, color);
     line.draw(isMain);
   }
 
@@ -162,10 +163,7 @@ class BranchSvg extends React.Component {
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
     let LEFT = this.svg.current.getBoundingClientRect().left;
 
-    let OFFSET_X = 30,
-      OFFSET_Y = 45;
-
-    let x = 80,
+    let x = LINE.space,
       y = 33;
     let is_main = true;
     let tasks = this.props.tasks;
@@ -184,25 +182,23 @@ class BranchSvg extends React.Component {
       // Draw line if haven't
       let color = toColorCode(task.line.color_RGB);
       let line_id = task.line._id;
-      console.log(task.task.title, line_id);
       let line = lines[line_id];
       if (line == null) {
-        drawer.drawLine(x, y, color, is_main);
+        drawer.drawLine(x - LINE.space, y - NODE.space / 2, x, color, false);
         line = lines[line_id] = {
           x: x,
           color: color,
         };
         if (is_main) {
-          y = y + OFFSET_Y;
+          y = y + NODE.space;
           is_main = false;
         }
-        x = x + OFFSET_X;
+        x = x + LINE.space;
       }
 
       // Draw node
       drawer.drawNode(line.x, y, color, task.task.achieved);
-      console.log(task.task.title, y);
-      y = y + OFFSET_Y;
+      y = y + NODE.space;
     }
   }
 
