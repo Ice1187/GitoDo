@@ -27,7 +27,7 @@ export default class Permission extends React.Component {
             <span className='block ml-5 font-semibold overflow-hidden'>Permission</span>
           </div>
           <div className='container flex items-center ml-5 mt-5'>
-            <input type='radio' name='branchPermission' value='private' className='mr-5 h-5 w-5' onClick={this.handleChange}></input>
+            <input type='radio' name='branchPermission' value={false} className='mr-5 h-5 w-5' onChange={this.handleChange} checked={this.props.value == false}></input>
             <span className='material-icons'>lock</span>
             <div className='ml-5 container'>
               <span className='block font-semibold overflow-hidden'>Private</span>
@@ -35,12 +35,12 @@ export default class Permission extends React.Component {
             </div>
           </div>
           <div className='container flex items-center ml-5 mt-5'>
-            <input type='radio' name='branchPermission' value='public' className='mr-5 h-5 w-5' onClick={this.handleChange}></input>
+            <input type='radio' name='branchPermission' value={true} className='mr-5 h-5 w-5' onChange={this.handleChange} checked={this.props.value == true}></input>
             <span className='material-icons'>public</span>
             <div className='ml-5  container'>
               <span className='block font-semibold overflow-hidden'>Public</span>
               <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>Anyone on the internet can see and copy this branch. You can choose who can collaborate with.</p>
-              {this.props.value == 'public' && <div className='container flex items-center mt-2 mb-2 mr-10 w-auto'>
+              {this.props.value == true && <div className='container flex items-center mt-2 mb-2 mr-10 w-auto'>
                 <span className='bg-green-100 text-green-800 p-2 rounded-md w-9 sm:w-auto overflow-scroll text-sm'>{Link}</span>
                 <CopyToClipboard text={Link} onCopy={() => this.setState({copied: true})}>
                   <button className='sm:ml-5 ml-2 bg-blue-100 text-blue-800 text-sm rounded-md p-2 focus:outline-none hover:bg-blue-600 hover:text-white'>
@@ -48,7 +48,7 @@ export default class Permission extends React.Component {
                   </button>
                 </CopyToClipboard>
               </div>}
-              {this.state.copied && this.props.value == 'public' && <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>* You can let others copy this branch once you have created it.</p>}
+              {this.state.copied && this.props.value == true && <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>* You can let others copy this branch once you have created it.</p>}
             </div>
           </div>
         </div>
@@ -56,6 +56,6 @@ export default class Permission extends React.Component {
   )}
 
   handleChange (event) {
-    this.props.permissionChange(event.target.value);
+    this.props.permissionChange(event.target.value == 'true' ? true : false);
   }
 }

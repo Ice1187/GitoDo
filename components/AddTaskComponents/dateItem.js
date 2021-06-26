@@ -1,5 +1,4 @@
 import React from 'react';
-import Switch from 'react-switch';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import moment from 'moment';
@@ -10,7 +9,6 @@ export default class DateItem extends React.Component {
 
     this.state = {open: false,};
 
-    this.handleDateToggle = this.handleDateToggle.bind(this);
     this.handleDatePick = this.handleDatePick.bind(this);
     this.handleDateExpand = this.handleDateExpand.bind(this);
   }
@@ -20,35 +18,27 @@ export default class DateItem extends React.Component {
       backgroundColor: this.props.color,
       '--tw-ring-color': this.props.color
     } 
+    const now = new Date();
+    const time = this.props.dueDate ? this.props.dueDate : now;
     return (
       <>
-        <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center cursor-default bg-white`}>
-          <div className='flex flex-row items-center'>
+        <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center bg-white`}>
+          <div className='flex flex-row items-center cursor-pointer' onClick={this.handleDateExpand}>
             <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
             <span className='ml-5 font-semibold overflow-hidden'>Due Time</span>
             <div className='flex-grow'/>
-            <span className='mr-5 text-sm font-normal text-blue-500 overflow-hidden hover:text-blue-700 cursor-pointer' onClick={this.handleDateExpand}>{this.props.dueDate}</span>
-            <Switch checked={this.props.isDate} checkedIcon={false} uncheckedIcon={false} width={36} height={20} activeBoxShadow='0 0 0px 0px #fff'
-            className='sm:mr-10 mr-5 p-0' onChange={this.handleDateToggle} id='date'></Switch>
+            <span className='mr-5 text-sm font-normal text-blue-500 overflow-hidden hover:text-blue-700 cursor-pointer' onClick={this.handleDateExpand}>{moment(time).format('YYYY-MM-DD HH:mm ddd')}</span>
+            <span className={'material-icons text-gray-400 hover:text-gray-700 transform origin-center transition-all sm:mr-12 cursor-pointer mr-7' + (this.state.open ? ' rotate-180' : ' rotate-0')} onClick={this.handleDateExpand}>expand_more</span>
           </div>
-          { this.state.open && this.props.isDate && 
-              <Datetime className='m-1 mt-3 shadow-sm transition-all duration-500' input={false} initialViewMode='days' onChange={this.handleDatePick} initialValue={moment.now()}></Datetime>
+          { this.state.open && 
+              <Datetime className='m-1 mt-3 shadow-sm transition-all duration-500' input={false} initialViewMode='days' onChange={this.handleDatePick} initialValue={moment(time)}></Datetime>
           }
         </div>
       </>
   )}
 
-  handleDateToggle (checked, event, id) {
-    this.props.dateToggle(checked, event, id);
-    if(checked) {
-      this.setState({ open: true, });
-    } else {
-      this.setState({ open: false, });
-    }
-  }
-
   handleDatePick (moment) {
-    this.props.datePick(moment.format("YYYY-MM-DD HH:mm ddd"));
+    this.props.datePick(moment);
   }
 
   handleDateExpand () {

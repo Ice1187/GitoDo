@@ -1,13 +1,14 @@
-import BranchItem from './ShareComponent/branchItem';
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
+import BranchChooseItem from './BranchChooseItem';
 
-export default class MainBranchDisplay extends React.Component{
+class BranchChooseList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = ({});
+    this.state = {allLine: []};
 
+    this.handleChooseBranch = this.handleChooseBranch.bind(this);
   }
 
   render() {
@@ -20,20 +21,25 @@ export default class MainBranchDisplay extends React.Component{
     );
     if (allLine.length > 1) {
       allLine.shift();
-      allLine.shift();
       children = allLine.map((p) => (
         <ListGroupItem key={p.Line._id} action>
-          <BranchItem {...p}/>
+          <BranchChooseItem {...p} ChooseBranch={this.handleChooseBranch} nowChoose={this.props.nowChoose}/>
         </ListGroupItem>
       ));
     }
 
     return (
-      <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-16 mr-1 p-5'>
+      <div className=''>
         <ListGroup>
           {children}
         </ListGroup>
       </div>
     );
   }
+
+  handleChooseBranch(title, id, color) {
+    this.props.ChooseBranch(title, id, color);
+  }
 }
+
+export default BranchChooseList;

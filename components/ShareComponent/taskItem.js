@@ -1,97 +1,152 @@
 import React from 'react';
-import moment from 'moment';
-import Link from 'next/link';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
+import { getNode, modifySubTask } from '../../api/node';
+import { connect } from 'react-redux';
+import { getNodesByLine, getShareProgress, setShareProgress} from '../../api/line';
+import { getUser } from '../../api/user';
+let qs = require('qs');
+import moment from 'moment';
 
-export default class TaskItem extends React.Component{
+class TaskItem extends React.Component{
   constructor(props) {
     super(props);
 
     this.state = {
       open: false,
+      subtask: [],
+      index: -1,
+      progress_users: [],
     }
 
     this.handleSubExpand = this.handleSubExpand.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleSubDone = this.handleSubDone.bind(this);
     this.handleTaskEdit = this.handleTaskEdit.bind(this);
+    this.RGBToHex = this.RGBToHex.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ 
+      subtask: this.props.task.subtask,
+    });
+    getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+      const index = task.map((p) => {return p._id}).indexOf(this.props.task._id)
+      this.setState({index: index})
+      if(this.props.line.is_share) {
+        getShareProgress(this.props.line.sharerLineId).then(progress => {
+          const usersObj = progress.shareder.filter(element => element.shareder_progress == index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+          let user_new = []
+          for(let i = 0; i < usersObj.length; i++) {
+            getUser(usersObj[i]).then(user => {
+              user_new = [...user_new, user.name]
+              if(i == usersObj.length - 1) {
+                this.setState({progress_users: user_new})
+              }
+            })
+          }
+        })
+      }
+    })
   }
 
   render() {
     let branchName = 'Main';
-    /* let taskName = 'Buy Milk';*/
     /* FIXME: fix the branchname and taskname overflow by server detecting */
     /* TODO: three dots svg and multipleitems icon */
+    const {color_RGB, title} = this.props.line;
+    branchName = title;
+    const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
     const stylebranch = {
-      backgroundColor: this.props.color,
-      '--tw-ring-color': this.props.color
+      backgroundColor: branch_color,
+      '--tw-ring-color': branch_color
     } 
     const stylebox = {
       backgroundColor: 'white',
-      '--tw-ring-color': this.props.color
+      '--tw-ring-color': branch_color
     }
     const stylecomplete = {
-      backgroundColor: this.props.color,
-      '--tw-ring-color': this.props.color,
+      backgroundColor: branch_color,
+      '--tw-ring-color': branch_color,
       border: '2px solid #fff',
-      'boxShadow': '0 0 0 2px this.props.color',
+      'boxShadow': '0 0 0 2px branch_color',
     }
     const importance = [
       '', '!', '!!', '!!!'
     ]
+    const userList = this.state.progress_users.map((user) => {
+      return (<li key={user}>{user}</li>)
+    })
+    let time = new Date(this.props.task.due_date);
+    let now = new Date();
+    let expire = false;
+    if(Date.parse(this.props.task.due_date) < Date.parse(now)){
+      expire = true;
+    }
     return(
       <>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
-          <div className='container flex-row flex items-center cursor-pointer bg-white my-3' onClick={this.handleSubExpand}>
-            <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.achieved ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
-            <div className={`sm:inline hidden ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold sm:w-24 w-10 overflow-hidden'>{branchName}</span>
-            <div className={`ml-5 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-            <span className='ml-5 font-semibold sm:w-60 w-36 overflow-hidden'>{this.props.title}</span>
-            <div className='md:flex-grow' />
-            {this.props.due_date && <span className='mr-1 text-sm font-normal sm:w-56 text-gray-500 hover:text-blue-700 overflow-hidde self-baseline pt-1'>{this.props.due_date}</span>}
-            {this.props.importance >= 0 &&  <span className='mx-5 text-md font-semibold text-blue-700 overflow-hidde self-baseline'>{importance[this.props.importance]}</span>}
-            <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
-              <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
-            </button>
+          <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.state.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
+            <div className='container flex flex-row items-center'>
+              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
+              <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-40 w-auto overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+              <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
+            </div>
+            <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
+            <div className='container flex flex-row items-center lg:justify-end justify-around'>
+              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm text-center font-normal lg:w-36 md:w-24 w-36  overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{moment(time).format('MM-DD ddd hh:mm')}</span>}
+              {<span className='pt-1 sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
+              {this.state.progress_users && 
+                <div className='hover-trigger relative mr-3 w-5'>
+                  {this.state.progress_users.length > 0 && <span className={'material-icons pt-2 text-gray-400 group-hover:text-gray-500'}>supervised_user_circle</span>}
+                  {this.state.progress_users.length > 0 && <ul className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 hover-target'>{userList}</ul>}
+                </div>
+              }
+              <button onClick={this.handleTaskEdit} className={`outline-none focus:outline-none pt-2`}>
+                <span className='material-icons text-xs transform scale-75 text-gray-400 hover:text-gray-600'>mode_edit</span>
+              </button>
+            </div>
           </div>
           {
-          this.state.open &&
+          this.state.open && (this.props.task.url || this.props.task.content || this.state.subtask) &&
           <div className='container flex-col flex items-center bg-white py-2'>
             {
-              this.props.url && 
+              this.props.task.url && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>URL</span>
-                <Link href={this.props.url}><span className='font-normal overflow-hidden cursor-pointer text-blue-700 hover:underline'>{this.props.url}</span></Link>
+                <a target='_blank' rel='noreferrer' href={'//'+this.props.task.url}><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a>
                 <div className='flex-grow'/>
               </div>
             }
             {
-              this.props.content &&
-              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-                <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-                <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Content</span>
-                <p className='font-normal overflow-scroll sm:w-auto w-96 sm:ml-7 bg-gray-100 p-2 rounded-lg px-5'>{this.props.content}</p>
-                <div className='flex-grow'/>
+              this.props.task.content &&
+              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
+                <div className='container flex flex-row items-center justify-start ml-5'>
+                  <div className={`h-4 w-0.5 ring-2`} style={stylebranch}></div>
+                  <span className='ml-5 font-medium overflow-hidden w-32'>Content</span>
+                </div>
+                <div className='container flex flex-row items-center mx-auto justify-around'>
+                  <p className='font-normal overflow-scroll w-96 sm:my-0 my-2 bg-gray-100 p-2 rounded-lg px-5'>{this.props.task.content}</p>
+                </div>
               </div>
             }
             {
-              this.props.subtask.length > 0 && 
+              this.state.subtask && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
                 <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                 <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Subtask</span>
                 <div className='container pr-2'>
-                  <SubtaskList color={this.props.color} subtask={this.props.subtask} DoneSub={this.handleSubDone} delete={false}></SubtaskList> 
+                  <SubtaskList color={branch_color} subtask={this.state.subtask} DoneSub={this.handleSubDone} delete={false}></SubtaskList> 
                 </div>
               </div>
             }
           </div>
-          }
-          
+          }   
         </div>
-         
       </>
     );
   }
@@ -100,21 +155,103 @@ export default class TaskItem extends React.Component{
     this.setState({ open: !this.state.open, });
   }
 
-  handleTaskDone() {
-    this.props.onTaskDone(moment().format("YYYY-MM-DD HH:mm ddd"));
+  handleTaskDone(event) {
+    event.cancelBubble = true;
+    if(event.stopPropagation) event.stopPropagation();
+    if(this.props.task.achieved == true) {
+      this.props.onTaskUndone(this.props.task._id);
+
+      // if the line is shared!
+      if(this.props.line.is_share) {
+        getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+          task[this.state.index].achieved = !task[this.state.index].achieved
+          let consecutive = task.map((p) => {return p.achieved}).indexOf(false)
+          if(consecutive != -1) {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, consecutive - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          }
+        })
+      }
+
+    } else {
+      const now = new Date();
+      this.props.onTaskDone(this.props.task._id, now);
+      
+      // if the line is shared!
+      if(this.props.line.is_share) {
+        getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
+          task[this.state.index].achieved = !task[this.state.index].achieved
+          let consecutive = task.map((p) => {return p.achieved}).indexOf(false)
+          if(consecutive != -1) {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, consecutive - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          } else {
+            setShareProgress(this.props.line.sharerLineId, this.props.userId, task.length - 1).then(()=>{
+              getShareProgress(this.props.line.sharerLineId).then(progress => {
+                // filter self: add one more .filter(element => element.shareder_progress == this.state.index)
+                const usersObj = progress.shareder.filter(element => element.shareder_progress == this.state.index && element.shareder_user_id != this.props.userId).map((p) => {return p.shareder_user_id})
+                this.setState({progress_users: usersObj})
+              })
+            })
+          }
+        })
+      }
+    }
   }
 
-  handleSubDone(id) {
-    this.props.onSubtaskDone(id, this.props.id);
+  handleSubDone(value, done, id) {
+    let data = qs.stringify({
+      'subtask': `${value}`,
+      'done': `${done}`,
+      'subtaskIdx': `${id}`,
+    });
+    modifySubTask(this.props.task._id, data).then(() => {
+      getNode(this.props.task._id).then(node => {
+        this.setState({subtask: [...node.subtask],})
+      })
+    });
   }
 
   handleTaskEdit () {
     // TODO: with api
-    console.log('Edit: ' + this.props.id);
+    console.log('Edit: ' + this.props.task._id);
     // Dynamic Routing
     Router.push({
-      pathname: '/[branchName]/[taskId]/edit',
-      query: { branchName: this.props.mother_line_id, taskId: this.props.id, title:this.props.title },
-    }, `/${this.props.mother_line_id}/${this.props.title}/edit`);
+      pathname: '/task-edit/[taskId]',
+      query: { taskId: this.props.task._id },
+    }, '/task-edit/[taskId]');
+  }
+
+  RGBToHex(r,g,b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+  
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+  
+    return "#" + r + g + b;
   }
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TaskItem);

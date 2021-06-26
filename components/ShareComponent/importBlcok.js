@@ -1,6 +1,5 @@
 import React from 'react';
 
-/* TODO: add check api and fetch import branch's data to parent state*/
 export default class ImportBlock extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +28,7 @@ export default class ImportBlock extends React.Component {
     )
   }
 
-  handleChange () {
-    /* add fetch data api*/
+  handleChange (e) {
+    this.props.handleUrl(e.target.value);
   }
 }

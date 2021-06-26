@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import styles from '../styles/Home.module.css';
 
 export default function Footer() {
   return (
-    <>
+    <div className={styles.footer}>
       <div className='bg-gray-100'>
         <hr className='sm:mx-10'></hr>
       </div>
@@ -14,6 +15,6 @@ export default function Footer() {
         <div className='sm:ml-5 text-md text-blue-600 hover:underline py-2'><Link href='/'>Tutorial</Link></div>
         <div className='sm:ml-5 text-md text-blue-600 hover:underline py-2'><Link href='/'>About</Link></div>
       </div>
-    </>
+    </div>
   )
 }

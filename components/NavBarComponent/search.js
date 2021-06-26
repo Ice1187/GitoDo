@@ -8,7 +8,6 @@ export default class Search extends React.Component{
       searchStatus: false,
       searchText: '',
     };
-    this.searchEl = null;
 
     this.handleClick = this.handleClick.bind(this);
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
@@ -25,7 +24,7 @@ export default class Search extends React.Component{
       <>
         <div className='flex-row inline-flex relative'>
           <input type='text' className='p-1 mx-3 border-solid border-gray-300 border-2 rounded-lg hover:border-red-500 focus:border-red-500 outline-none px-2 transition-transform' 
-              placeholder='Search' onKeyPress={this.handleSearchKeyPress} innerRef={(e) => (this.searchEl = e)}></input>
+              placeholder='Search' onKeyPress={this.handleSearchKeyPress}></input>
           <button type='submit' className='text-gray-400 outline-none focus:outline-none absolute right-5' onClick={this.handleClick}>
             <span className='pt-2 material-icons'>search</span>
           </button>

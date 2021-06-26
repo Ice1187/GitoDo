@@ -32,7 +32,7 @@ export default class AddTitle extends React.Component {
           {this.props.name == 'Branch' 
           ? <div className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
           : (this.props.onDone 
-              ? <button type='button' onClick={this.handleDone} className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.achieved ? stylecomplete : stylebox}></button>
+              ? <button type='button' onClick={this.handleDone} className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.achieved == true ? stylecomplete : stylebox}></button>
               : <button disabled className={`sm:ml-5 outline-none focus:outline-none ring-2 rounded-sm w-4 h-4 cursor-default`} style={stylebox}></button>
             )
           }

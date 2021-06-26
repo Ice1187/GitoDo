@@ -4,26 +4,33 @@ import ImportanceItem from '../components/AddTaskComponents/importanceItem';
 import NoteItem from '../components/AddTaskComponents/noteItem';
 import UrlItem from '../components/AddTaskComponents/urlItem';
 import SubtaskView from '../components/AddTaskComponents/subtaskView';
+import BranchChooseView from '../components/AddTaskComponents/branchChooseView';
 import React from 'react';
 import Link from 'next/link';
+import {addNode, addSubtask} from '../api/node';
+import Router from 'next/router';
 
+let qs = require('qs');
 export default class AddTaskView extends React.Component{
   constructor(props) {
     super(props);
 
+    let now = new Date();
     this.state = {
+      branchTitle: '',
+      branchId: '',
       taskName: '',
       branchColor: '#f44336',
-      isDate: false,
-      dueDate: null,
+      dueDate: now,
+      dueDateJSON: now.toJSON(),
       importance: 0,
-      note: '',
-      url: '',
+      note: null,
+      url: null,
       subtask: [],
     };
 
     this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleDateToggle = this.handleDateToggle.bind(this);
+    this.handleBranchChoose = this.handleBranchChoose.bind(this);
     this.handleDatePick = this.handleDatePick.bind(this);
     this.handleImportPick = this.handleImportPick.bind(this);
     this.handleNoteChange = this.handleNoteChange.bind(this);
@@ -45,7 +52,8 @@ export default class AddTaskView extends React.Component{
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange}></AddTitle>
               {/* TODO: insert branch item and edit func */}
-              <DateItem color={this.state.branchColor} isDate={this.state.isDate} dueDate={this.state.dueDate} dateToggle={this.handleDateToggle} datePick={this.handleDatePick}></DateItem>
+              <BranchChooseView view={'task'} color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
+              <DateItem color={this.state.branchColor} dueDate={this.state.dueDateJSON} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
               <NoteItem color={this.state.branchColor} note={this.state.note} noteChange={this.handleNoteChange}></NoteItem>
               <UrlItem color={this.state.branchColor} url={this.state.url} urlChange={this.handleUrlChange}></UrlItem>
@@ -67,19 +75,17 @@ export default class AddTaskView extends React.Component{
     );
   }
 
-  handleDateToggle(checked) {
-    if(!checked) {
-      this.setState({ dueDate: null });
-    }
-    this.setState({ isDate: checked, });
-  }
-
   handleTitleChange(value) {
     this.setState({ taskName: value,});
   }
 
+  handleBranchChoose(title, id, color) {
+    this.setState({branchTitle: title, branchId: id, branchColor: color});
+  }
+
   handleDatePick(moment) {
-    this.setState({ dueDate: moment,});
+    let time = moment.format("YYYY-MM-DD HH:mm ddd");
+    this.setState({ dueDate: time, dueDateJSON: moment.toJSON()});
   }
 
   handleImportPick(index) {
@@ -96,36 +102,60 @@ export default class AddTaskView extends React.Component{
 
   handleSubAdd(value) {
     if(value != '') {
-      let newSub = {'task': value, 'done': false, 'id': this.state.subtask.length + 1};
+      let newSub = {'subtask': value, 'done': 'false'};
       this.setState({ subtask: [...this.state.subtask, newSub]});
     }
   }
 
   handleSubDel(id) {
     let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask.splice(i, 1);
-        break;
-      }
-    }
+    ReSubtask.splice(id, 1);
     this.setState({ subtask: ReSubtask});
   }
 
-  handleSubDone(id) {
+  handleSubDone(value, done, id) {
     let ReSubtask = this.state.subtask;
-    for (let i = 0; i < ReSubtask.length; i++) {
-      if (ReSubtask[i].id === id) {
-        ReSubtask[i].done = !this.state.subtask[i].done;
-        break;
-      }
-    }
+    console.log(ReSubtask)
+    ReSubtask[id].done = done;
     this.setState({ subtask: ReSubtask});
   }
   
   handleSubmit(event) {
     /* TODO: add redirect after submit*/
-    alert('A name was submitted: ' + this.state.taskName, this.state.isDate, this.state.dueDate, this.state.importance, this.state.note, this.state.url, this.state.subtask);
+    console.log(this.state.taskName, this.state.dueDateJSON, this.state.branchId)
+    if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
+      alert('You should enter a title, choose a due time, and choose the branch to add. If you do not have a branch, please add a branch first.');
+    else {
+      /* TODO: add subtask data & importance and content*/
+      const now = new Date();
+      let data = qs.stringify({
+        'mother_line_id': this.state.branchId,
+        'create_date': `${now}`,
+        'due_date': this.state.dueDateJSON,
+        'title': `${this.state.taskName}`,
+        'url': `${this.state.url ? `"${this.state.url}"` : null}`,
+        'content': `${this.state.note ? `"${this.state.note}"` : null}`,
+        'importance': this.state.importance,
+        'is_main': 'true' 
+      })
+      addNode(data).then(node => {
+        for(let i = 0; i < this.state.subtask.length; i++){
+          let data = qs.stringify({
+            'subtask': `${this.state.subtask[i].subtask}`,
+            'done': `${this.state.subtask[i].done}`,
+            'nodeId': `${node._id}`, 
+          });
+          addSubtask(data);
+        }
+        Router.push({
+          pathname: '/main',
+        }, `/main`);
+        // TODO: add status and show new line is added.
+      }).catch(err => {
+        console.error('Error while adding branch', err);
+        window.location.reload();
+      });
+    }
     event.preventDefault();
   }
 }
