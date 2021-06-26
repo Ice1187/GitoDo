@@ -48,7 +48,7 @@ class Home extends React.Component {
             <Header></Header>
 
             <main className={styles.main + ' bg-gray-100 relative'}>
-              <BranchSvg></BranchSvg>
+              <BranchSvg isBranchView='true'></BranchSvg>
               <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
                 <div className='container flex flex-row mx-auto items-center'>
                   <h1 className='text-2xl font-semibold'>Branch</h1>

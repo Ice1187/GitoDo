@@ -10,8 +10,12 @@ const NODE = {
   head_radius: 15,
 };
 const LINE = {
+  begin_x: 40,
+  begin_y: 33,
   space: 40,
   curve: NODE.space / 2,
+  opacity: 0.5,
+  branchView_y_space: 0,
 };
 
 class Node {
@@ -72,8 +76,10 @@ class Line {
     } else {
       let curve = this.drawCurve(this.x1, this.y1 + NODE.radius / 2);
       let subline = this._drawLine(
-        this.x1 + LINE.space,
-        this.y1 + NODE.space / 2 + NODE.radius / 2,
+        //this.x1 + LINE.space,
+        this.x2,
+        //this.y1 + NODE.space / 2 + NODE.radius / 2,
+        this.y1 + NODE.radius / 2 - 2,
         this.y2
       );
       return { curve, subline };
@@ -83,21 +89,24 @@ class Line {
   _drawLine(x, y1, y2) {
     let line = this.snap
       .line(x, y1, x, y2)
-      .attr({ stroke: this.color, strokeWidth: 5 });
+      .attr({ stroke: this.color, strokeWidth: 5, opacity: LINE.opacity });
 
     return line;
   }
 
   drawCurve(x, y) {
     let curve = this.snap
-      .path(
-        `m ${x} ${y} S ${x + LINE.space} ${y} ${x + LINE.space} ${
-          y + NODE.space / 2
-        }`
-      )
+      //      .path(
+      //`m ${x} ${y} S ${x + LINE.space} ${y} ${x + LINE.space} ${
+      //  y + NODE.space / 2
+      //}`
+      //`m ${x} ${y} S ${x + LINE.space} ${y} ${this.x2} ${y + NODE.space / 2}`
+      //      )
+      .line(x, y, this.x2, y)
       .attr({
         stroke: this.color,
         strokeWidth: 5,
+        opacity: LINE.opacity,
         fill: 'none',
         filter: 'none',
       });
@@ -111,9 +120,9 @@ class Line {
 }
 
 class Drawer {
-  constructor(svg, buttom) {
+  constructor(svg, bottom) {
     this.snap = Snap(svg);
-    this.buttom = buttom;
+    this.bottom = bottom;
 
     // Constants
     this.radius = 10;
@@ -124,9 +133,12 @@ class Drawer {
     this.draw_node = this.drawNode.bind(this);
   }
 
-  drawLine(x1, y1, x2, color, isMain) {
-    let line = new Line(this.snap, x1, y1, x2, this.buttom, color);
-    line.draw(isMain);
+  drawLine(x, y, color, isMain = false) {
+    let line = new Line(this.snap, LINE.begin_x, y, x, this.bottom, color);
+    if (isMain) {
+      line = new Line(this.snap, 0, y, x, this.bottom, color);
+    }
+    line.draw();
   }
 
   drawNode(x, y, color, isDone) {
@@ -158,13 +170,10 @@ class BranchSvg extends React.Component {
       return colorCode;
     }
 
-    let TOP = this.svg.current.getBoundingClientRect().top;
-    let RIGHT = this.svg.current.getBoundingClientRect().right;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
-    let LEFT = this.svg.current.getBoundingClientRect().left;
 
-    let x = LINE.space,
-      y = 33;
+    let x = LINE.begin_x,
+      y = LINE.begin_y;
     let is_main = true;
     let tasks = this.props.tasks;
     let lines = {};
@@ -184,7 +193,9 @@ class BranchSvg extends React.Component {
       let line_id = task.line._id;
       let line = lines[line_id];
       if (line == null) {
-        drawer.drawLine(x - LINE.space, y - NODE.space / 2, x, color, false);
+        // TODO: change is_main type to bool
+        is_main = task.line.is_main === 'true';
+        drawer.drawLine(x, y - NODE.radius / 2, color, is_main);
         line = lines[line_id] = {
           x: x,
           color: color,
@@ -194,6 +205,14 @@ class BranchSvg extends React.Component {
           is_main = false;
         }
         x = x + LINE.space;
+        // Branch view don't draw nodes
+        if (this.props.isBranchView) {
+          y = y + NODE.space;
+        }
+      }
+      // Branch view don't draw nodes
+      if (this.props.isBranchView) {
+        continue;
       }
 
       // Draw node
