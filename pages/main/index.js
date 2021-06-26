@@ -40,12 +40,13 @@ class Home extends React.Component{
   componentDidMount() {
     if(this.props.userId != -1) {
       this.props.listMainBranch(this.props.userId);
-      this.getAllLines();
+      setTimeout(() => {
+        this.getAllLines();
+      }, 100);
     }
   }
 
   render() {
-    console.log(this.state.position)
     return (
       <>
       {

@@ -38,6 +38,13 @@ export default class MainTaskView extends React.Component{
           <ListGroup>
             {children}
           </ListGroup>
+          {this.props.task.length == 0 && 
+            <div className='text-green-500 flex flex-row container justify-center h-48 items-center'>
+              <div className={`h-2.5 w-2.5 bg-current animate-bounce200 rounded-full mr-1`}></div>
+              <div className={`h-2.5 w-2.5 bg-current animate-bounce400 rounded-full mr-1`}></div>
+              <div className={`h-2.5 w-2.5 bg-current animate-bounce100 rounded-full`}></div>
+            </div>
+          }
         </div>
       </>
     );

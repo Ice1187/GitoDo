@@ -57,7 +57,6 @@ class Home extends React.Component{
   }
 
   render(){
-    console.log(this.state.position)
     return (
       <>
       {
@@ -220,10 +219,12 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
-        let task = this.state.task;
-        task[index].achieved = true;
-        task[index].achieved_at = time;
-        this.setState({task: task});
+        let task = ([...this.state.task], ()=>{
+          console.log(task)
+          task[index].task.achieved = true;
+          task[index].task.achieved_at = time;
+          this.setState({task: task});
+        });
       })
       this.setState({
         loading: false,
@@ -241,10 +242,12 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
-        let task = this.state.task;
-        task[index].achieved = false;
-        task[index].achieved_at = null;
-        this.setState({task: task});
+        let task = ([...this.state.task], ()=>{
+          console.log(task)
+          task[index].task.achieved = false;
+          task[index].task.achieved_at = null;
+          this.setState({task: task});
+        });
       })
       this.setState({
         loading: false,
