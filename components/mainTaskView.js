@@ -1,4 +1,4 @@
-import TaskDisplay from './taskDisplay';
+import TaskItem from './ShareComponent/taskItem';
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 
@@ -64,7 +64,7 @@ export default class MainTaskView extends React.Component{
     if (this.state.task.length) {
       children = this.state.task.map((p) => (
         <ListGroupItem key={p.id} action>
-          <TaskDisplay {...p} onTaskDone={this.handleTaskDone} onSubtaskDone={this.handleSubtaskDone} />
+          <TaskItem {...p} onTaskDone={this.handleTaskDone} onSubtaskDone={this.handleSubtaskDone} />
         </ListGroupItem>
       ));
     }

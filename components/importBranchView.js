@@ -1,8 +1,8 @@
-import ImportBlock from '../components/importBlcok';
-import AddTitle from '../components/addTitle';
-import Permission from '../components/permission';
-import BranchColor from '../components/branchColor';
-import ShareBlock from '../components/shareBlcok';
+import ImportBlock from './ShareComponent/importBlcok';
+import AddTitle from './ShareComponent/addTitle';
+import Permission from './ShareComponent/permission';
+import BranchColor from './ShareComponent/branchColor';
+import ShareBlock from './ShareComponent/shareBlcok';
 import React from 'react';
 import Link from 'next/link';
 

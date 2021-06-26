@@ -1,7 +1,7 @@
-import AddTitle from '../components/addTitle';
-import Permission from '../components/permission';
-import BranchColor from '../components/branchColor';
-import ShareBlock from '../components/shareBlcok';
+import AddTitle from '../components/ShareComponent/addTitle';
+import Permission from '../components/ShareComponent/permission';
+import BranchColor from '../components/ShareComponent/branchColor';
+import ShareBlock from '../components/ShareComponent/shareBlcok';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
