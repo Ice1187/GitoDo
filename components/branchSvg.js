@@ -131,7 +131,7 @@ class Drawer {
     // Draw Line
     if (is_main) {
       this.x = this.x + 80;
-      this.y = this.y + 25;
+      this.y = this.y + 33;
       color = COLOR.black;
     }
 
@@ -145,29 +145,19 @@ class Drawer {
       is_main
     );
     line.draw();
+
     // Draw Nodes
     if (!is_main) {
       this.x = this.x + LINE.space;
     }
-    let items = [];
-    console.log(lineObj);
-    items = items.concat(
-      lineObj.nodes.map((node) => {
-        node.type = 'node';
-        return node;
-      })
-    );
-    items = items.concat(
-      lineObj.branch_line_id.map((lineId) => {
-        let line = this.getLineObjByLineId(lineId);
-        line.type = 'line';
-        return line;
-      })
-    );
-    items.sort((a, b) => a.create_date - b.create_date);
+
+    let items = this.getAllItemsByLineObj(lineObj);
+    items.sort((a, b) => a.due_date - b.due_date);
+
     for (let i = 0; i < items.length; i++) {
       this.y = this.y + NODE.space;
       let item = items[i];
+
       if (item.type == 'node') {
         let node = new Node(
           this.snap,
@@ -183,6 +173,28 @@ class Drawer {
         this.x = this.x - LINE.space;
       }
     }
+  }
+
+  // TODO: Put child line before parent
+  // TODO: A event handle the (x,y) list from expanding task
+
+  getAllItemsByLineObj(lineObj) {
+    let items = [];
+    items = items.concat(
+      lineObj.nodes.map((node) => {
+        node.type = 'node';
+        return node;
+      })
+    );
+    items = items.concat(
+      lineObj.branch_line_id.map((lineId) => {
+        let line = this.getLineObjByLineId(lineId);
+        line.type = 'line';
+        return line;
+      })
+    );
+
+    return items;
   }
 
   getColorByLineId(id) {
@@ -269,7 +281,7 @@ class BranchSvg extends React.Component {
     console.log(this.svg.current.getBoundingClientRect());
 
     let snap = Snap(this.svg.current);
-    let filter = {}; // snap.filter(Snap.filter.shadow(-3, 2, 0.3));
+    // snap.filter(Snap.filter.shadow(-3, 2, 0.3));
 
     let lineObj = {
       title: 'Test',
@@ -298,6 +310,7 @@ class BranchSvg extends React.Component {
         },
       ],
     };
+
     let drawer = new Drawer(this.svg.current, BOTTOM);
     drawer.draw(lineObj);
   }
