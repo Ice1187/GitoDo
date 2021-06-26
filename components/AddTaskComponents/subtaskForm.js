@@ -25,7 +25,7 @@ export default class SubtaskForm extends React.Component {
             <div className='md:flex-grow' />
           </div>
           <div className='container ml-5 mx-2 flex flex-row p-0 py-2'>
-            <input className='text-center sm:mr-5 md:w-60 sm:w-36 w-auto bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
+            <input className='text-center sm:mr-5 md:w-60 w-36 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
             placeholder='Type your subtask content' value={this.props.value} onChange={this.handleChange} onKeyPress={this.handleKeyPress}
             ></input>
             <div className='sm:flex-shirnk flex-grow' />

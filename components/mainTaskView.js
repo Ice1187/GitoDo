@@ -34,16 +34,18 @@ export default class MainTaskView extends React.Component{
 
     return(
       <>
-        <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-16 mr-1 p-5'>
+        <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-8 mr-1 p-5'>
           <ListGroup>
             {children}
           </ListGroup>
-          {this.props.task.length == 0 && 
-            <div className='text-green-500 flex flex-row container justify-center h-48 items-center'>
-              <div className={`h-2.5 w-2.5 bg-current animate-bounce200 rounded-full mr-1`}></div>
-              <div className={`h-2.5 w-2.5 bg-current animate-bounce400 rounded-full mr-1`}></div>
-              <div className={`h-2.5 w-2.5 bg-current animate-bounce100 rounded-full`}></div>
+          {this.props.task.length == 1 &&
+            <a href='/main/newtask'>
+            <div className='container shadow rounded-lg flex-row py-5 my-3 px-5 flex items-center text-gray-700 bg-white cursor-pointer hover:bg-gray-50'>
+              <div className={`inline ml-5 h-4 w-0.5`}></div>
+              <span className='material-icons ring-2 ring-gray-700 rounded-full'>add</span>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>Go add a task!</span>
             </div>
+            </a>
           }
         </div>
       </>

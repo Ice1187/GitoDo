@@ -71,9 +71,9 @@ class Home extends React.Component{
         <Header></Header>
   
         <main className={styles.main + ' bg-gray-100 relative'}>
-          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
+          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-8 px-10 absolute w-auto'>
             <div className='container flex flex-row mx-auto items-center'>
-              <h1 className='text-2xl font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
+              <h1 className='sm:text-2xl text-md sm:w-auto w-40 font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
               <div className='flex-grow' />
               <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
                 {!this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Share</span>}
@@ -91,6 +91,13 @@ class Home extends React.Component{
             {this.state.share_open && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
           </div>
           {!this.state.share_open && <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {this.state.loading == true && 
+            <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
+              <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}></div>
+            </div>
+          }
         </main>
   
         <Footer></Footer>
@@ -144,12 +151,9 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.router.query.id);
-      this.setState({
+      setTimeout(() => {this.getAllTasks(); this.setState({
         loading: false,
-      }, () => {
-        /* FIXME: add mask otherwie if have many branches, we will have no acurate tasks*/
-        setTimeout(() => {this.getAllTasks();}, 300);
-      })
+      })}, 300);
     })
   }
 

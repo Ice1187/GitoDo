@@ -72,13 +72,13 @@ class EditBranchView extends React.Component{
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
-              <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
+              <Permission color={this.state.branchColor} id={this.props._id} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
             </div>
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
               <span>Save Change</span>
             </button>
-            <Link href='/main'>
+            <Link href='/main/branch'>
               <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow-md py-2 px-2.5 focus:outline-none my-3 ml-5'>
                 <a>
                   <span>Discard</span>

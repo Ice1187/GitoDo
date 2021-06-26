@@ -21,7 +21,7 @@ export default class ImportBlock extends React.Component {
           <span className='ml-5 font-semibold overflow-hidden'>Import URL</span>
           <div className='flex-grow' />
           <input className='text-center sm:mr-10 mx-3 w-20 sm:w-32 md:w-80 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
-          placeholder='Type your title' value={this.props.value} onChange={this.handleChange}
+          placeholder='Paste the URL' value={this.props.value} onChange={this.handleChange}
           ></input>
         </div>
       </>

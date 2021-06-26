@@ -6,7 +6,7 @@ import Header from '../../components/header';
 import MainTaskView from '../../components/mainTaskView';
 import Footer from '../../components/footer';
 import { getLine, getNodesByLine } from '../../api/line';
-import {endListAllLineClear, listAllLine_more, listMainBranch, endListTaskClear, listAllTask_more} from '../../redux/actions/branchActions';
+import { listMainBranch } from '../../redux/actions/branchActions';
 import { modifyNode } from '../../api/node';
 import Router from 'next/router';
 
@@ -68,6 +68,13 @@ class Home extends React.Component{
             </div>
           </div>
           <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          {this.state.loading == true && 
+            <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
+              <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}></div>
+            </div>
+          }
         </main>
   
         <Footer></Footer>
@@ -130,12 +137,9 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.mainLine._id);
-      this.setState({
+      setTimeout(() => {this.getAllTasks(); this.setState({
         loading: false,
-      }, () => {
-        /* FIXME: add mask otherwie if have many branches, we will have no acurate tasks*/
-        setTimeout(() => {this.getAllTasks();}, 300);
-      })
+      })}, 300);
     })
   }
 
@@ -229,18 +233,10 @@ class Home extends React.Component{
 const mapStateToProps = state => ({
   userId: state.login.userId,
   mainLine: state.branch.mainLine,
-  branchLoading: state.branch.branchLoading,
-  allLine: state.branch.allLine,
-  task: state.branch.task,
-  loading: state.branch.branchLoading,
 });
 
 const mapDispatchToProps = {
   listMainBranch: listMainBranch,
-  listAllLineClear: endListAllLineClear,
-  listAllLineMore: listAllLine_more,
-  listAllTaskClear: endListTaskClear,
-  listAllTaskMore: listAllTask_more,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

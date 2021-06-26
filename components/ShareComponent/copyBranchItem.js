@@ -26,7 +26,7 @@ export default class CopyBranchItem extends React.Component {
           </div>
           <div className='sm:flex-grow'/>
           <div className='container flex-row flex items-center mr-0'>
-          <div className='sm:flex-grow'/>
+          <div className='flex-grow'/>
           {
             this.props.Line.sharer ?
             (this.props.Line.sharer.length >= 1 && 
