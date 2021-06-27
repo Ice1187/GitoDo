@@ -48,7 +48,6 @@ class Home extends React.Component{
   }
 
   render() {
-    console.log(this.state.task)
     return (
       <>
       {
@@ -190,7 +189,7 @@ class Home extends React.Component{
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
         if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
+          task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
           action_i++;
         }
         else if(state_i < state_task.length && action_i >= task.length) {
@@ -204,7 +203,7 @@ class Home extends React.Component{
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
+            task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
             action_i++;
           }
         }

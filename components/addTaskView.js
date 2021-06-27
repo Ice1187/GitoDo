@@ -133,7 +133,7 @@ export default class AddTaskView extends React.Component{
         'url': `${this.state.url ? `"${this.state.url}"` : null}`,
         'content': `${this.state.note ? `"${this.state.note}"` : null}`,
         'importance': this.state.importance,
-        'is_main': 'true' 
+        'is_main': true
       })
       addNode(data).then(node => {
         for(let i = 0; i < this.state.subtask.length; i++){

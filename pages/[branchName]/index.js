@@ -174,7 +174,7 @@ class Home extends React.Component{
     this.setState({
         loading: true,
     }, () => {
-      this.getLinetoState(this.props.router.query.id);
+      this.getLinetoState(this.props.router.query.id, {Node: {due_date: '1989-01-01T00:00:00.000Z'}});
       setTimeout(() => {this.getAllTasks();}, 1000);
       setTimeout(() => {this.setState({loading: false,})}, 1500);
     })
@@ -189,7 +189,7 @@ class Home extends React.Component{
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
         if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
+          task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
           action_i++;
         }
         else if(state_i < state_task.length && action_i >= task.length) {
@@ -203,7 +203,7 @@ class Home extends React.Component{
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
+            task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
             action_i++;
           }
         }
