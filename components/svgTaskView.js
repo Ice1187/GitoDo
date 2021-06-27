@@ -10,12 +10,12 @@ const NODE = {
 };
 const LINE = {
   begin_x: 40,
-  begin_y: 10,
+  begin_y: 11,
   space: 40,
   v_space: 20,
   width: 5,
   curve: NODE.space / 2,
-  opacity: 0.7,
+  opacity: 0.9,
   branchView_y_space: 0,
 };
 
@@ -33,12 +33,13 @@ class Drawer {
   }
 
   drawLine(line, x, y) {
-    if (line.is_host !== true) {
+    if (line.is_host === true) this.drawVertical(line, x, y, this.bottom);
+    else {
       if (line.is_main)
         this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
       else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
+      this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
     }
-    this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
   }
 
   drawHorizontal(line, x1, x2, y) {
@@ -59,12 +60,16 @@ class Drawer {
 
   drawNode(node, x, y) {
     //    console.log(node.color, x, y);
-    this.snap.circle(x, y, NODE.radius).attr({ fill: node.color });
-    this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
+    this.snap
+      .circle(x, y, NODE.radius)
+      .attr({ fill: node.color, opacity: LINE.opacity });
+    //    this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
 
-    if (node.achieved) {
-      this.snap.circle(x, y, NODE.radius * 0.5).attr({ fill: node.color });
-    }
+    //    if (node.achieved) {
+    //      this.snap
+    //        .circle(x, y, NODE.radius * 0.5)
+    //        .attr({ fill: node.color, opacity: LINE.opacity + 0.1 });
+    //    }
   }
 }
 class SvgTaskView extends React.Component {
@@ -113,22 +118,6 @@ class SvgTaskView extends React.Component {
     }
     lines.sort((a, b) => -(a.due_date < b.due_date));
 
-    let line_index = false;
-    let tasks = [];
-    for (let task of tasksObj) {
-      if (task._id === '0' || task.task.branch_line_id !== null) continue;
-      line_index = this.getIndexOfLineById(lines, task.task.mother_line_id);
-      tasks.push({
-        _id: task.task._id,
-        line_id: task.task.mother_line_id,
-        color: line_index !== null ? lines[line_index].color : COLOR.white,
-        achieved: task.task.achieved,
-      });
-    }
-    for (let pos of positionsObj) {
-      tasks[this.getIndexOfTaskById(tasks, pos.task_id)]['pos'] = pos;
-    }
-
     let x, y;
     let drawer = new Drawer(this.svg.current, BOTTOM);
 
@@ -137,6 +126,8 @@ class SvgTaskView extends React.Component {
     y = LINE.begin_y;
     let line;
 
+    let node = { color: '#000000', achieved: true };
+    drawer.drawNode(node, x, y);
     line = { is_host: true, color: '#000000' };
     drawer.drawLine(line, x, y);
     x += LINE.space;
@@ -149,6 +140,7 @@ class SvgTaskView extends React.Component {
       x += LINE.space;
       y += LINE.v_space;
     }
+
     //    console.log(lines);
   }
 

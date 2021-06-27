@@ -10,7 +10,7 @@ const NODE = {
 };
 const LINE = {
   begin_x: 40,
-  begin_y: 10,
+  begin_y: 11,
   space: 40,
   v_space: 90,
   width: 5,
@@ -33,21 +33,15 @@ class Drawer {
   }
 
   drawLine(line, x, y) {
-    if (line.is_host !== true) {
+    if (line.is_host === true)
+      this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
+    else {
       if (line.is_main)
         this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
       else this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
+      this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
     }
-    this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
   }
-  //  drawLine(line, x1, x2, y) {
-  //    if (line.is_host !== true) {
-  //      if (line.is_main)
-  //        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x2, y);
-  //      else this.drawHorizontal(line, x1 + LINE.width / 2, x2, y);
-  //    }
-  //    this.drawVertical(line, x2, y - LINE.width / 2, this.bottom);
-  //  }
 
   drawHorizontal(line, x1, x2, y) {
     this.snap.line(x1, y, x2, y).attr({
@@ -68,11 +62,11 @@ class Drawer {
   drawNode(node, x, y) {
     //    console.log(node.color, x, y);
     this.snap.circle(x, y, NODE.radius).attr({ fill: node.color });
-    this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
+    //    this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
 
-    if (node.achieved) {
-      this.snap.circle(x, y, NODE.radius * 0.5).attr({ fill: node.color });
-    }
+    //    if (node.achieved) {
+    //      this.snap.circle(x, y, NODE.radius * 0.5).attr({ fill: node.color });
+    //    }
   }
 }
 class SvgBranchView extends React.Component {
@@ -127,6 +121,8 @@ class SvgBranchView extends React.Component {
     y = LINE.begin_y;
     let line;
 
+    let node = { color: '#000000', achieved: true };
+    drawer.drawNode(node, x, y);
     line = { is_host: true, color: '#000000', x: x };
     //    drawer.drawLine(line, 0, x, y);
     drawer.drawLine(line, x, y);
