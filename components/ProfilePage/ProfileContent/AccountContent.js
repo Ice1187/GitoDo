@@ -54,24 +54,29 @@ class AccountContent extends React.Component {
     this.setState({
       selectedFile: event.target.files[0],
     })
-    if (event.target.files && event.target.files[0]) {
-      let img = event.target.files[0];
-      this.setState({
-        avatar_url: URL.createObjectURL(img),
-      });
-
-      let data = qs.stringify({
-        'avatar_url': `${this.state.avatar_url}`,
-      })
-      modifyAvatar(this.props.userId, data).then(() => {
-        
-      }).catch(err => {
-        console.error('Error while change', err);
-        window.location.reload();
-      });
-    }
+    // if (event.target.files && event.target.files[0]) {
+    //   let img = event.target.files[0];
+    //   this.setState({
+    //     avatar_url: URL.createObjectURL(img)
+    //   });
+    //   console.log('hello', URL.createObjectURL(img));
+    // }
     var data = new FormData();
-    
+    data.append('file', event.target.files[0]);
+    console.log("HEY");
+    // Here will make another data goes to API(Don't care about how it process)
+    // Two parameter
+    // Forer one, userId, which you need to make it as some variable
+    // Later one, data itself(your avatar picture)
+    modifyUser(this.props.userId, data).then(() => {
+      setInterval('window.location.reload()', 500);
+    }).catch(err => {
+      console.error('Error while change', err);
+      window.location.reload();
+    });
+    // You will get an userObj after it completes
+    // (i.e. this is a promise, but that's your job to deal with)
+    // Good night!    
     };
   
 
