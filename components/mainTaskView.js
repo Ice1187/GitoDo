@@ -24,9 +24,8 @@ export default class MainTaskView extends React.Component {
     );
     if (allTask.length > 1) {
       allTask.shift();
-      let task = allTask.filter(
-        (element) => element.task.branch_line_id == null
-      );
+      let task = allTask.filter(element => element.task.branch_line_id == null);
+      console.log(task)
       children = task.map((p, index) => (
         <ListGroupItem key={p.task._id} action>
           <TaskItem
