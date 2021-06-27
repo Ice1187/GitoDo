@@ -21,13 +21,17 @@ class Home extends React.Component{
     this.state = {
       all_line: [],
       task: [],
+      position: [],
       loading: false,
       share_open: false,
       color: null,
       title: '',
+      shareLineId: '',
     };
 
-    this.getAllLines = this.getAllLines.bind(this)
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
+    this.getAllLines = this.getAllLines.bind(this);
     this.getLinetoState = this.getLinetoState.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
     this.getLinetoState = this.getLinetoState.bind(this);
@@ -68,26 +72,33 @@ class Home extends React.Component{
         <Header></Header>
   
         <main className={styles.main + ' bg-gray-100 relative'}>
-          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
+          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-8 px-10 absolute w-auto'>
             <div className='container flex flex-row mx-auto items-center'>
-              <h1 className='text-2xl font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
+              <h1 className='sm:text-2xl text-md sm:w-auto w-40 font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
               <div className='flex-grow' />
-              <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
+              {this.state.shareLineId == this.state._id && <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
                 {!this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Share</span>}
                 {!this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>ios_share</span>}
                 {this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Show&nbsp;tasks</span>}
                 {this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>splitscreen</span>}
-              </div>
+              </div>}
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
                   pathname: '/branch-edit/[branchId]',
-                  query: { branchId: this.props.router.query.id },
+                  query: { branchId: this.props.router.query.id, node_id: this.props.router.query.node_id },
                 }} as={`/branch-edit/[branchId]`}>Edit</Link>
               </button>
             </div>
-            {this.state.share_open && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
+            {this.state.share_open && this.state.shareLineId == this.state._id && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
           </div>
-          {!this.state.share_open && <MainTaskView task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {!this.state.share_open && <MainTaskView loading={this.state.loading} userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {this.state.loading == true && 
+            <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
+              <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}></div>
+            </div>
+          }
         </main>
   
         <Footer></Footer>
@@ -95,6 +106,15 @@ class Home extends React.Component{
       }
       </>
     );
+  }
+
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
+    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  }
+
+  handleStore(obj) {
+    this.setState({position: [...this.state.position, obj]});
   }
 
   checkLogin(){
@@ -109,7 +129,7 @@ class Home extends React.Component{
   getLinetoState(LineId) {
     getLine(LineId).then(Line => {
       if(!this.state.color){
-        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id})
+        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id, shareLineId: Line.shareLineId})
       }
       this.setState({
         all_line: [...this.state.all_line, Line],
@@ -132,12 +152,9 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.router.query.id);
-      this.setState({
+      setTimeout(() => {this.getAllTasks(); this.setState({
         loading: false,
-      }, () => {
-        /* FIXME: add mask otherwie if have many branches, we will have no acurate tasks*/
-        setTimeout(() => {this.getAllTasks();}, 300);
-      })
+      })}, 300);
     })
   }
 
@@ -178,7 +195,6 @@ class Home extends React.Component{
       loading: true,
       task: [],
     }, () => {
-      console.log('all', this.state.all_line)
       for(let i = 0; i < this.state.all_line.length; i++){
         this.getTasktoState(this.state.all_line[i])
       }
@@ -198,7 +214,7 @@ class Home extends React.Component{
     })
   }
 
-  handleTaskDone(id, time) {
+  handleTaskDone(id, time, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -208,6 +224,12 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
+        let task = ([...this.state.task], ()=>{
+          console.log(task)
+          task[index].task.achieved = true;
+          task[index].task.achieved_at = time;
+          this.setState({task: task});
+        });
       })
       this.setState({
         loading: false,
@@ -215,7 +237,7 @@ class Home extends React.Component{
     })
   }
 
-  handleTaskUndone(id) {
+  handleTaskUndone(id, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -225,6 +247,12 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         this.getAllTasks();
+        let task = ([...this.state.task], ()=>{
+          console.log(task)
+          task[index].task.achieved = false;
+          task[index].task.achieved_at = null;
+          this.setState({task: task});
+        });
       })
       this.setState({
         loading: false,

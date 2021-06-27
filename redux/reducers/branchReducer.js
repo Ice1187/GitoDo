@@ -10,6 +10,7 @@ import {
   END_LIST_MAIN_MORE,
   END_LIST_TASK_CLEAR,
   END_LIST_TASK_MORE,
+  CLEAR,
 } from '../actions/branchActions'
 
 const initialMainBranchState = {
@@ -26,6 +27,8 @@ const branchReducer = (state = initialMainBranchState, action) => {
       return {...state};
     case REHYDRATE:
       return {...state};
+    case CLEAR:
+      return {initialMainBranchState};
     case START_LOADING:
       return {...state, branchLoading: true};
     case END_LOADING:
@@ -42,7 +45,7 @@ const branchReducer = (state = initialMainBranchState, action) => {
         let action_i = 0;
         while (state_i < state_task.length || action_i < 1) {
           if(state_i >= state_task.length && action_i < 1) {
-            task_new = [...task_new, {Line:action.allLine, owner:action.owner, mother:action.mother, time:action.time}];
+            task_new = [...task_new, {Line:action.allLine, node_id:action.node_id, owner:action.owner, mother:action.mother, time:action.time}];
             action_i++;
           }
           else if(state_i < state_task.length && action_i >= 1) {
@@ -56,7 +59,7 @@ const branchReducer = (state = initialMainBranchState, action) => {
               task_new = [...task_new, state_task[state_i]];
               state_i++;
             } else {
-              task_new = [...task_new, {Line:action.allLine, owner:action.owner, mother:action.mother, time:action.time}];
+              task_new = [...task_new, {Line:action.allLine, node_id:action.node_id, owner:action.owner, mother:action.mother, time:action.time}];
               action_i++;
             }
           }

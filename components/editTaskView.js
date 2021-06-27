@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { withRouter } from "next/router"
 import { modifyNode, addSubtask, getNode, deleteSubTask, modifySubTask, deleteNode} from '../api/node';
 import Router from 'next/router';
+import { connect } from 'react-redux'
+import {endListAllLineClear, endListTaskClear} from '../redux/actions/branchActions';
 
 let qs = require('qs');
 class EditTaskView extends React.Component{
@@ -118,6 +120,8 @@ class EditTaskView extends React.Component{
 
   handleTaskDelete() {
     deleteNode(this.props.line._id, this.props._id).then(() => {
+      this.props.listAllLineClear();
+      this.props.listTaskClear();
       Router.push({
         pathname: '/main',
       }, `/main`);
@@ -163,10 +167,6 @@ class EditTaskView extends React.Component{
 
   handleSubAdd(value) {
     if(value != '') {
-      /*
-      let newSub = {'task': value, 'done': false, 'id': this.state.subtask.length + 1};
-      this.setState({ subtask: [...this.state.subtask, newSub]});
-      */
       let data = qs.stringify({
         'subtask': `${value}`,
         'done': false,
@@ -206,7 +206,6 @@ class EditTaskView extends React.Component{
     if(this.state.taskName == '' || !this.state.dueDateJSON)
       alert('You should enter a title, choose a due time to modify.');
     else {
-      /* TODO: add subtask data & importance and content*/
       let data = qs.stringify({
         'due_date': this.state.dueDateJSON,
         'title': `${this.state.taskName}`,
@@ -231,4 +230,16 @@ class EditTaskView extends React.Component{
   }
 }
 
-export default withRouter(EditTaskView);
+const mapStateToProps = state => ({
+  userId: state.login.userId,
+  mainLine: state.branch.mainLine,
+  branchLoading: state.branch.branchLoading,
+  allLine: state.branch.allLine,
+});
+
+const mapDispatchToProps = {
+  listAllLineClear: endListAllLineClear,
+  listTaskClear: endListTaskClear
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(EditTaskView));

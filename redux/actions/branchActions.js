@@ -18,8 +18,13 @@ export const END_LIST_TASK_MORE = 'END_LIST_TASK_MORE';
 export const BUFFER_LINE = 'BUFFER_LINE';
 export const END_BUFFER_ALL_CLEAR = 'END_BUFFER_ALL_CLEAR';
 export const END_BUFFER_ALL_MORE = 'END_BUFFER_ALL_MORE';
+export const CLEAR = 'CLEAR';
 
 /* branch */
+
+export const clear = () => ({
+  type: CLEAR
+})
 
 export const startLoading = () => ({
   type: START_LOADING
@@ -38,9 +43,10 @@ export const endListAllLineClear = () => ({
   type: END_LIST_ALL_CLEAR,
 })
 
-export const endListAllLineMore = (allLine, owner, mother, time) => ({
+export const endListAllLineMore = (allLine, node_id, owner, mother, time) => ({
   type: END_LIST_ALL_MORE,
   allLine, 
+  node_id,
   owner,
   mother,
   time
@@ -81,10 +87,10 @@ export function listMainBranch (userId) {
   };
 }
 
-export function listAllLine_more (allLine, owner, mother, time = Date.now()) {
+export function listAllLine_more (allLine, node_id, owner, mother, time = Date.now()) {
   return (dispatch) => {
     dispatch(startLoading());
-    dispatch(endListAllLineMore(allLine, owner, mother, time));
+    dispatch(endListAllLineMore(allLine, node_id, owner, mother, time));
     dispatch(endLoading());
   };
 }

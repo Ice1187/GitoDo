@@ -41,7 +41,7 @@ class AddBranchView extends React.Component{
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
               <BranchChooseView view={'branch'} color={this.state.branchColor} branchTitle={this.state.branchFromTitle} branchId={this.state.branchFromId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
-              <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
+              <Permission view={'add'} color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
             </div>
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
@@ -77,9 +77,6 @@ class AddBranchView extends React.Component{
   }
   
   handleSubmit(event) {
-    /* TODO: add redirect after submit*/
-    /* TODO: still have permission, url ,branchFrom a node, sharer to add */
-    /* FIXME: can't use api to finish it */
     if(this.state.branchName == '' || this.state.permission == null)
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {
@@ -111,8 +108,8 @@ class AddBranchView extends React.Component{
         addBranch(branch_data).then(line => {
           console.log(line)
           Router.push({
-            pathname: '/main',
-          }, `/main`);
+            pathname: '/main/branch',
+          }, `/main/branch`);
           // TODO: add status and show new line is added.
         }).catch(err => {
           console.error('Error while adding branch', err);

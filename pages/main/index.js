@@ -6,8 +6,7 @@ import Header from '../../components/header';
 import MainTaskView from '../../components/mainTaskView';
 import Footer from '../../components/footer';
 import { getLine, getNodesByLine } from '../../api/line';
-import { getUser } from '../../api/user';
-import {endListAllLineClear, listAllLine_more, listMainBranch, endListTaskClear, listAllTask_more} from '../../redux/actions/branchActions';
+import { listMainBranch } from '../../redux/actions/branchActions';
 import { modifyNode } from '../../api/node';
 import Router from 'next/router';
 
@@ -21,10 +20,18 @@ class Home extends React.Component{
       /* TODO: change to state not redux */
       all_line: [],
       task: [],
+      position: [],
+      loading: false,
+      trigger: false,
     };
 
-    this.getAllBranches = this.getAllBranches.bind(this);
+    this.handleTrigger = this.handleTrigger.bind(this);
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
+    this.getAllLines = this.getAllLines.bind(this);
+    this.getLinetoState = this.getLinetoState.bind(this);
     this.getAllTasks = this.getAllTasks.bind(this);
+    this.getLinetoState = this.getLinetoState.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleTaskUndone = this.handleTaskUndone.bind(this);
     this.checkLogin = this.checkLogin.bind(this);
@@ -35,12 +42,14 @@ class Home extends React.Component{
   componentDidMount() {
     if(this.props.userId != -1) {
       this.props.listMainBranch(this.props.userId);
-      setTimeout(() => {this.getAllBranches(this.props.mainLine, Date.now(), 0);
-      setTimeout(() => {this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);}, 500);}, 100);
+      setTimeout(() => {
+        this.getAllLines();
+      }, 100);
     }
   }
 
   render() {
+    console.log(this.state.task)
     return (
       <>
       {
@@ -61,7 +70,14 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView task={this.props.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          <MainTaskView onTrigger={this.handleTrigger} trigger={this.state.trigger} userId={this.props.userId} loading={this.state.loading} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          {this.state.loading == true && 
+            <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
+              <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}></div>
+              <div className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}></div>
+            </div>
+          }
         </main>
   
         <Footer></Footer>
@@ -69,6 +85,26 @@ class Home extends React.Component{
       }
       </>  
     );
+  }
+
+  handleTrigger(){
+    this.setState({trigger: true})
+    setTimeout(() => {this.setState({trigger: false})}, 30);
+  }
+
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
+    setTimeout(() => {this.handleStore(index, obj)}, index * 50);
+  }
+
+  handleStore(index, obj) {
+    if(this.state.position.length >= index) {
+      let pos = this.state.position;
+      pos[index] = obj;
+      this.setState({position: pos})
+    } else {
+      this.setState({position: [...this.state.position, obj]});
+    }
   }
 
   checkLogin(){
@@ -80,70 +116,93 @@ class Home extends React.Component{
     }
   }
 
-  getAllBranches(LineObject, comtime, level) {
-    if(LineObject == this.props.mainLine) {
-      this.props.listAllLineClear();
-      this.props.listAllLineMore(LineObject, 'you', LineObject, comtime - 100)
-    }
-    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
-      for(let i = 0; i < task.length; i++) {
-        if(task[i].branch_line_id) {
-          getLine(task[i].branch_line_id[0]).then(Line => {
-            getUser(Line.owner).then(res => {
-              let owner = res.name;
-              this.props.listAllLineMore(Line, owner, LineObject, comtime + i * Math.pow(1000, 1-level))
-            })
-            if(Line.contain_branch > 0) {
-              this.getAllBranches(Line, comtime + 1, level+1)
+  getLinetoState(LineId) {
+    if(LineId == this.props.mainLine._id) {
+      getNodesByLine(LineId, 0, 1000, 0).then(task => {
+        for(let i = 0; i < task.length; i++) {
+          if(task[i].branch_line_id) {
+            this.getLinetoState(task[i].branch_line_id[0])
+          }
+        }
+      }).catch(err => {
+        console.error('Error fetching branches', err);
+      })
+    } else {
+      getLine(LineId).then(Line => {
+        this.setState({
+          all_line: [...this.state.all_line, Line],
+        }, () => {
+          getNodesByLine(Line._id, 0, 1000, 0).then(task => {
+            for(let i = 0; i < task.length; i++) {
+              if(task[i].branch_line_id) {
+                this.getLinetoState(task[i].branch_line_id[0])
+              }
             }
           })
-        }
-      }
+        })
+      }).catch(err => {
+        console.error('Error fetching branches', err);
+      })
+    }
+  }
+
+  getAllLines(){
+    this.setState({
+        loading: true,
+    }, () => {
+      this.getLinetoState(this.props.mainLine._id);
+      setTimeout(() => {this.getAllTasks();}, 500);
+      setTimeout(() => {this.setState({loading: false,})}, 1000);
     })
   }
 
-  getAllTasks(LineObject, limit, now) {
-    if(now == 1) {
-      this.props.listAllTaskClear();
-    }
-    if(now < limit){
-      /* inf as 1000 = anout */
-      getNodesByLine(LineObject[now].Line._id, 0, 1000, 0).then(task => {
-        /*inside here and compare */
-        let task_new = [{_id:'0'}];
-        let state_task = this.props.task
-        let state_i = 1;
-        let action_i = 0;
-        while (state_i < state_task.length || action_i < task.length) {
-          if(state_i >= state_task.length && action_i < task.length) {
-            task_new = [...task_new, {task:task[action_i], line:LineObject[now].Line}];
-            action_i++;
-          }
-          else if(state_i < state_task.length && action_i >= task.length) {
+  getTasktoState(LineObject){
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      /*inside here and compare */
+      let task_new = [{_id:'0'}];
+      let state_task = this.state.task
+      let state_i = 1;
+      let action_i = 0;
+      while (state_i < state_task.length || action_i < task.length) {
+        if(state_i >= state_task.length && action_i < task.length) {
+          task_new = [...task_new, {task:task[action_i], line:LineObject}];
+          action_i++;
+        }
+        else if(state_i < state_task.length && action_i >= task.length) {
+          task_new = [...task_new, state_task[state_i]];
+          state_i++;
+        }
+        else {
+          let state_ms = Date.parse(state_task[state_i].task.due_date);
+          let action_ms = Date.parse(task[action_i].due_date);
+          if(state_ms <= action_ms) {
             task_new = [...task_new, state_task[state_i]];
             state_i++;
-          }
-          else {
-            let state_ms = Date.parse(state_task[state_i].task.due_date);
-            let action_ms = Date.parse(task[action_i].due_date);
-            if(state_ms <= action_ms) {
-              task_new = [...task_new, state_task[state_i]];
-              state_i++;
-            } else {
-              task_new = [...task_new, {task:task[action_i], line:LineObject[now].Line}];
-              action_i++;
-            }
+          } else {
+            task_new = [...task_new, {task:task[action_i], line:LineObject}];
+            action_i++;
           }
         }
-        // console.log('result', task_new);
-        this.props.listAllTaskMore(task_new);
-      })
-      if(this.props.loading == false)
-        this.getAllTasks(LineObject, limit, now+1)
-    }
+      }
+      this.setState({task: task_new});
+    })
   }
 
-  handleTaskDone(id, time) {
+  getAllTasks(){
+    this.setState({
+      loading: true,
+      task: [],
+    }, () => {
+      for(let i = 0; i < this.state.all_line.length; i++){
+        this.getTasktoState(this.state.all_line[i])
+      }
+      this.setState({
+        loading: false,
+      })
+    })
+  }
+
+  handleTaskDone(id, time, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -152,7 +211,10 @@ class Home extends React.Component{
         'achieved_at': time
       })
       modifyNode(id, data).then(() => {
-        this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
+        let task = this.state.task;
+        task[index+1].achieved = true;
+        task[index+1].achieved_at = time;
+        this.setState({task: task});
       })
       this.setState({
         loading: false,
@@ -160,7 +222,7 @@ class Home extends React.Component{
     })
   }
 
-  handleTaskUndone(id) {
+  handleTaskUndone(id, index) {
     this.setState({
       loading: true,
     }, () => {
@@ -169,7 +231,10 @@ class Home extends React.Component{
         'achieved_at': 'null',
       })
       modifyNode(id, data).then(() => {
-        this.getAllTasks(this.props.allLine, this.props.allLine.length, 1);
+        let task = this.state.task;
+        task[index+1].achieved = false;
+        task[index+1].achieved_at = null;
+        this.setState({task: task});
       })
       this.setState({
         loading: false,
@@ -181,18 +246,10 @@ class Home extends React.Component{
 const mapStateToProps = state => ({
   userId: state.login.userId,
   mainLine: state.branch.mainLine,
-  branchLoading: state.branch.branchLoading,
-  allLine: state.branch.allLine,
-  task: state.branch.task,
-  loading: state.branch.branchLoading,
 });
 
 const mapDispatchToProps = {
   listMainBranch: listMainBranch,
-  listAllLineClear: endListAllLineClear,
-  listAllLineMore: listAllLine_more,
-  listAllTaskClear: endListTaskClear,
-  listAllTaskMore: listAllTask_more,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

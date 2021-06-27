@@ -19,10 +19,13 @@ class SignupView extends React.Component{
       name: '',
       avatar_url: 'empty',
       email: '',
+      passcheck: true,
+      password2: '',
     };
 
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handlePassChange = this.handlePassChange.bind(this);
+    this.handlePassCheckChange = this.handlePassCheckChange.bind(this);
     this.handleAccChange = this.handleAccChange.bind(this);
     this.handleMailChange = this.handleMailChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -48,13 +51,17 @@ class SignupView extends React.Component{
                 <span className='ml-5 my-2'>Password</span>      
                 <input type='password' className='text-left mx-5 my-3 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
                 value={this.state.password} onChange={this.handlePassChange} required></input>
+                <span className='ml-5 my-2'>Password Check</span>
+                <span className={'ml-5 text-sm ' + (this.state.passcheck ? ' text-gray-500' : ' text-red-500')}>{(this.state.password != this.state.password2 || this.state.password2 == '') && `*${!this.state.passcheck ? 'Please check the password agian.' : 'Enter the password again.'}`}</span>    
+                <input type='password' className='text-left mx-5 my-3 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
+                value={this.state.password2} onChange={this.handlePassCheckChange} required></input>
                 <span className='ml-5 my-2'>Email</span>      
                 <input type='text' className='text-left mx-5 my-3 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
                 value={this.state.email} onChange={this.handleMailChange} required></input>
                 <span className='ml-5 my-2'>Username</span>      
                 <input type='text' className='text-left mx-5 my-3 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
                 value={this.state.name} onChange={this.handleNameChange} required></input>
-                <Button className='ring-2 ring-blue-500 mx-5 my-2 rounded-md py-2 bg-blue-200 text-blue-800 hover:bg-blue-600 hover:text-white'>Sign in</Button>
+                <Button className='ring-2 ring-blue-500 mx-5 my-2 rounded-md py-2 bg-blue-200 text-blue-800 hover:bg-blue-600 hover:text-white'>Sign up</Button>
               </div>
               <p className='text-sm text-gray-500 sm:w-96 text-center mx-auto sm:px-1 px-5'>Sign up to GitoDo means you agree to GitoDo&apos;s Terms of Service and
               acknowledge that GitoDo&apos;s Privacy Policy applies to you.</p>
@@ -71,6 +78,20 @@ class SignupView extends React.Component{
 
   handlePassChange(event) {
     this.setState({password: event.target.value});
+    if(this.state.password2 == event.target.value) {
+      this.setState({passcheck: true});
+    } else {
+      this.setState({passcheck: false})
+    }
+  }
+
+  handlePassCheckChange(event) {
+    this.setState({password2: event.target.value})
+    if(this.state.password == event.target.value) {
+      this.setState({passcheck: true});
+    } else {
+      this.setState({passcheck: false})
+    }
   }
 
   handleMailChange(event) {
@@ -89,7 +110,7 @@ class SignupView extends React.Component{
       'password': this.state.password,
       'email': this.state.email,
       'name': this.state.name,
-      'avatar_url': 'http://140.114.91.242:3000/upload_1df0a74177f39b7bb53160b68e500564.jpg',
+      'avatar_url': '/user.jpg',
     });
     signIn(data).then(() => {
       Router.push({
