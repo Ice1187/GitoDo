@@ -97,6 +97,34 @@ export function modifyUser(userId, data) {
   });
 }
 
+/* data should like this 
+var axios = require('axios');
+var FormData = require('form-data');
+var fs = require('fs');
+var data = new FormData();
+data.append('file', fs.createReadStream('/C:/Users/fuchi/Downloads/AIO_Zen_Wallpaper_3840x2160_1(default).jpg'));
+e.g. with userId:60ccbb70e2b953f80f847287
+This will generate this url: 'http://140.114.91.242:3000/user/avatar/60ccbb70e2b953f80f847287',
+and make data uploaded as avatar
+*/
+export function modifyAvatar(userId, data) {
+  let url = `${postBaseUrl}/user/avatar/`;
+  url = url + userId;
+  let headers = { 
+    'Content-Type': 'application/json; charset=utf-8'
+  }
+  
+  return axios.put(url, data, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
+}
+
 // searchUsers
 // '/user/searchUsers/:string/:offset/:amount'
 // for instance
