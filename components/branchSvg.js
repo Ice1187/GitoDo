@@ -11,8 +11,9 @@ const NODE = {
 };
 const LINE = {
   begin_x: 40,
-  begin_y: 33,
+  begin_y: 10,
   space: 40,
+  v_space: 20,
   width: 5,
   curve: NODE.space / 2,
   opacity: 0.8,
@@ -33,8 +34,11 @@ class Drawer {
   }
 
   drawLine(line, x, y) {
-    if (line.is_main) this.drawHorizontal(line, 0, x, y);
-    else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
+    if (line.is_host !== true) {
+      if (line.is_main)
+        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
+      else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
+    }
     this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
   }
 
@@ -88,7 +92,7 @@ class BranchSvg extends React.Component {
   }
 
   svgRender(linesObj, tasksObj, positionsObj) {
-    console.log('Rerender~');
+    //    console.log('Rerender~');
     if (
       linesObj === undefined ||
       tasksObj === undefined ||
@@ -133,45 +137,20 @@ class BranchSvg extends React.Component {
     x = LINE.begin_x;
     y = LINE.begin_y;
     let line;
-    for (let i = 0; i < lines.length; i++) {
-      line = lines[i];
-      if (line.is_main) {
-        drawer.drawLine(line, x, y);
-        lines[i]['x'] = x;
-        x += LINE.space;
-        //y += NODE.space;
-        break;
-      }
-    }
+
+    line = { is_host: true, color: '#000000' };
+    drawer.drawLine(line, x, y);
+    x += LINE.space;
+    y += LINE.v_space;
 
     for (let i = 0; i < lines.length; i++) {
       line = lines[i];
-      if (line.is_main) continue;
       drawer.drawLine(line, x, y);
       lines[i]['x'] = x;
       x += LINE.space;
-      //      y += NODE.space;
+      y += LINE.v_space;
     }
-    console.log(lines);
-
-    /*
-    let task;
-    for (let i = 0; i < tasks.length; i++) {
-      task = tasks[i];
-      if (task.pos === undefined) continue;
-
-      let line_index = this.getIndexOfLineById(lines, task.line_id);
-      y = task.pos.y - TOP + NODE.radius - 2;
-      if (lines[line_index]['x'] === undefined) {
-        x = x + LINE.space;
-        drawer.drawLine(lines[line_index], x, y);
-        lines[line_index]['x'] = x;
-      }
-      if (task.pos !== undefined) {
-        drawer.drawNode(task, lines[line_index]['x'], y);
-      }
-    }
-    */
+    //    console.log(lines);
   }
 
   getIndexOfTaskById(tasks, _id) {

@@ -39,6 +39,7 @@ class TaskItem extends React.Component {
         ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
         : '#ffffff';
       let rect = this.node.getBoundingClientRect();
+      this.rect = rect;
       this.handleDraw(
         this.props.index,
         this.props.task._id,
@@ -57,6 +58,7 @@ class TaskItem extends React.Component {
         ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
         : '#ffffff';
       let rect = this.node.getBoundingClientRect();
+      this.rect = rect;
       this.setState({ re: true }, () => {
         this.handleDraw(
           this.props.index,
@@ -159,6 +161,39 @@ class TaskItem extends React.Component {
                 style={this.state.achieved == true ? stylecomplete : stylebox}
                 onClick={this.handleTaskDone}
               ></button>
+              <svg
+                ref={(svg) => {
+                  this.svg = svg;
+                }}
+                className='absolute left-0'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <circle
+                  cx={this.rect !== undefined ? this.rect.x - 320 : '0'}
+                  cy={this.rect !== undefined ? 75 : '0'}
+                  r='8'
+                  stroke={
+                    this.props.line.color_RGB !== undefined
+                      ? this.RGBToHex(
+                          this.props.line.color_RGB[0],
+                          this.props.line.color_RGB[1],
+                          this.props.line.color_RGB[2]
+                        )
+                      : ''
+                  }
+                  fill={
+                    this.state.achieved
+                      ? this.RGBToHex(
+                          this.props.line.color_RGB[0],
+                          this.props.line.color_RGB[1],
+                          this.props.line.color_RGB[2]
+                        )
+                      : '#ffffffff'
+                  }
+                  strokeWidth='4'
+                />
+                {console.log(this.svg)}
+              </svg>
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}
                 style={stylebranch}
