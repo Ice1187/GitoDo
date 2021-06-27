@@ -108,8 +108,8 @@ export function searchUsers(string, offset, amount) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
+  // console.log(url)
+  // console.log(headers)
   
   return axios.get(url, {
     headers: headers

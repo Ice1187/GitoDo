@@ -17,7 +17,6 @@ class Home extends React.Component{
     super(props);
 
     this.state = {
-      /* TODO: change to state not redux */
       all_line: [],
       task: [],
       position: [],
@@ -49,7 +48,7 @@ class Home extends React.Component{
   }
 
   render() {
-    console.log(this.state.task)
+    console.log(this.state.all_line)
     return (
       <>
       {
@@ -64,7 +63,7 @@ class Home extends React.Component{
         <Header></Header>
   
         <main className={styles.main + ' bg-gray-100 relative'}>
-          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
+          <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 md:left-20 left-10 px-10 absolute w-auto'>
             <div className='container flex flex-row mx-auto items-center'>
               <h1 className='text-2xl font-semibold'>Task</h1>
               <div className='flex-grow' />
@@ -116,12 +115,12 @@ class Home extends React.Component{
     }
   }
 
-  getLinetoState(LineId) {
+  getLinetoState(LineId, node) {
     if(LineId == this.props.mainLine._id) {
       getNodesByLine(LineId, 0, 1000, 0).then(task => {
         for(let i = 0; i < task.length; i++) {
           if(task[i].branch_line_id) {
-            this.getLinetoState(task[i].branch_line_id[0])
+            this.getLinetoState(task[i].branch_line_id[0], task[i])
           }
         }
       }).catch(err => {
@@ -130,13 +129,14 @@ class Home extends React.Component{
     } else {
       getLine(LineId).then(Line => {
         this.setState({
-          all_line: [...this.state.all_line, Line],
+          all_line: [...this.state.all_line, {Line: Line, Node:node}]
         }, () => {
           getNodesByLine(Line._id, 0, 1000, 0).then(task => {
             for(let i = 0; i < task.length; i++) {
               if(task[i].branch_line_id) {
-                this.getLinetoState(task[i].branch_line_id[0])
+                this.getLinetoState(task[i].branch_line_id[0], task[i])
               }
+              setTimeout(() => {}, 10);
             }
           })
         })
@@ -194,7 +194,8 @@ class Home extends React.Component{
       task: [],
     }, () => {
       for(let i = 0; i < this.state.all_line.length; i++){
-        this.getTasktoState(this.state.all_line[i])
+        this.getTasktoState(this.state.all_line[i].Line)
+        setTimeout(() => {}, 30);
       }
       this.setState({
         loading: false,
@@ -212,8 +213,8 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         let task = this.state.task;
-        task[index+1].achieved = true;
-        task[index+1].achieved_at = time;
+        task[index+1].task.achieved = true;
+        task[index+1].task.achieved_at = time;
         this.setState({task: task});
       })
       this.setState({
@@ -232,8 +233,8 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         let task = this.state.task;
-        task[index+1].achieved = false;
-        task[index+1].achieved_at = null;
+        task[index+1].task.achieved = false;
+        task[index+1].task.achieved_at = null;
         this.setState({task: task});
       })
       this.setState({

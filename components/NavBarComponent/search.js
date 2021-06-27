@@ -13,9 +13,6 @@ export default class Search extends React.Component{
     this.handleSearchKeyPress = this.handleSearchKeyPress.bind(this);
   }
 
-  
-  /* TODO: Change the method of button and adjust the input field */
-
   render() {
     return(
       <>

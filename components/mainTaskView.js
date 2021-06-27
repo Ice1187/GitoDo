@@ -35,7 +35,7 @@ export default class MainTaskView extends React.Component{
 
     return(
       <>
-        <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-8 mr-1 p-5'>
+        <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-10 mr-1 p-5'>
           <ListGroup>
             {children}
           </ListGroup>

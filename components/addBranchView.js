@@ -90,9 +90,7 @@ class AddBranchView extends React.Component{
         'content': `${null}`,
         'importance': '0',
       })
-      console.log(node_data)
       addNode(node_data).then(node => {
-        console.log(node)
         let branch_data = qs.stringify({
           'url': 'null',
           'content': 'null',
@@ -105,8 +103,7 @@ class AddBranchView extends React.Component{
           'permission': this.state.permission,
           'nodeId': `${node._id}`
         }); 
-        addBranch(branch_data).then(line => {
-          console.log(line)
+        addBranch(branch_data).then(() => {
           Router.push({
             pathname: '/main/branch',
           }, `/main/branch`);

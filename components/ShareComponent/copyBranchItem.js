@@ -10,7 +10,6 @@ export default class CopyBranchItem extends React.Component {
   }
 
   render() {
-    /* FIXME: share people and branch from status */
     const {color_RGB, title} = this.props.Line;
     const branch_color = this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]);
     const stylebranch = {

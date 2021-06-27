@@ -19,9 +19,6 @@ export default class TaskDisplay extends React.Component{
 
   render() {
     let branchName = 'Main';
-    /* let taskName = 'Buy Milk';*/
-    /* FIXME: fix the branchname and taskname overflow by server detecting */
-    /* TODO: three dots svg and multipleitems icon */
     const stylebranch = {
       backgroundColor: this.props.color,
       '--tw-ring-color': this.props.color
@@ -107,7 +104,6 @@ export default class TaskDisplay extends React.Component{
   }
 
   handleTaskEdit () {
-    // TODO: with api
     console.log('Edit: ' + this.props.id);
     // Dynamic Routing
     Router.push({

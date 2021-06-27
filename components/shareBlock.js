@@ -15,8 +15,6 @@ export default class ShareBlock extends React.Component {
       '--tw-ring-color': this.props.color
     }
     return (
-      /* TODO: make all color bar have same color but use redux to manage state*/
-      /* TODO: find user in input field and able to delete invited*/
       <>
         <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center cursor-default bg-white`}>
           <div className='container items-center flex'>
@@ -39,7 +37,6 @@ export default class ShareBlock extends React.Component {
   }
 
   handleChange (event) {
-    /* FIXME: fix the props func*/
     this.props.branchNameChange(event.target.value);
   }
 }

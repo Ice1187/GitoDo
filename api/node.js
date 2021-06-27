@@ -181,8 +181,8 @@ export function deleteSubTask(nodeId, subtaskIdx) {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-  console.log(url)
-  console.log(headers)
+  // console.log(url)
+  // console.log(headers)
   
   return axios.delete(url, {
     headers: headers
