@@ -237,9 +237,7 @@ class BranchSvg extends React.Component {
     }
 
     for (let pos of this.props.positions) {
-      console.log(this.tasks);
       this.tasks[this.getIndexOfTaskById(pos.task_id)]['pos'] = pos;
-      console.log(this.tasks);
     }
   }
 
@@ -261,10 +259,11 @@ class BranchSvg extends React.Component {
   }
 
   render() {
-    //    if (this.svg.current !== null) {
-    //      const Snap = require('snapsvg-cjs');
-    //      this.svgRender();
-    //    }
+    const { lines, tasks, positions } = this.props;
+    if (this.svg.current !== null) {
+      const Snap = require('snapsvg-cjs');
+      this.svgRender(lines, tasks, positions);
+    }
     return (
       <svg
         ref={this.svg}
@@ -275,10 +274,4 @@ class BranchSvg extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  tasks: state.branch.task,
-});
-
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BranchSvg);
+export default BranchSvg;
