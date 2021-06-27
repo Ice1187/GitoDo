@@ -48,7 +48,7 @@ class Home extends React.Component{
   }
 
   render() {
-    console.log(this.state.all_line)
+    console.log(this.state.task)
     return (
       <>
       {
@@ -128,8 +128,33 @@ class Home extends React.Component{
       })
     } else {
       getLine(LineId).then(Line => {
+        let line_new = [];
+        let state_task = this.state.all_line
+        let state_i = 0;
+        let action_i = 0;
+        while (state_i < state_task.length || action_i < 1) {
+          if(state_i >= state_task.length && action_i < 1) {
+            line_new = [...line_new, {Line: Line, Node:node}];
+            action_i++;
+          }
+          else if(state_i < state_task.length && action_i >= 1) {
+            line_new = [...line_new, state_task[state_i]];
+            state_i++;
+          }
+          else {
+            let state_ms = Date.parse(state_task[state_i].Node.due_date);
+            let action_ms = Date.parse(node.due_date);
+            if(state_ms <= action_ms) {
+              line_new = [...line_new, state_task[state_i]];
+              state_i++;
+            } else {
+              line_new = [...line_new, {Line: Line, Node:node}];
+              action_i++;
+            }
+          }
+        }
         this.setState({
-          all_line: [...this.state.all_line, {Line: Line, Node:node}]
+          all_line: line_new
         }, () => {
           getNodesByLine(Line._id, 0, 1000, 0).then(task => {
             for(let i = 0; i < task.length; i++) {
@@ -151,12 +176,12 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.mainLine._id);
-      setTimeout(() => {this.getAllTasks();}, 500);
-      setTimeout(() => {this.setState({loading: false,})}, 1000);
+      setTimeout(() => {this.getAllTasks();}, 1000);
+      setTimeout(() => {this.setState({loading: false,})}, 1500);
     })
   }
 
-  getTasktoState(LineObject){
+  getTasktoState(LineObject, index){
     getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
       /*inside here and compare */
       let task_new = [{_id:'0'}];
@@ -165,7 +190,7 @@ class Home extends React.Component{
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
         if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject}];
+          task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
           action_i++;
         }
         else if(state_i < state_task.length && action_i >= task.length) {
@@ -179,7 +204,7 @@ class Home extends React.Component{
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject}];
+            task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
             action_i++;
           }
         }
@@ -194,7 +219,7 @@ class Home extends React.Component{
       task: [],
     }, () => {
       for(let i = 0; i < this.state.all_line.length; i++){
-        this.getTasktoState(this.state.all_line[i].Line)
+        this.getTasktoState(this.state.all_line[i].Line, i)
         setTimeout(() => {}, 30);
       }
       this.setState({

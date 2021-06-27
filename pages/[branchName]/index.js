@@ -126,19 +126,42 @@ class Home extends React.Component{
     }
   }
 
-  getLinetoState(LineId) {
+  getLinetoState(LineId, node) {
     getLine(LineId).then(Line => {
-      if(!this.state.color){
-        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id, shareLineId: Line.shareLineId})
+      let line_new = [];
+      let state_task = this.state.all_line
+      let state_i = 0;
+      let action_i = 0;
+      while (state_i < state_task.length || action_i < 1) {
+        if(state_i >= state_task.length && action_i < 1) {
+          line_new = [...line_new, {Line: Line, Node:node}];
+          action_i++;
+        }
+        else if(state_i < state_task.length && action_i >= 1) {
+          line_new = [...line_new, state_task[state_i]];
+          state_i++;
+        }
+        else {
+          let state_ms = Date.parse(state_task[state_i].Node.due_date);
+          let action_ms = Date.parse(node.due_date);
+          if(state_ms <= action_ms) {
+            line_new = [...line_new, state_task[state_i]];
+            state_i++;
+          } else {
+            line_new = [...line_new, {Line: Line, Node:node}];
+            action_i++;
+          }
+        }
       }
       this.setState({
-        all_line: [...this.state.all_line, Line],
+        all_line: line_new
       }, () => {
         getNodesByLine(Line._id, 0, 1000, 0).then(task => {
           for(let i = 0; i < task.length; i++) {
             if(task[i].branch_line_id) {
-              this.getLinetoState(task[i].branch_line_id[0])
+              this.getLinetoState(task[i].branch_line_id[0], task[i])
             }
+            setTimeout(() => {}, 10);
           }
         })
       })
@@ -152,13 +175,12 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.router.query.id);
-      setTimeout(() => {this.getAllTasks(); this.setState({
-        loading: false,
-      })}, 300);
+      setTimeout(() => {this.getAllTasks();}, 1000);
+      setTimeout(() => {this.setState({loading: false,})}, 1500);
     })
   }
 
-  getTasktoState(LineObject){
+  getTasktoState(LineObject, index){
     getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
       /*inside here and compare */
       let task_new = [{_id:'0'}];
@@ -167,7 +189,7 @@ class Home extends React.Component{
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
         if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject}];
+          task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
           action_i++;
         }
         else if(state_i < state_task.length && action_i >= task.length) {
@@ -181,7 +203,7 @@ class Home extends React.Component{
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject}];
+            task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
             action_i++;
           }
         }
@@ -196,7 +218,8 @@ class Home extends React.Component{
       task: [],
     }, () => {
       for(let i = 0; i < this.state.all_line.length; i++){
-        this.getTasktoState(this.state.all_line[i])
+        this.getTasktoState(this.state.all_line[i].Line, i)
+        setTimeout(() => {}, 30);
       }
       this.setState({
         loading: false,
