@@ -19,86 +19,6 @@ const LINE = {
   branchView_y_space: 0,
 };
 
-/*
-class Line {
-  constructor(snap, x1, y1, x2, y2, color) {
-    this.snap = snap;
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
-    this.color = color;
-    this.nodes = [];
-
-    this._drawLine = this._drawLine.bind(this);
-    this.draw = this.draw.bind(this);
-    this.drawCurve = this.drawCurve.bind(this);
-    this.pushNode = this.pushNode.bind(this);
-  }
-
-  draw(is_main = false) {
-    if (is_main) {
-      let head_node = new Node(
-        this.snap,
-        this.x1,
-        this.y1,
-        NODE.head_radius,
-        this.color
-      ).draw(true);
-
-      this._drawLine(this.x1, this.y1, this.y2);
-      let main_line = this;
-
-      return { head_node, main_line };
-    } else {
-      let curve = this.drawCurve(this.x1, this.y1 + NODE.radius / 2);
-      let subline = this._drawLine(
-        //this.x1 + LINE.space,
-        this.x2,
-        //this.y1 + NODE.space / 2 + NODE.radius / 2,
-        this.y1 + NODE.radius / 2 - LINE.width / 2,
-        this.y2
-      );
-      return { curve, subline };
-    }
-  }
-
-  _drawLine(x, y1, y2) {
-    let line = this.snap.line(x, y1, x, y2).attr({
-      stroke: this.color,
-      strokeWidth: LINE.width,
-      opacity: LINE.opacity,
-    });
-
-    return line;
-  }
-
-  drawCurve(x, y) {
-    let curve = this.snap
-      //      .path(
-      //`m ${x} ${y} S ${x + LINE.space} ${y} ${x + LINE.space} ${
-      //  y + NODE.space / 2
-      //}`
-      //`m ${x} ${y} S ${x + LINE.space} ${y} ${this.x2} ${y + NODE.space / 2}`
-      //      )
-      .line(x + LINE.width / 2, y, this.x2 + LINE.width / 2, y)
-      .attr({
-        stroke: this.color,
-        strokeWidth: LINE.width,
-        opacity: LINE.opacity,
-        fill: 'none',
-        filter: 'none',
-      });
-
-    return curve;
-  }
-
-  pushNode(node) {
-    this.nodes.push(node);
-  }
-}
-*/
-
 class Drawer {
   constructor(svg, bottom) {
     this.snap = Snap(svg);
@@ -149,12 +69,10 @@ class BranchSvg extends React.Component {
     super(props);
 
     this.svg = React.createRef();
-    this.lines = [];
-    this.tasks = [];
 
     this.getIndexOfTaskById = this.getIndexOfTaskById.bind(this);
     this.getIndexOfLineById = this.getIndexOfLineById.bind(this);
-    this.getDataFromProps = this.getDataFromProps.bind(this);
+    //    this.getDataFromProps = this.getDataFromProps.bind(this);
     this.colorArrayToHex = this.colorArrayToHex.bind(this);
   }
 
@@ -169,13 +87,44 @@ class BranchSvg extends React.Component {
     this.svgRender(lines, tasks, positions);
   }
 
-  svgRender(lines, tasks, positions) {
+  svgRender(linesObj, tasksObj, positionsObj) {
     console.log('Rerender~');
+    if (
+      linesObj === undefined ||
+      tasksObj === undefined ||
+      positionsObj === undefined
+    )
+      return;
+    //    console.log(tasksObj);
     let TOP = this.svg.current.getBoundingClientRect().top;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
 
     //    this.getDataFromProps();
-    this.getDataFromProps(lines, tasks, positions);
+    //    this.getDataFromProps(lines, tasks, positions);
+    let lines = [];
+    for (let line of linesObj) {
+      lines.push({
+        _id: line._id,
+        is_main: line.is_main,
+        color: this.colorArrayToHex(line.color_RGB),
+      });
+    }
+
+    let line_index = false;
+    let tasks = [];
+    for (let task of tasksObj) {
+      if (task._id === '0' || task.task.branch_line_id !== null) continue;
+      line_index = this.getIndexOfLineById(lines, task.task.mother_line_id);
+      tasks.push({
+        _id: task.task._id,
+        line_id: task.task.mother_line_id,
+        color: line_index !== null ? lines[line_index].color : COLOR.white,
+        achieved: task.task.achieved,
+      });
+    }
+    for (let pos of positionsObj) {
+      tasks[this.getIndexOfTaskById(tasks, pos.task_id)]['pos'] = pos;
+    }
 
     //    console.log('lines___', lines);
     //    console.log('tasks___', tasks_);
@@ -187,72 +136,38 @@ class BranchSvg extends React.Component {
     x = LINE.begin_x;
     y = LINE.begin_y;
     let line;
-    for (let i = 0; i < this.lines.length; i++) {
-      line = this.lines[i];
+    for (let i = 0; i < lines.length; i++) {
+      line = lines[i];
       if (line.is_main) {
         drawer.drawLine(line, x, y);
-        this.lines[i]['x'] = x;
+        lines[i]['x'] = x;
       }
     }
 
     let task;
-    for (let i = 0; i < this.tasks.length; i++) {
-      task = this.tasks[i];
+    for (let i = 0; i < tasks.length; i++) {
+      task = tasks[i];
       if (task.pos === undefined) continue;
 
-      let line_index = this.getIndexOfLineById(task.line_id);
+      let line_index = this.getIndexOfLineById(lines, task.line_id);
       y = task.pos.y - TOP + NODE.radius - 2;
-      if (this.lines[line_index]['x'] === undefined) {
+      if (lines[line_index]['x'] === undefined) {
         x = x + LINE.space;
-        drawer.drawLine(this.lines[line_index], x, y);
-        this.lines[line_index]['x'] = x;
+        drawer.drawLine(lines[line_index], x, y);
+        lines[line_index]['x'] = x;
       }
       if (task.pos !== undefined) {
-        drawer.drawNode(task, x, y);
+        drawer.drawNode(task, lines[line_index]['x'], y);
       }
     }
   }
 
-  getDataFromProps() {
-    //    console.log('lines', this.props.lines);
-    //    console.log('tasks', this.props.tasks);
-    //    console.log('positions', this.props.positions);
-
-    this.lines = [];
-    for (let line of this.props.lines) {
-      this.lines.push({
-        _id: line._id,
-        is_main: line.is_main,
-        color: this.colorArrayToHex(line.color_RGB),
-      });
-    }
-
-    let line_index = false;
-    this.tasks = [];
-    for (let task of this.props.tasks) {
-      if (task._id === '0' || task.task.branch_line_id !== null) continue;
-      line_index = this.getIndexOfLineById(task.task.mother_line_id);
-      this.tasks.push({
-        _id: task.task._id,
-        line_id: task.task.mother_line_id,
-        color: line_index !== null ? this.lines[line_index].color : COLOR.white,
-        achieved: task.task.achieved,
-      });
-    }
-
-    for (let pos of this.props.positions) {
-      this.tasks[this.getIndexOfTaskById(pos.task_id)]['pos'] = pos;
-    }
-  }
-
-  getIndexOfTaskById(_id) {
-    for (let i = 0; i < this.tasks.length; i++)
-      if (this.tasks[i]._id === _id) return i;
+  getIndexOfTaskById(tasks, _id) {
+    for (let i = 0; i < tasks.length; i++) if (tasks[i]._id === _id) return i;
     return null;
   }
-  getIndexOfLineById(_id) {
-    for (let i = 0; i < this.lines.length; i++)
-      if (this.lines[i]._id === _id) return i;
+  getIndexOfLineById(lines, _id) {
+    for (let i = 0; i < lines.length; i++) if (lines[i]._id === _id) return i;
     return null;
   }
   colorArrayToHex(arr) {

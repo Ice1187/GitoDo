@@ -248,8 +248,8 @@ class Home extends React.Component {
         });
         modifyNode(id, data).then(() => {
           let task = this.state.task;
-          task[index].achieved = true;
-          task[index].achieved_at = time;
+          task[index + 1].achieved = true;
+          task[index + 1].achieved_at = time;
           this.setState({ task: task });
         });
         this.setState({
@@ -271,8 +271,8 @@ class Home extends React.Component {
         });
         modifyNode(id, data).then(() => {
           let task = this.state.task;
-          task[index].achieved = false;
-          task[index].achieved_at = null;
+          task[index + 1].achieved = false;
+          task[index + 1].achieved_at = null;
           this.setState({ task: task });
         });
         this.setState({
