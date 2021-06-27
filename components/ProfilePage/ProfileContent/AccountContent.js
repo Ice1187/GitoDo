@@ -51,6 +51,7 @@ class AccountContent extends React.Component {
   }
   
   imageHandler = event => {
+    console.log(event.target.files[0]);
     this.setState({
       selectedFile: event.target.files[0],
     })
@@ -63,13 +64,12 @@ class AccountContent extends React.Component {
     // }
     var data = new FormData();
     data.append('file', event.target.files[0]);
-    console.log("HEY");
     // Here will make another data goes to API(Don't care about how it process)
     // Two parameter
     // Forer one, userId, which you need to make it as some variable
     // Later one, data itself(your avatar picture)
-    modifyUser(this.props.userId, data).then(() => {
-      setInterval('window.location.reload()', 500);
+    modifyAvatar(this.props.userId, data).then(() => {
+      setInterval('window.location.reload()', 100);
     }).catch(err => {
       console.error('Error while change', err);
       window.location.reload();
@@ -77,12 +77,11 @@ class AccountContent extends React.Component {
     // You will get an userObj after it completes
     // (i.e. this is a promise, but that's your job to deal with)
     // Good night!    
-    };
-  
+      };
 
   render() {
     let color = 'red';
-	  console.log(this.state.avatar_url);
+	  // console.log(this.state.avatar_url);
 
     return (
       <>
