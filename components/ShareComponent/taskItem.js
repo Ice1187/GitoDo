@@ -32,6 +32,24 @@ class TaskItem extends React.Component {
     this.RGBToHex = this.RGBToHex.bind(this);
   }
 
+  componentDidUpdate() {
+    if (this.props.trigger) {
+      const { color_RGB } = this.props.line;
+      const branch_color = color_RGB
+        ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
+        : '#ffffff';
+      let rect = this.node.getBoundingClientRect();
+      this.handleDraw(
+        this.props.index,
+        this.props.task._id,
+        branch_color,
+        this.props.line._id,
+        rect.x,
+        rect.y
+      );
+    }
+  }
+
   componentDidMount() {
     if (!this.state.re) {
       const { color_RGB } = this.props.line;
@@ -61,8 +79,10 @@ class TaskItem extends React.Component {
         })
         .indexOf(this.props.task._id);
       this.setState({ index: index });
-      if (this.props.line.is_share) {
+      if (this.props.line.is_share == true && this.props.line.sharerLineId) {
+        console.log(this.props.line.sharerLineId);
         getShareProgress(this.props.line.sharerLineId).then((progress) => {
+          console.log(progress);
           const usersObj = progress.shareder
             .filter(
               (element) =>
@@ -292,6 +312,7 @@ class TaskItem extends React.Component {
 
   handleSubExpand() {
     this.setState({ open: !this.state.open });
+    this.props.onTrigger();
   }
 
   handleTaskDone(event) {

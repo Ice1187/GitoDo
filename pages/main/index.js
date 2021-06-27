@@ -23,8 +23,10 @@ class Home extends React.Component {
       task: [],
       position: [],
       loading: false,
+      trigger: false,
     };
 
+    this.handleTrigger = this.handleTrigger.bind(this);
     this.handleStore = this.handleStore.bind(this);
     this.handleDraw = this.handleDraw.bind(this);
     this.getAllLines = this.getAllLines.bind(this);
@@ -48,6 +50,7 @@ class Home extends React.Component {
   }
 
   render() {
+    console.log(this.state.task);
     return (
       <>
         {this.props.userId != -1 && (
@@ -67,12 +70,9 @@ class Home extends React.Component {
                   <div className='flex-grow' />
                 </div>
               </div>
-              <BranchSvg
-                lines={this.state.all_line}
-                tasks={this.state.task}
-                positions={this.state.position}
-              ></BranchSvg>
               <MainTaskView
+                onTrigger={this.handleTrigger}
+                trigger={this.state.trigger}
                 userId={this.props.userId}
                 loading={this.state.loading}
                 onDraw={this.handleDraw}
@@ -102,6 +102,13 @@ class Home extends React.Component {
     );
   }
 
+  handleTrigger() {
+    this.setState({ trigger: true });
+    setTimeout(() => {
+      this.setState({ trigger: false });
+    }, 30);
+  }
+
   handleDraw(index, task_id, branch_color, mother_id, x, y) {
     let obj = {
       index: index,
@@ -112,12 +119,18 @@ class Home extends React.Component {
       y: y,
     };
     setTimeout(() => {
-      this.handleStore(obj);
-    }, index * 3);
+      this.handleStore(index, obj);
+    }, index * 50);
   }
 
-  handleStore(obj) {
-    this.setState({ position: [...this.state.position, obj] });
+  handleStore(index, obj) {
+    if (this.state.position.length >= index) {
+      let pos = this.state.position;
+      pos[index] = obj;
+      this.setState({ position: pos });
+    } else {
+      this.setState({ position: [...this.state.position, obj] });
+    }
   }
 
   checkLogin() {
@@ -178,10 +191,10 @@ class Home extends React.Component {
         this.getLinetoState(this.props.mainLine._id);
         setTimeout(() => {
           this.getAllTasks();
-          this.setState({
-            loading: false,
-          });
-        }, 300);
+        }, 500);
+        setTimeout(() => {
+          this.setState({ loading: false });
+        }, 1000);
       }
     );
   }

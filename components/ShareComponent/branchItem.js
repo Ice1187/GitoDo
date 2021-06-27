@@ -7,7 +7,7 @@ class BranchItem extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {owner: '', shareder: null, shareder_name: [], re: false};
+    this.state = {owner: '', shareder: null, shareder_name: [], shareder_avatar: [], re: false};
 
     this.handleDraw = this.handleDraw.bind(this);
     this.handleBranch = this.handleBranch.bind(this);
@@ -34,6 +34,7 @@ class BranchItem extends React.Component {
           for(let i = 0; i < shareder_filter.length; i++) {
             getUser(shareder_filter[i].shareder_user_id).then(user => {
               this.setState({shareder_name: [...this.state.shareder_name, user.name]})
+              this.setState({shareder_avatar: [...this.state.shareder_avatar, user.avatar_url]})
             })
           }
         })
@@ -68,7 +69,7 @@ class BranchItem extends React.Component {
             this.state.shareder ?
             (this.state.shareder.length >= 1 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+              <img src={this.state.shareder_avatar[1-1]} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img>
               <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[1-1]}</span>
             </div>) : ''
           }
@@ -76,7 +77,7 @@ class BranchItem extends React.Component {
             this.state.shareder ?
             (this.state.shareder.length >= 2 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+            <img src={this.state.shareder_avatar[2-1]} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img>
               <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[2-1]}</span>
             </div>) : ''
           }
@@ -84,7 +85,7 @@ class BranchItem extends React.Component {
             this.state.shareder ?
             (this.state.shareder.length >= 3 && 
             <div className='hover-trigger relative sm:mx-2 mx-1'>
-              <span className='material-icons pt-2 text-gray-400 group-hover:text-gray-500'>supervised_user_circle</span>
+            <img src={this.state.shareder_avatar[3-1]} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img>
               <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 z-10 hover-target'>{this.state.shareder_name[3-1]}</span>
             </div>) : ''
           }

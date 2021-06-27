@@ -55,7 +55,6 @@ class Home extends React.Component {
                   <h1 className='text-2xl font-semibold'>Branch</h1>
                 </div>
               </div>
-              {/*<BranchSvg></BranchSvg>*/}
               {this.props.allLine && (
                 <MainBranchDisplay
                   loading={this.props.branchLoading}
@@ -73,7 +72,6 @@ class Home extends React.Component {
       </>
     );
   }
-
   handleDraw(index, line_id, branch_color, x, y) {
     let obj = {
       index: index,

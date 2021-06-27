@@ -18,8 +18,13 @@ export const END_LIST_TASK_MORE = 'END_LIST_TASK_MORE';
 export const BUFFER_LINE = 'BUFFER_LINE';
 export const END_BUFFER_ALL_CLEAR = 'END_BUFFER_ALL_CLEAR';
 export const END_BUFFER_ALL_MORE = 'END_BUFFER_ALL_MORE';
+export const CLEAR = 'CLEAR';
 
 /* branch */
+
+export const clear = () => ({
+  type: CLEAR
+})
 
 export const startLoading = () => ({
   type: START_LOADING
