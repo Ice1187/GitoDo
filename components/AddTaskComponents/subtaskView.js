@@ -2,7 +2,6 @@ import React from 'react';
 import SubtaskForm from './subtaskForm';
 import SubtaskList from './subtaskList';
 
-/* TODO: need link api*/
 export default class SubtaskView extends React.Component {
   constructor(props) {
     super(props);

@@ -51,7 +51,6 @@ export default class AddTaskView extends React.Component{
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange}></AddTitle>
-              {/* TODO: insert branch item and edit func */}
               <BranchChooseView view={'task'} color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
               <DateItem color={this.state.branchColor} dueDate={this.state.dueDateJSON} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
@@ -121,12 +120,10 @@ export default class AddTaskView extends React.Component{
   }
   
   handleSubmit(event) {
-    /* TODO: add redirect after submit*/
     console.log(this.state.taskName, this.state.dueDateJSON, this.state.branchId)
     if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
       alert('You should enter a title, choose a due time, and choose the branch to add. If you do not have a branch, please add a branch first.');
     else {
-      /* TODO: add subtask data & importance and content*/
       const now = new Date();
       let data = qs.stringify({
         'mother_line_id': this.state.branchId,

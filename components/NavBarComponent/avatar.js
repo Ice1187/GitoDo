@@ -55,7 +55,6 @@ class Avatar extends React.Component{
       <>
         <div className='relative'>
         <button className='inline-flex items-end mr-2 text-gray-500 hover:text-black focus:outline-none outline-none pt-2'onClick={this.openMenu}>
-          {/* TODO: modify code to get avatar from database */}
           { <img src={url} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img>}
         </button>
 

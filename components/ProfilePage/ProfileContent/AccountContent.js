@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {getUser, modifyUser} from '../../../api/user';
+import {getUser, modifyAvatar, modifyUser} from '../../../api/user';
+import {userAvatar} from '../../../redux/actions/loginAction';
 
 let qs = require('qs');
 class AccountContent extends React.Component {
@@ -8,6 +9,7 @@ class AccountContent extends React.Component {
     super(props);
 
     this.state = {
+      selectedFile: null,
       account: '',
       email: '',
       name: '',
@@ -20,6 +22,8 @@ class AccountContent extends React.Component {
       valueEmail: '',
       input: {},
       msg: {},
+      nameShow: false,
+      emailShow: false,
       pwdShow: false,
     };
 
@@ -30,28 +34,30 @@ class AccountContent extends React.Component {
         name: userId.name, 
         email: userId.email,
         password: userId.password,
-        avatar_url: userId.avatar_url,
+        avatar_url: userId.avatar_url, 
     })
     }).catch(err => {
         console.error('Error while getUser', err);
     });
+
+    this.handleemailExpand = this.handleemailExpand.bind(this);
+    this.handlenameExpand = this.handlenameExpand.bind(this);
     this.handlePwdExpand = this.handlePwdExpand.bind(this);
     this.pwdConfirm = this.pwdConfirm.bind(this);
     this.handlePwdSubmit = this.handlePwdSubmit.bind(this);
-
+    this.imageHandler = this.imageHandler.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleNameSubmit = this.handleNameSubmit.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleEmailSubmit = this.handleEmailSubmit.bind(this);
     this.handleDiscard = this.handleDiscard.bind(this);
   }
-  
+
   render() {
     let color = 'red';
-
     return (
       <>
-      {/* header */}
-      
+      {/* header */}      
       <div className='container flex-row flex items-center my-2'>
         <div className='container flex-row flex items-center'>
           <h1 className="font-bold pl-3 pr-3 pb-3 text-xl ml-0">Profile & Account</h1>
@@ -62,64 +68,91 @@ class AccountContent extends React.Component {
               <img src={this.state.avatar_url} className="inline shadow-sm rounded-full h-12 w-12 overflow-hidden"></img>
             </label>
             <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-12 right-12 text-center'>Avatar (Click&nbsp;to&nbsp;upload&nbsp;photos)</span>
-            <input id="filePicker" style={{display:'none'}} type={"file"} onChange={this.fileSelectedHandler}/>
+            <input id="filePicker" name="image-upload" style={{display:'none'}} type={"file"} onChange={this.imageHandler} accept="image/*" />
           </div>
         </div>
       </div>
       <hr></hr>
+
       {/* Account Block */}
-      <div className='container shadow rounded-lg p-4 my-4 flex-col flex items-center cursor-default bg-white w-auto'>
-          <div className="container flex-row flex items-center">
-            <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-            <span className='ml-5 font-semibold overflow-hidden'>
-              Account: <span className='font-semibold text-lg'>{this.state.account}</span></span>
-            <div className='flex-grow' />
-          </div> 
-        </div>
+      <div className='container shadow rounded-lg p-4 my-2 flex-col flex items-center cursor-default bg-white w-auto'>
+        <div className="container flex-row flex items-center">
+          <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
+          <span className='ml-5 font-semibold overflow-hidden'>
+            Account: <span className='font-semibold text-lg'>{this.state.account}</span></span>
+          <div className='flex-grow' />
+        </div> 
+      </div>
 
       {/* UserName Block */}
-        <div className='container shadow rounded-lg p-4 my-4 flex-col flex items-center cursor-default bg-white w-auto'>
+      <div className='container shadow rounded-lg p-4 my-2 flex-col flex items-center cursor-default bg-white w-auto'>
+        <div className="container flex-row flex items-center">
           <div className="container flex-row flex items-center">
             <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
             <span className='ml-5 font-semibold overflow-scroll'>
               Username: {this.state.name}</span>
             <div className='flex-grow' />
           </div>
-          <div className='my-2.5 container py-2'>
-            <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-0 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
-              <div className='container justify-start flex-row flex items-center'>
-                <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-                <label className="ml-5 font-medium overflow-hidden sm:mr-2 w-60">New UserName</label>
-                <div className='flex-grow'></div>
-              </div>
-              <input type="text" className='sm:my-0 my-3 text-center sm:mr-10 w-40 xs:w-36 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' placeholder='Enter your username'  
-              value={this.state.valueName}  onChange={this.handleNameChange}
-              ></input>
-            </div>
-         </div>
-        
+          <button  className='text-center focus:outline-none outline-none pt-2 font-semibold mr-2 text-gray-400 hover:text-gray-600' 
+          onClick={this.handlenameExpand}>
+          {this.state.nameShow ? (<span className='material-icons'>cancel</span>) : (<span className='material-icons'>edit</span>)}</button>
         </div>
+        { this.state.nameShow &&
+        <div className='my-2.5 container py-2'>
+          <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-0 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
+            <div className='container justify-start flex-row flex items-center'>
+              <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
+              <label className="ml-5 font-medium overflow-hidden sm:mr-2 w-40">New Username</label>
+              <div className='flex-grow'></div>
+            </div>
+            <input type="text" className='sm:my-0 my-3 text-center sm:mr-10 w-40 sm:w-80 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' placeholder='Enter your username'  
+            value={this.state.valueName}  onChange={this.handleNameChange}
+            ></input>
+          </div>
+          <div className="mr-auto ml-3">
+            <div className="text-green-500 font-bold">{this.state.msg.nameSave}</div>
+            <button className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md pl-2 pr-2 pt-1 pb-1 focus:outline-none my-3' 
+            onClick={this.handleNameSubmit}>
+              <span>Save</span>
+            </button>
+          </div>
+        </div>}
+      </div>
 
-        {/* Email Part */}
-        <div className='container shadow rounded-lg p-4 my-4 flex-col flex items-center cursor-default bg-white w-auto'>
-          <div className="container flex-row flex items-center">
+      {/* Email Part */}
+      <div className='container shadow rounded-lg p-4 my-2 flex-col flex items-center cursor-default bg-white w-auto'>
+        <div className="container flex-row flex items-center">
+          <div className="mt-2 container flex-row flex items-center">
             <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-            <span className='ml-5 font-semibold overflow-scroll'>Email: {this.state.email} </span>
-            <div className='flex-grow' />         
-            </div>
-            <div className='my-2.5 container py-2'>
-              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-0 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
-                <div className='container justify-start flex-row flex items-center'>
-                  <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-                  <label className="ml-5 font-medium overflow-hidden sm:mr-2 w-60">New Email</label>
-                  <div className='flex-grow'></div>
-                </div>
-                <input className='sm:my-0 my-3 text-center sm:mr-10 w-40 xs:w-36 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
-                value={this.state.valueEmail} onChange={this.handleEmailChange} placeholder='Enter your email' 
-                ></input>
-              </div>
-            </div>
+            <span className='ml-5 font-semibold overflow-scroll'>
+              Email: {this.state.email}</span>
+            <div className='flex-grow' />
+          </div>
+          <button  className='text-center focus:outline-none outline-none pt-2 font-semibold mr-2 text-gray-400 hover:text-gray-600' 
+          onClick={this.handleemailExpand}>
+          {this.state.emailShow ? (<span className='material-icons'>cancel</span>) : (<span className='material-icons'>edit</span>)}</button>
         </div>
+        { this.state.emailShow &&
+        <div className='my-2.5 container py-2'>
+          <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-0 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
+            <div className='container justify-start flex-row flex items-center'>
+              <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
+              <label className="ml-5 font-medium overflow-hidden sm:mr-2 w-40">New Email</label>
+              <div className='flex-grow'></div>
+            </div>
+            <input type="text" className='sm:my-0 my-3 text-center sm:mr-10 w-40 sm:w-80 bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' placeholder='Enter your new email'  
+            value={this.state.valueEmail}  onChange={this.handleEmailChange}
+            ></input>
+          </div>
+          <div className="mr-auto ml-3">
+            <div className="text-green-500 font-bold">{this.state.msg.emailSave}</div>
+            <button className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md pl-2 pr-2 pt-1 pb-1 focus:outline-none my-3' 
+            onClick={this.handleEmailSubmit}>
+              <span>Save</span>
+            </button>
+          </div>
+        </div>}
+      </div>
 
         {/* Password Part */}
         
@@ -185,11 +218,48 @@ class AccountContent extends React.Component {
                 </div>       
               </div>
             }
-        </div>
-        }
+          </div>
+          }
         </div>
       </>
     );
+  }
+
+  imageHandler(event) {
+    console.log(event.target.files[0]);
+    this.setState({
+      selectedFile: event.target.files[0],
+    })
+    // if (event.target.files && event.target.files[0]) {
+    //   let img = event.target.files[0];
+    //   this.setState({
+    //     avatar_url: URL.createObjectURL(img)
+    //   });
+    //   console.log('hello', URL.createObjectURL(img));
+    // }
+    let data = new FormData();
+    data.append('file', event.target.files[0]);
+    // Here will make another data goes to API(Don't care about how it process)
+    // Two parameter
+    // Forer one, userId, which you need to make it as some variable
+    // Later one, data itself(your avatar picture)
+    modifyAvatar(this.props.userId, data).then(user => {
+      this.props.userAvatar(user.avatar_url)
+      setInterval('window.location.reload()', 100);
+    }).catch(err => {
+      console.error('Error while change', err);
+      window.location.reload();
+    });
+    // You will get an userObj after it completes
+    // (i.e. this is a promise, but that's your job to deal with)
+    // Good night!    
+  }
+
+  handlenameExpand () {
+    this.setState({ nameShow: !this.state.nameShow, });
+  }
+  handleemailExpand () {
+    this.setState({ emailShow: !this.state.emailShow, });
   }
 
   // Password Part
@@ -207,7 +277,7 @@ class AccountContent extends React.Component {
   validation(){
     let msg={};
     if(this.state.input["newPwd1"] !== this.state.input["newPwd2"]){
-      msg["newPwd1"] = "!New Password Are Not Matching!";
+      msg["newPwd1"] = "New Password Are Not Matching!!";
       this.setState({newPwdValid: false});
     }
     else{
@@ -230,7 +300,7 @@ class AccountContent extends React.Component {
     let msg={};
     if(this.state.input["curPwd"] !== this.state.password){
       this.setState({pwdValid: false});
-      msg["curPwd"] = "!Current Password Are Wrong!";
+      msg["curPwd"] = "Current Password Are Wrong!!";
       this.setState({msg: msg});
     }
     else  {
@@ -273,8 +343,8 @@ class AccountContent extends React.Component {
     this.setState({valueEmail: '', valueName:''});
   }
 
-  handleSubmit(event) {
-    if(this.state.valueName == '' && this.state.valueEmail == '')
+  handleNameSubmit(event) {
+    if(this.state.valueName == '')
       alert('You should enter some text');
     else {
       console.log('submit');
@@ -288,27 +358,58 @@ class AccountContent extends React.Component {
       // console.log(data)
       modifyUser(this.props.userId, data).then(() => {
         let msg = {};
-        msg["save"] = "already saved!";
+        msg["nameSave"] = "already saved!";
         this.setState({ msg: msg })
       }).catch(err => {
         console.error('Error while change', err);
         window.location.reload();
       });
 
+      
+    setInterval('window.location.reload()', 800);
     }
     event.preventDefault();
-    setInterval('window.location.reload()', 800);
   }
 
+  handleEmailSubmit(event) {
+    if(this.state.valueEmail == '')
+      alert('You should enter some text');
+    else {
+      console.log('submit');
+      let data = qs.stringify({
+        'account': `${this.state.account}`,
+        'email': `${this.state.valueEmail}`,
+        'name': `${this.state.valueName}`,
+        'avatar_url': '',
+        'password': `${this.state.password}`,
+      })
+      // console.log(data)
+      modifyUser(this.props.userId, data).then(() => {
+        let msg = {};
+        msg["emailSave"] = "already saved!";
+        this.setState({ msg: msg })
+      }).catch(err => {
+        console.error('Error while change', err);
+        window.location.reload();
+      });
   
+      
+    setInterval('window.location.reload()', 800);
+    }
+    event.preventDefault();
+  }
+
 }
+
+
+
 
 const mapStateToProps = state => ({
   userId: state.login.userId
 });
 
 const mapDispatchToProps = {
-  
+  userAvatar: userAvatar,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountContent);

@@ -1,5 +1,5 @@
 import React from 'react';
-/* TODO: need link api*/
+
 export default class AccountContent extends React.Component {
   constructor(props) {
     super(props);

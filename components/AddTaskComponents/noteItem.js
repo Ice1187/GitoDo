@@ -1,6 +1,4 @@
 import React from 'react';
-
-/* TODO: need link api*/
 export default class NoteItem extends React.Component {
   constructor(props) {
     super(props);

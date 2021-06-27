@@ -32,7 +32,7 @@ class LoginView extends React.Component{
   }
 
   render() {
-    // TODO: forget password! clear all memory!
+    // TODO: forget password!
     return(
       <>
         <form onSubmit={this.handleSubmit}>

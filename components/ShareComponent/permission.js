@@ -1,7 +1,6 @@
 import React from 'react';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
-/* TODO: need link api*/
 export default class Permission extends React.Component {
   constructor(props) {
     super(props);

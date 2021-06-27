@@ -110,8 +110,7 @@ class TaskItem extends React.Component {
 
   render() {
     let branchName = 'Main';
-    /* FIXME: fix the branchname and taskname overflow by server detecting */
-    const { color_RGB, title } = this.props.line;
+    const {color_RGB, title} = this.props.line;
     branchName = title;
     const branch_color = color_RGB
       ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
@@ -464,8 +463,7 @@ class TaskItem extends React.Component {
     });
   }
 
-  handleTaskEdit() {
-    // TODO: with api
+  handleTaskEdit () {
     console.log('Edit: ' + this.props.task._id);
     // Dynamic Routing
     Router.push(

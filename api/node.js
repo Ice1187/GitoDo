@@ -185,19 +185,18 @@ export function deleteSubTask(nodeId, subtaskIdx) {
   let url = `${postBaseUrl}/node/deleteSubTask/`;
   url = url + nodeId + '/' + subtaskIdx;
   let headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
-  console.log(url);
-  console.log(headers);
-
-  return axios
-    .delete(url, {
-      headers: headers,
-    })
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  // console.log(url)
+  // console.log(headers)
+  
+  return axios.delete(url, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
 }

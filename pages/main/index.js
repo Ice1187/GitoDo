@@ -18,7 +18,6 @@ class Home extends React.Component {
     super(props);
 
     this.state = {
-      /* TODO: change to state not redux */
       all_line: [],
       task: [],
       position: [],
@@ -152,34 +151,52 @@ class Home extends React.Component {
   }
 
   getLinetoState(LineId, node) {
-    if (LineId == this.props.mainLine._id) {
-      getNodesByLine(LineId, 0, 1000, 0)
-        .then((task) => {
-          for (let i = 0; i < task.length; i++) {
-            if (task[i].branch_line_id) {
-              this.getLinetoState(task[i].branch_line_id[0], task[i]);
-            }
+    if(LineId == this.props.mainLine._id) {
+      getNodesByLine(LineId, 0, 1000, 0).then(task => {
+        for(let i = 0; i < task.length; i++) {
+          if(task[i].branch_line_id) {
+            this.getLinetoState(task[i].branch_line_id[0], task[i])
           }
         })
         .catch((err) => {
           console.error('Error fetching branches', err);
         });
     } else {
-      getLine(LineId)
-        .then((Line) => {
-          this.setState(
-            {
-              all_line: [...this.state.all_line, { Line: Line, Node: node }],
-            },
-            () => {
-              getNodesByLine(Line._id, 0, 1000, 0).then((task) => {
-                for (let i = 0; i < task.length; i++) {
-                  if (task[i].branch_line_id) {
-                    this.getLinetoState(task[i].branch_line_id[0], task[i]);
-                  }
-                  setTimeout(() => {}, 10);
-                }
-              });
+      getLine(LineId).then(Line => {
+        let line_new = [];
+        let state_task = this.state.all_line
+        let state_i = 0;
+        let action_i = 0;
+        while (state_i < state_task.length || action_i < 1) {
+          if(state_i >= state_task.length && action_i < 1) {
+            line_new = [...line_new, {Line: Line, Node:node}];
+            action_i++;
+          }
+          else if(state_i < state_task.length && action_i >= 1) {
+            line_new = [...line_new, state_task[state_i]];
+            state_i++;
+          }
+          else {
+            let state_ms = Date.parse(state_task[state_i].Node.due_date);
+            let action_ms = Date.parse(node.due_date);
+            if(state_ms <= action_ms) {
+              line_new = [...line_new, state_task[state_i]];
+              state_i++;
+            } else {
+              line_new = [...line_new, {Line: Line, Node:node}];
+              action_i++;
+            }
+          }
+        }
+        this.setState({
+          all_line: line_new
+        }, () => {
+          getNodesByLine(Line._id, 0, 1000, 0).then(task => {
+            for(let i = 0; i < task.length; i++) {
+              if(task[i].branch_line_id) {
+                this.getLinetoState(task[i].branch_line_id[0], task[i])
+              }
+              setTimeout(() => {}, 10);
             }
           );
         })
@@ -193,29 +210,23 @@ class Home extends React.Component {
     this.setState(
       {
         loading: true,
-      },
-      () => {
-        this.getLinetoState(this.props.mainLine._id);
-        setTimeout(() => {
-          this.getAllTasks();
-        }, 500);
-        setTimeout(() => {
-          this.setState({ loading: false });
-        }, 1000);
-      }
-    );
+    }, () => {
+      this.getLinetoState(this.props.mainLine._id);
+      setTimeout(() => {this.getAllTasks();}, 1000);
+      setTimeout(() => {this.setState({loading: false,})}, 1500);
+    })
   }
 
-  getTasktoState(LineObject) {
-    getNodesByLine(LineObject._id, 0, 1000, 0).then((task) => {
+  getTasktoState(LineObject, index){
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
       /*inside here and compare */
       let task_new = [{ _id: '0' }];
       let state_task = this.state.task;
       let state_i = 1;
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
-        if (state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, { task: task[action_i], line: LineObject }];
+        if(state_i >= state_task.length && action_i < task.length) {
+          task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
           action_i++;
         } else if (state_i < state_task.length && action_i >= task.length) {
           task_new = [...task_new, state_task[state_i]];
@@ -227,10 +238,7 @@ class Home extends React.Component {
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [
-              ...task_new,
-              { task: task[action_i], line: LineObject },
-            ];
+            task_new = [...task_new, {task:task[action_i], line:LineObject, index: index}];
             action_i++;
           }
         }
@@ -239,68 +247,56 @@ class Home extends React.Component {
     });
   }
 
-  getAllTasks() {
-    this.setState(
-      {
-        loading: true,
-        task: [],
-      },
-      () => {
-        for (let i = 0; i < this.state.all_line.length; i++) {
-          this.getTasktoState(this.state.all_line[i].Line);
-          setTimeout(() => {}, 30);
-        }
-        this.setState({
-          loading: false,
-        });
+  getAllTasks(){
+    this.setState({
+      loading: true,
+      task: [],
+    }, () => {
+      for(let i = 0; i < this.state.all_line.length; i++){
+        this.getTasktoState(this.state.all_line[i].Line, i)
+        setTimeout(() => {}, 30);
       }
     );
   }
 
   handleTaskDone(id, time, index) {
-    this.setState(
-      {
-        loading: true,
-      },
-      () => {
-        let data = qs.stringify({
-          achieved: true,
-          achieved_at: time,
-        });
-        modifyNode(id, data).then(() => {
-          let task = this.state.task;
-          task[index + 1].achieved = true;
-          task[index + 1].achieved_at = time;
-          this.setState({ task: task });
-        });
-        this.setState({
-          loading: false,
-        });
-      }
-    );
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': true,
+        'achieved_at': time
+      })
+      modifyNode(id, data).then(() => {
+        let task = this.state.task;
+        task[index+1].task.achieved = true;
+        task[index+1].task.achieved_at = time;
+        this.setState({task: task});
+      })
+      this.setState({
+        loading: false,
+      })
+    })
   }
 
   handleTaskUndone(id, index) {
-    this.setState(
-      {
-        loading: true,
-      },
-      () => {
-        let data = qs.stringify({
-          achieved: false,
-          achieved_at: 'null',
-        });
-        modifyNode(id, data).then(() => {
-          let task = this.state.task;
-          task[index + 1].achieved = false;
-          task[index + 1].achieved_at = null;
-          this.setState({ task: task });
-        });
-        this.setState({
-          loading: false,
-        });
-      }
-    );
+    this.setState({
+      loading: true,
+    }, () => {
+      let data = qs.stringify({
+        'achieved': false,
+        'achieved_at': 'null',
+      })
+      modifyNode(id, data).then(() => {
+        let task = this.state.task;
+        task[index+1].task.achieved = false;
+        task[index+1].task.achieved_at = null;
+        this.setState({task: task});
+      })
+      this.setState({
+        loading: false,
+      })
+    })
   }
 }
 

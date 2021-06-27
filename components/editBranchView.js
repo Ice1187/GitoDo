@@ -107,7 +107,6 @@ class EditBranchView extends React.Component{
   }
 
   handleBranchDelete() {
-    // TODO: link api with fixed deleteBranch
     this.props.listAllLineClear();
     this.props.listTaskClear();
     if(this.state.contain_branch == 0) {
