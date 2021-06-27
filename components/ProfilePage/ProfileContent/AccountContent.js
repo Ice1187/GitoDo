@@ -54,15 +54,23 @@ class AccountContent extends React.Component {
     this.setState({
       selectedFile: event.target.files[0],
     })
-    // if (event.target.files && event.target.files[0]) {
-    //   let img = event.target.files[0];
-    //   this.setState({
-    //     avatar_url: URL.createObjectURL(img)
-    //   });
-    //   console.log('hello', URL.createObjectURL(img));
-    // }
+    if (event.target.files && event.target.files[0]) {
+      let img = event.target.files[0];
+      this.setState({
+        avatar_url: URL.createObjectURL(img),
+      });
+
+      let data = qs.stringify({
+        'avatar_url': `${this.state.avatar_url}`,
+      })
+      modifyAvatar(this.props.userId, data).then(() => {
+        
+      }).catch(err => {
+        console.error('Error while change', err);
+        window.location.reload();
+      });
+    }
     var data = new FormData();
-    data.append('file', )
     
     };
   
