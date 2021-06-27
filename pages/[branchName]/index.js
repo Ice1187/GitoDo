@@ -26,6 +26,7 @@ class Home extends React.Component{
       share_open: false,
       color: null,
       title: '',
+      shareLineId: '',
     };
 
     this.handleStore = this.handleStore.bind(this);
@@ -75,12 +76,12 @@ class Home extends React.Component{
             <div className='container flex flex-row mx-auto items-center'>
               <h1 className='sm:text-2xl text-md sm:w-auto w-40 font-semibold'>Branch -  {this.props.router.query.branchName}</h1>
               <div className='flex-grow' />
-              <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
+              {this.state.shareLineId == this.state._id && <div className='relative hover-trigger flex flex-row cursor-pointer mr-5' onClick={this.handleShareOpen}>
                 {!this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Share</span>}
                 {!this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>ios_share</span>}
                 {this.state.share_open && <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-5 right-7'>Show&nbsp;tasks</span>}
                 {this.state.share_open && <span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600'>splitscreen</span>}
-              </div>
+              </div>}
               <button className='outline-none focus:outline-none bg-blue-200 text-blue-700 ring-2 ring-blue-600 hover:bg-blue-500 hover:text-white rounded-md p-2 py-1'>
                 <Link href={{
                   pathname: '/branch-edit/[branchId]',
@@ -88,9 +89,9 @@ class Home extends React.Component{
                 }} as={`/branch-edit/[branchId]`}>Edit</Link>
               </button>
             </div>
-            {this.state.share_open && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
+            {this.state.share_open && this.state.shareLineId == this.state._id && <ShareBlock color={this.state.color} branchName={this.state.title} lineId={this.state._id}></ShareBlock>}
           </div>
-          {!this.state.share_open && <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
+          {!this.state.share_open && <MainTaskView loading={this.state.loading} userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>}
           {this.state.loading == true && 
             <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
               <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
@@ -128,7 +129,7 @@ class Home extends React.Component{
   getLinetoState(LineId) {
     getLine(LineId).then(Line => {
       if(!this.state.color){
-        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id})
+        this.setState({color: Line.color_RGB, title: Line.title, _id: Line._id, shareLineId: Line.shareLineId})
       }
       this.setState({
         all_line: [...this.state.all_line, Line],

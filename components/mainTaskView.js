@@ -9,6 +9,7 @@ export default class MainTaskView extends React.Component{
     this.state = {
     }
 
+    this.handleTrigger = this.handleTrigger.bind(this);
     this.handleDraw = this.handleDraw.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleTaskUndone = this.handleTaskUndone.bind(this);
@@ -27,7 +28,7 @@ export default class MainTaskView extends React.Component{
       let task = allTask.filter(element => element.task.branch_line_id == null);
       children = task.map((p, index) => (
         <ListGroupItem key={p.task._id} action>
-          <TaskItem {...p} userId={this.props.userId} index={index} onDraw={this.handleDraw} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}/>
+          <TaskItem {...p} onTrigger={this.handleTrigger} trigger={this.props.trigger} userId={this.props.userId} index={index} onDraw={this.handleDraw} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}/>
         </ListGroupItem>
       ));
     }
@@ -55,6 +56,10 @@ export default class MainTaskView extends React.Component{
   handleDraw(index, task_id, branch_color, mother_id, x, y) {
     let task = this.props.task.filter(element => element.branch_line_id == null);
     this.props.onDraw(index, task_id, branch_color, mother_id, x, y, task.length);
+  }
+
+  handleTrigger() {
+    this.props.onTrigger();
   }
 
   handleTaskDone(id, time, index) {

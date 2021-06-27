@@ -22,8 +22,10 @@ class Home extends React.Component{
       task: [],
       position: [],
       loading: false,
+      trigger: false,
     };
 
+    this.handleTrigger = this.handleTrigger.bind(this);
     this.handleStore = this.handleStore.bind(this);
     this.handleDraw = this.handleDraw.bind(this);
     this.getAllLines = this.getAllLines.bind(this);
@@ -47,6 +49,7 @@ class Home extends React.Component{
   }
 
   render() {
+    console.log(this.state.task)
     return (
       <>
       {
@@ -67,7 +70,7 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView userId={this.props.userId} loading={this.state.loading} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          <MainTaskView onTrigger={this.handleTrigger} trigger={this.state.trigger} userId={this.props.userId} loading={this.state.loading} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
           {this.state.loading == true && 
             <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
               <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
@@ -84,13 +87,24 @@ class Home extends React.Component{
     );
   }
 
-  handleDraw(index, task_id, branch_color, mother_id, x, y) {
-    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
-    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  handleTrigger(){
+    this.setState({trigger: true})
+    setTimeout(() => {this.setState({trigger: false})}, 30);
   }
 
-  handleStore(obj) {
-    this.setState({position: [...this.state.position, obj]});
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
+    setTimeout(() => {this.handleStore(index, obj)}, index * 50);
+  }
+
+  handleStore(index, obj) {
+    if(this.state.position.length >= index) {
+      let pos = this.state.position;
+      pos[index] = obj;
+      this.setState({position: pos})
+    } else {
+      this.setState({position: [...this.state.position, obj]});
+    }
   }
 
   checkLogin(){
@@ -137,8 +151,8 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.mainLine._id);
-      setTimeout(() => {this.getAllTasks();}, 300);
-      setTimeout(() => {this.setState({loading: false,})}, 500);
+      setTimeout(() => {this.getAllTasks();}, 500);
+      setTimeout(() => {this.setState({loading: false,})}, 1000);
     })
   }
 
@@ -198,8 +212,8 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         let task = this.state.task;
-        task[index].achieved = true;
-        task[index].achieved_at = time;
+        task[index+1].achieved = true;
+        task[index+1].achieved_at = time;
         this.setState({task: task});
       })
       this.setState({
@@ -218,8 +232,8 @@ class Home extends React.Component{
       })
       modifyNode(id, data).then(() => {
         let task = this.state.task;
-        task[index].achieved = false;
-        task[index].achieved_at = null;
+        task[index+1].achieved = false;
+        task[index+1].achieved_at = null;
         this.setState({task: task});
       })
       this.setState({

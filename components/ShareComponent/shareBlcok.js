@@ -31,8 +31,8 @@ class ShareBlock extends React.Component {
     })
     const shareList = this.state.sharer.map((sharer, index) => {
       return (
-        <div className='hover-trigger relative' key={sharer._id}>
-          <button onClick={() => {this.handleDeleteSharer(sharer)}} className='rounded-full' key={index}><span className='material-icons text-md transform scale-90 text-gray-400 hover:text-gray-600 self-end mt-2'>account_circle</span></button>
+        <div className='hover-trigger relative sm:m-0 mx-2' key={sharer._id}>
+          <button onClick={() => {this.handleDeleteSharer(sharer)}} className='rounded-full' key={index}><img src={sharer.avatar_url} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img></button>
           <span className='bg-opacity-90 rounded-lg p-1 px-2 text-sm text-center bg-gray-800 text-white absolute top-10 right-2 hover-target'>{sharer.name},&nbsp;{sharer.email} Click&nbsp;to&nbsp;remove</span>
         </div>
       )
@@ -60,7 +60,7 @@ class ShareBlock extends React.Component {
               <input className='my-0 text-center bg-white border-gray-200 border-b-2 p-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
               placeholder='Search User Name' value={this.state.value} onChange={this.handleChange}
               ></input>
-              {this.state.result.length > 0 && <div className='bg-opacity-90 rounded-lg text-sm ring-2 ring-red-500 bg-white mt-5'>{userList}</div>}
+              {this.state.result.length > 0 && <div className='bg-opacity-90 rounded-lg text-sm ring-2 ring-red-500 bg-white mt-5 overflow-scroll max-h-32'>{userList}</div>}
           </div>
         </div>
       </>
