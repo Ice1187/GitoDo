@@ -135,7 +135,7 @@ class Drawer {
   }
 
   drawNode(node, x, y) {
-    console.log(node.color, x, y);
+    //    console.log(node.color, x, y);
     this.snap.circle(x, y, NODE.radius).attr({ fill: node.color });
     this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
 
@@ -160,18 +160,22 @@ class BranchSvg extends React.Component {
 
   componentDidMount() {
     const Snap = require('snapsvg-cjs');
-    this.svgRender();
+    let { lines, tasks, positions } = this.props;
+    this.svgRender(lines, tasks, positions);
   }
   componentDidUpdate() {
     const Snap = require('snapsvg-cjs');
-    this.svgRender();
+    let { lines, tasks, positions } = this.props;
+    this.svgRender(lines, tasks, positions);
   }
 
-  svgRender() {
+  svgRender(lines, tasks, positions) {
+    console.log('Rerender~');
     let TOP = this.svg.current.getBoundingClientRect().top;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
 
-    this.getDataFromProps();
+    //    this.getDataFromProps();
+    this.getDataFromProps(lines, tasks, positions);
 
     //    console.log('lines___', lines);
     //    console.log('tasks___', tasks_);
@@ -259,16 +263,18 @@ class BranchSvg extends React.Component {
   }
 
   render() {
-    const { lines, tasks, positions } = this.props;
     if (this.svg.current !== null) {
       const Snap = require('snapsvg-cjs');
-      this.svgRender(lines, tasks, positions);
+      this.svgRender();
     }
     return (
       <svg
         ref={this.svg}
         className='top-24 left-0 h-5/6 absolute w-1/5'
         xmlns='http://www.w3.org/2000/svg'
+        lines={this.props.lines}
+        tasks={this.props.tasks}
+        positions={this.props.positions}
       />
     );
   }
