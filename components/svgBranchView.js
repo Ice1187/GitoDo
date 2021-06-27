@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 const COLOR = {
   white: '#ffffff',
@@ -13,7 +12,7 @@ const LINE = {
   begin_x: 40,
   begin_y: 10,
   space: 40,
-  v_space: 20,
+  v_space: 90,
   width: 5,
   curve: NODE.space / 2,
   opacity: 0.8,
@@ -37,10 +36,18 @@ class Drawer {
     if (line.is_host !== true) {
       if (line.is_main)
         this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
-      else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
+      else this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
     }
     this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
   }
+  //  drawLine(line, x1, x2, y) {
+  //    if (line.is_host !== true) {
+  //      if (line.is_main)
+  //        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x2, y);
+  //      else this.drawHorizontal(line, x1 + LINE.width / 2, x2, y);
+  //    }
+  //    this.drawVertical(line, x2, y - LINE.width / 2, this.bottom);
+  //  }
 
   drawHorizontal(line, x1, x2, y) {
     this.snap.line(x1, y, x2, y).attr({
@@ -68,7 +75,7 @@ class Drawer {
     }
   }
 }
-class BranchSvg extends React.Component {
+class SvgBranchView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -82,53 +89,35 @@ class BranchSvg extends React.Component {
 
   componentDidMount() {
     const Snap = require('snapsvg-cjs');
-    let { lines, tasks, positions } = this.props;
-    this.svgRender(lines, tasks, positions);
+    let { lines } = this.props;
+    this.svgRender(lines);
   }
   componentDidUpdate() {
     const Snap = require('snapsvg-cjs');
-    let { lines, tasks, positions } = this.props;
-    this.svgRender(lines, tasks, positions);
+    let { lines } = this.props;
+    this.svgRender(lines);
   }
 
-  svgRender(linesObj, tasksObj, positionsObj) {
-    //    console.log('Rerender~');
-    if (
-      linesObj === undefined ||
-      tasksObj === undefined ||
-      positionsObj === undefined
-    )
-      return;
+  svgRender(linesObj) {
+    console.log('Rerender~');
+    console.log(linesObj);
+    if (linesObj === undefined) return;
     let TOP = this.svg.current.getBoundingClientRect().top;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
 
     let lines = [];
     for (let line of linesObj) {
-      //      console.log(line);
+      if (line._id === '0' || line.owner === 'you') continue;
+      console.log(line);
       lines.push({
         _id: line.Line._id,
         is_main: line.Line.is_main,
         color: this.colorArrayToHex(line.Line.color_RGB),
-        due_date: line.Node.due_date,
+        create_date: line.Line.create_date,
+        mother: line.mother._id,
       });
     }
-    lines.sort((a, b) => -(a.due_date < b.due_date));
-
-    let line_index = false;
-    let tasks = [];
-    for (let task of tasksObj) {
-      if (task._id === '0' || task.task.branch_line_id !== null) continue;
-      line_index = this.getIndexOfLineById(lines, task.task.mother_line_id);
-      tasks.push({
-        _id: task.task._id,
-        line_id: task.task.mother_line_id,
-        color: line_index !== null ? lines[line_index].color : COLOR.white,
-        achieved: task.task.achieved,
-      });
-    }
-    for (let pos of positionsObj) {
-      tasks[this.getIndexOfTaskById(tasks, pos.task_id)]['pos'] = pos;
-    }
+    lines.sort((a, b) => -(a.create_date < b.create_date));
 
     let x, y;
     let drawer = new Drawer(this.svg.current, BOTTOM);
@@ -138,13 +127,24 @@ class BranchSvg extends React.Component {
     y = LINE.begin_y;
     let line;
 
-    line = { is_host: true, color: '#000000' };
+    line = { is_host: true, color: '#000000', x: x };
+    //    drawer.drawLine(line, 0, x, y);
     drawer.drawLine(line, x, y);
     x += LINE.space;
     y += LINE.v_space;
 
+    y += 10;
     for (let i = 0; i < lines.length; i++) {
       line = lines[i];
+      //            console.log(line.mother);
+      //            if (line.is_main) drawer.drawLine(line, LINE.begin_x, x, y);
+      //            else
+      //      drawer.drawLine(
+      //        line,
+      //        this.lines[this.getIndexOfLineById(lines, line.mother)]['x'],
+      //        x,
+      //        y
+      //      );
       drawer.drawLine(line, x, y);
       lines[i]['x'] = x;
       x += LINE.space;
@@ -186,4 +186,4 @@ class BranchSvg extends React.Component {
   }
 }
 
-export default BranchSvg;
+export default SvgBranchView;

@@ -13,7 +13,7 @@ import Footer from '../../components/footer';
 import { getLine, getNodesByLine } from '../../api/line';
 import { getUser } from '../../api/user';
 import Router from 'next/router';
-import BranchSvg from '../../components/branchSvg';
+import SvgBranchView from '../../components/svgBranchView';
 
 class Home extends React.Component {
   constructor(props) {
@@ -55,8 +55,8 @@ class Home extends React.Component {
                   <h1 className='text-2xl font-semibold'>Branch</h1>
                 </div>
               </div>
+              <SvgBranchView lines={this.props.allLine}></SvgBranchView>
               {this.props.allLine && (
-                //      <BranchSvg></BranchSvg>
                 <MainBranchDisplay
                   loading={this.props.branchLoading}
                   userId={this.props.userId}

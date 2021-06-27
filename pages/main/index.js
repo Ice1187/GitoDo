@@ -10,7 +10,7 @@ import { listMainBranch } from '../../redux/actions/branchActions';
 import { modifyNode } from '../../api/node';
 import Router from 'next/router';
 
-import BranchSvg from '../../components/branchSvg';
+import SvgTaskView from '../../components/svgTaskView';
 
 let qs = require('qs');
 class Home extends React.Component {
@@ -69,11 +69,11 @@ class Home extends React.Component {
                   <div className='flex-grow' />
                 </div>
               </div>
-              <BranchSvg
+              <SvgTaskView
                 lines={this.state.all_line}
                 tasks={this.state.task}
                 positions={this.state.position}
-              ></BranchSvg>
+              ></SvgTaskView>
               <MainTaskView
                 onTrigger={this.handleTrigger}
                 trigger={this.state.trigger}
