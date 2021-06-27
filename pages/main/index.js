@@ -61,182 +61,225 @@ class Home extends React.Component {
             <Header></Header>
 
             <main className={styles.main + ' bg-gray-100 relative'}>
-              <BranchSvg></BranchSvg>
               <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-20 px-10 absolute w-auto'>
                 <div className='container flex flex-row mx-auto items-center'>
                   <h1 className='text-2xl font-semibold'>Task</h1>
                   <div className='flex-grow' />
                 </div>
               </div>
+              <BranchSvg
+                lines={this.state.all_line}
+                tasks={this.state.task}
+                positions={this.state.position}
+              ></BranchSvg>
               <MainTaskView
-                task={this.props.task}
+                userId={this.props.userId}
+                loading={this.state.loading}
+                onDraw={this.handleDraw}
+                task={this.state.task}
                 onTaskDone={this.handleTaskDone}
                 onTaskUndone={this.handleTaskUndone}
               ></MainTaskView>
+              {this.state.loading == true && (
+                <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
+                  <div
+                    className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}
+                  ></div>
+                  <div
+                    className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}
+                  ></div>
+                  <div
+                    className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}
+                  ></div>
+                </div>
+              )}
             </main>
 
             <Footer></Footer>
           </div>
-          <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
-          {this.state.loading == true && 
-            <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
-              <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
-              <div className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}></div>
-              <div className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}></div>
-            </div>
-          }
-        </main>
-  
-        <Footer></Footer>
-      </div>
-      }
-      </>  
+        )}
+      </>
     );
   }
 
   handleDraw(index, task_id, branch_color, mother_id, x, y) {
-    let obj = {index:index, task_id: task_id, branch_color: branch_color, mother_id: mother_id, x: x, y: y};
-    setTimeout(() => {this.handleStore(obj)}, index * 3);
+    let obj = {
+      index: index,
+      task_id: task_id,
+      branch_color: branch_color,
+      mother_id: mother_id,
+      x: x,
+      y: y,
+    };
+    setTimeout(() => {
+      this.handleStore(obj);
+    }, index * 3);
   }
 
   handleStore(obj) {
-    this.setState({position: [...this.state.position, obj]});
+    this.setState({ position: [...this.state.position, obj] });
   }
 
-  checkLogin(){
-    if(this.props.userId == -1){
-      Router.push({
-        pathname: '/login',
-        query: {},
-      }, `/login`);
+  checkLogin() {
+    if (this.props.userId == -1) {
+      Router.push(
+        {
+          pathname: '/login',
+          query: {},
+        },
+        `/login`
+      );
     }
   }
 
   getLinetoState(LineId) {
-    if(LineId == this.props.mainLine._id) {
-      getNodesByLine(LineId, 0, 1000, 0).then(task => {
-        for(let i = 0; i < task.length; i++) {
-          if(task[i].branch_line_id) {
-            this.getLinetoState(task[i].branch_line_id[0])
-          }
-        }
-      }).catch(err => {
-        console.error('Error fetching branches', err);
-      })
-    } else {
-      getLine(LineId).then(Line => {
-        this.setState({
-          all_line: [...this.state.all_line, Line],
-        }, () => {
-          getNodesByLine(Line._id, 0, 1000, 0).then(task => {
-            for(let i = 0; i < task.length; i++) {
-              if(task[i].branch_line_id) {
-                this.getLinetoState(task[i].branch_line_id[0])
-              }
+    if (LineId == this.props.mainLine._id) {
+      getNodesByLine(LineId, 0, 1000, 0)
+        .then((task) => {
+          for (let i = 0; i < task.length; i++) {
+            if (task[i].branch_line_id) {
+              this.getLinetoState(task[i].branch_line_id[0]);
             }
-          })
+          }
         })
-      }).catch(err => {
-        console.error('Error fetching branches', err);
-      })
+        .catch((err) => {
+          console.error('Error fetching branches', err);
+        });
+    } else {
+      getLine(LineId)
+        .then((Line) => {
+          this.setState(
+            {
+              all_line: [...this.state.all_line, Line],
+            },
+            () => {
+              getNodesByLine(Line._id, 0, 1000, 0).then((task) => {
+                for (let i = 0; i < task.length; i++) {
+                  if (task[i].branch_line_id) {
+                    this.getLinetoState(task[i].branch_line_id[0]);
+                  }
+                }
+              });
+            }
+          );
+        })
+        .catch((err) => {
+          console.error('Error fetching branches', err);
+        });
     }
   }
 
-  getAllLines(){
-    this.setState({
+  getAllLines() {
+    this.setState(
+      {
         loading: true,
-    }, () => {
-      this.getLinetoState(this.props.mainLine._id);
-      setTimeout(() => {this.getAllTasks(); this.setState({
-        loading: false,
-      })}, 300);
-    })
+      },
+      () => {
+        this.getLinetoState(this.props.mainLine._id);
+        setTimeout(() => {
+          this.getAllTasks();
+          this.setState({
+            loading: false,
+          });
+        }, 300);
+      }
+    );
   }
 
-  getTasktoState(LineObject){
-    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+  getTasktoState(LineObject) {
+    getNodesByLine(LineObject._id, 0, 1000, 0).then((task) => {
       /*inside here and compare */
-      let task_new = [{_id:'0'}];
-      let state_task = this.state.task
+      let task_new = [{ _id: '0' }];
+      let state_task = this.state.task;
       let state_i = 1;
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
-        if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject}];
+        if (state_i >= state_task.length && action_i < task.length) {
+          task_new = [...task_new, { task: task[action_i], line: LineObject }];
           action_i++;
-        }
-        else if(state_i < state_task.length && action_i >= task.length) {
+        } else if (state_i < state_task.length && action_i >= task.length) {
           task_new = [...task_new, state_task[state_i]];
           state_i++;
-        }
-        else {
+        } else {
           let state_ms = Date.parse(state_task[state_i].task.due_date);
           let action_ms = Date.parse(task[action_i].due_date);
-          if(state_ms <= action_ms) {
+          if (state_ms <= action_ms) {
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject}];
+            task_new = [
+              ...task_new,
+              { task: task[action_i], line: LineObject },
+            ];
             action_i++;
           }
         }
       }
-      this.setState({task: task_new});
-    })
+      this.setState({ task: task_new });
+    });
   }
 
-  getAllTasks(){
-    this.setState({
-      loading: true,
-      task: [],
-    }, () => {
-      for(let i = 0; i < this.state.all_line.length; i++){
-        this.getTasktoState(this.state.all_line[i])
+  getAllTasks() {
+    this.setState(
+      {
+        loading: true,
+        task: [],
+      },
+      () => {
+        for (let i = 0; i < this.state.all_line.length; i++) {
+          this.getTasktoState(this.state.all_line[i]);
+        }
+        this.setState({
+          loading: false,
+        });
       }
-      this.setState({
-        loading: false,
-      })
-    })
+    );
   }
 
   handleTaskDone(id, time, index) {
-    this.setState({
-      loading: true,
-    }, () => {
-      let data = qs.stringify({
-        'achieved': true,
-        'achieved_at': time
-      })
-      modifyNode(id, data).then(() => {
-        let task = this.state.task;
-        task[index].achieved = true;
-        task[index].achieved_at = time;
-        this.setState({task: task});
-      })
-      this.setState({
-        loading: false,
-      })
-    })
+    this.setState(
+      {
+        loading: true,
+      },
+      () => {
+        let data = qs.stringify({
+          achieved: true,
+          achieved_at: time,
+        });
+        modifyNode(id, data).then(() => {
+          let task = this.state.task;
+          task[index].achieved = true;
+          task[index].achieved_at = time;
+          this.setState({ task: task });
+        });
+        this.setState({
+          loading: false,
+        });
+      }
+    );
   }
 
   handleTaskUndone(id, index) {
-    this.setState({
-      loading: true,
-    }, () => {
-      let data = qs.stringify({
-        'achieved': false,
-        'achieved_at': 'null',
-      })
-      modifyNode(id, data).then(() => {
-        let task = this.state.task;
-        task[index].achieved = false;
-        task[index].achieved_at = null;
-        this.setState({task: task});
-      })
-      this.setState({
-        loading: false,
-      })
-    })
+    this.setState(
+      {
+        loading: true,
+      },
+      () => {
+        let data = qs.stringify({
+          achieved: false,
+          achieved_at: 'null',
+        });
+        modifyNode(id, data).then(() => {
+          let task = this.state.task;
+          task[index].achieved = false;
+          task[index].achieved_at = null;
+          this.setState({ task: task });
+        });
+        this.setState({
+          loading: false,
+        });
+      }
+    );
   }
 }
 

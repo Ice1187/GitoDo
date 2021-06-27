@@ -168,15 +168,37 @@ class BranchSvg extends React.Component {
   }
 
   svgRender() {
-    function toColorCode(arr) {
-      let colorCode =
-        '#' +
-        arr.map((c) => ('0' + (c & 0xff).toString(16)).slice(-2)).join('');
-      //      console.log(colorCode);
-      return colorCode;
+    let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
+
+    //    console.log('lines', this.props.lines);
+    //    console.log('tasks', this.props.tasks);
+    //    console.log('positions', this.props.positions);
+
+    let lines_ = {};
+    for (let line of this.props.lines) {
+      lines_[line._id] = {
+        _id: line._id,
+        is_main: line.is_main,
+        color: colorArrayToHex(line.color_RGB),
+      };
     }
 
-    let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
+    let tasks_ = {};
+    for (let task of this.props.tasks) {
+      if (task._id === '0' || task.task.branch_line_id !== null) continue;
+      tasks_[task.task._id] = {
+        line_id: task.task.mother_line_id,
+        achieved: task.task.achieved,
+      };
+    }
+
+    for (let pos of this.props.positions) {
+      console.log(tasks_);
+      tasks_[pos.task_id]['pos'] = pos;
+    }
+
+    console.log('lines___', lines_);
+    console.log('tasks___', tasks_);
 
     let x = LINE.begin_x,
       y = LINE.begin_y;
@@ -195,7 +217,7 @@ class BranchSvg extends React.Component {
         continue;
 
       // Draw line if haven't
-      let color = toColorCode(task.line.color_RGB);
+      let color = colorArrayToHex(task.line.color_RGB);
       let line_id = task.line._id;
       let line = lines[line_id];
       if (line == null) {
@@ -225,9 +247,21 @@ class BranchSvg extends React.Component {
       drawer.drawNode(line.x, y, color, task.task.achieved);
       y = y + NODE.space;
     }
+
+    function colorArrayToHex(arr) {
+      let hex =
+        '#' +
+        arr.map((c) => ('0' + (c & 0xff).toString(16)).slice(-2)).join('');
+      //      console.log(colorCode);
+      return hex;
+    }
   }
 
   render() {
+    //    if (this.svg.current !== null) {
+    //      const Snap = require('snapsvg-cjs');
+    //      this.svgRender();
+    //    }
     return (
       <svg
         ref={this.svg}
