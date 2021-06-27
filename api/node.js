@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Develop server URL
 const postBaseUrl = 'http://140.114.91.242:3000';
+//const postBaseUrl = 'http://127.0.0.1:7000';
 
 /* data should like this 
 var data = qs.stringify({
@@ -15,19 +16,20 @@ var data = qs.stringify({
 }); */
 export function addNode(data) {
   let url = `${postBaseUrl}/node/addNode`;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.post(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .post(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 // modifyNode
@@ -50,24 +52,24 @@ var data = qs.stringify({
 //   'content': 'MASK',
 //   'is_main': 'true' 
 }); */
-export function modifyNode(nodeId,data) {
+export function modifyNode(nodeId, data) {
   let url = `${postBaseUrl}/node/modifyNode/`;
   url = url + nodeId;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.put(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
-}
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
 
+  return axios
+    .put(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+}
 
 // getNode
 // '/node/getNode/:id'
@@ -75,40 +77,42 @@ export function getNode(nodeId) {
   let url = `${postBaseUrl}/node/getNode/`;
   url = url + nodeId;
   let headers = {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.get(url, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .get(url, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 // deleteNode
 // '/node/deleteNode/:lineId/:nodeId'
 // also, if you are deleting last node of a line
 // the line will be deleted as well
-export function deleteNode(lineId,nodeId) {
+export function deleteNode(lineId, nodeId) {
   let url = `${postBaseUrl}/node/deleteNode/`;
   url = url + lineId + '/' + nodeId;
   let headers = {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.delete(url, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .delete(url, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 // addSubtask
@@ -122,19 +126,20 @@ var data = qs.stringify({
 // create a subtask at the tail of subtask array of node '60c320e6e46b792cdc86a644'
 export function addSubtask(data) {
   let url = `${postBaseUrl}/node/addSubtask`;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.post(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .post(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 // modifySubTask
@@ -152,22 +157,23 @@ var data = qs.stringify({
   'done': 'false',
   'subtaskIdx': '0' 
 }); */
-export function modifySubTask(nodeId,data) {
+export function modifySubTask(nodeId, data) {
   let url = `${postBaseUrl}/node/modifySubTask/`;
   url = url + nodeId;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.put(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .put(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 // deleteSubTask

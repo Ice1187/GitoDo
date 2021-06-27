@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Develop server URL
 const postBaseUrl = 'http://140.114.91.242:3000';
+//const postBaseUrl = 'http://127.0.0.1:7000';
 
 /* data should like this 
 var data = qs.stringify({
@@ -13,19 +14,20 @@ var data = qs.stringify({
 }); */
 export function signIn(data) {
   let url = `${postBaseUrl}/user/signIn`;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.post(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .post(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 /* data should like this 
@@ -35,41 +37,41 @@ var data = qs.stringify({
 }); */
 export function logIn(data) {
   let url = `${postBaseUrl}/user/logIn`;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.post(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response;
-  })
-  .catch((error) => {
-	return error
-  });
-}
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
 
+  return axios
+    .post(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error;
+    });
+}
 
 // getUser
 export function getUser(userId) {
   let url = `${postBaseUrl}/user/getUser/`;
   url = url + userId;
   let headers = {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.get(url, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
-}
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
 
+  return axios
+    .get(url, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+}
 
 /* data should like this 
 var data = qs.stringify({
@@ -82,19 +84,20 @@ var data = qs.stringify({
 export function modifyUser(userId, data) {
   let url = `${postBaseUrl}/user/modifyUser/`;
   url = url + userId;
-  let headers = { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-  
-  return axios.put(url, data, {
-    headers: headers
-  })
-  .then((response) => {
-	return response.data;
-  })
-  .catch((error) => {
-	return error
-  });
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  return axios
+    .put(url, data, {
+      headers: headers,
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
 }
 
 /* data should like this 
