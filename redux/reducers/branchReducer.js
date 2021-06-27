@@ -10,6 +10,7 @@ import {
   END_LIST_MAIN_MORE,
   END_LIST_TASK_CLEAR,
   END_LIST_TASK_MORE,
+  CLEAR,
 } from '../actions/branchActions'
 
 const initialMainBranchState = {
@@ -26,6 +27,8 @@ const branchReducer = (state = initialMainBranchState, action) => {
       return {...state};
     case REHYDRATE:
       return {...state};
+    case CLEAR:
+      return {initialMainBranchState};
     case START_LOADING:
       return {...state, branchLoading: true};
     case END_LOADING:

@@ -67,7 +67,7 @@ class Home extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <MainTaskView userId={this.props.userId} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
+          <MainTaskView userId={this.props.userId} loading={this.state.loading} onDraw={this.handleDraw} task={this.state.task} onTaskDone={this.handleTaskDone} onTaskUndone={this.handleTaskUndone}></MainTaskView>
           {this.state.loading == true && 
             <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
               <div className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}></div>
@@ -137,9 +137,8 @@ class Home extends React.Component{
         loading: true,
     }, () => {
       this.getLinetoState(this.props.mainLine._id);
-      setTimeout(() => {this.getAllTasks(); this.setState({
-        loading: false,
-      })}, 300);
+      setTimeout(() => {this.getAllTasks();}, 300);
+      setTimeout(() => {this.setState({loading: false,})}, 500);
     })
   }
 

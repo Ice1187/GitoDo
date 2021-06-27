@@ -52,7 +52,7 @@ class Home extends React.Component{
               <h1 className='text-2xl font-semibold'>Branch</h1>
             </div>
           </div>
-          <MainBranchDisplay userId={this.props.userId} onDraw={this.handleDraw} mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>
+          {this.props.allLine && <MainBranchDisplay loading={this.props.branchLoading} userId={this.props.userId} onDraw={this.handleDraw} mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>}
         </main>
   
         <Footer></Footer>

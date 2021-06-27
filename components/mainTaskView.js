@@ -38,7 +38,7 @@ export default class MainTaskView extends React.Component{
           <ListGroup>
             {children}
           </ListGroup>
-          {this.props.task.length == 1 &&
+          {this.props.task.length <= 1 && this.props.loading == false &&
             <a href='/main/newtask'>
             <div className='container shadow rounded-lg flex-row py-5 my-3 px-5 flex items-center text-gray-700 bg-white cursor-pointer hover:bg-gray-50'>
               <div className={`inline ml-5 h-4 w-0.5`}></div>

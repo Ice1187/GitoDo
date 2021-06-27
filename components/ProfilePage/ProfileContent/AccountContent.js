@@ -1,8 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import Link from 'next/link';
 import {getUser, modifyUser} from '../../../api/user';
-import Router from 'next/router';
 
 let qs = require('qs');
 class AccountContent extends React.Component {
@@ -49,13 +47,6 @@ class AccountContent extends React.Component {
   
   render() {
     let color = 'red';
-    let data = qs.stringify({
-      'account': this.state.account,
-      'email': this.state.email,
-      'name': this.state.name,
-      'password': this.state.password
-    })
-	console.log(this.state.avatar_url);
 
     return (
       <>
@@ -207,14 +198,14 @@ class AccountContent extends React.Component {
     this.setState({input: {}, msg: {}})
   }
   pwdConfirm(e){
-    var inputPwd = this.state.input;
+    let inputPwd = this.state.input;
     inputPwd[e.target.name] = e.target.value;
     this.setState({
       inputPwd
     })
   }
   validation(){
-    var msg={};
+    let msg={};
     if(this.state.input["newPwd1"] !== this.state.input["newPwd2"]){
       msg["newPwd1"] = "!New Password Are Not Matching!";
       this.setState({newPwdValid: false});
@@ -232,11 +223,11 @@ class AccountContent extends React.Component {
     e.preventDefault();
     if(this.validation())
     {
-      var input = {};
+      let input = {};
       input["newPwd1"] = "";
       input["newPwd2"] = "";
     }    
-    var msg={};
+    let msg={};
     if(this.state.input["curPwd"] !== this.state.password){
       this.setState({pwdValid: false});
       msg["curPwd"] = "!Current Password Are Wrong!";
@@ -247,16 +238,16 @@ class AccountContent extends React.Component {
     }
     if(this.state.newPwdValid && this.state.pwdValid ){
       // console.log('Pwd ok')
-      this.state.password = this.state.input["newPwd1"];
+      this.setState({password: this.state.input["newPwd1"]});
       let data = qs.stringify({
         'account': `${this.state.account}`,
         'email': `${this.state.valueEmail}`,
         'name': `${this.state.valueName}`,
         'avatar_url': '',
-        'password': `${this.state.password}`,
+        'password': `${this.state.input["newPwd1"]}`,
       })
       modifyUser(this.props.userId, data).then(() => {
-        var msg = {};
+        let msg = {};
         msg["pwdSave"] = "already saved!";
         this.setState({ msg: msg , })
         setTimeout(( () => this.setState({pwdShow: false}) ), 800);
@@ -264,7 +255,7 @@ class AccountContent extends React.Component {
         console.error('Error while change', err);
         window.location.reload();
       });
-      this.state.password = this.state.input["newPwd1"];
+      this.setState({password: this.state.input["newPwd1"]});
     }
   }
   
@@ -296,7 +287,7 @@ class AccountContent extends React.Component {
       })
       // console.log(data)
       modifyUser(this.props.userId, data).then(() => {
-        var msg = {};
+        let msg = {};
         msg["save"] = "already saved!";
         this.setState({ msg: msg })
       }).catch(err => {
@@ -320,59 +311,4 @@ const mapDispatchToProps = {
   
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountContent);  // handleSubmit(event) {
-
-{/* <div className='container flex-col flex items-center bg-white py-2'>
-          
-  <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-    <div className={` ml-5 h-4 w-0.5 bg-${subcolor}-500 ring-2 ring-${subcolor}-500`}></div>
-    <label className="ml-5 font-medium overflow-hidden mr-2 w-60" for="curAcc">New Account</label>
-    </div>
-            
-</div> */}
-
-  {/* Bio Description */}
-  {/* <div className='container shadow rounded-lg p-4 my-3 flex items-center cursor-default bg-white max-w-xl w-auto'>
-    <div className="grid grid-rows-5">
-      <div className={`row-span-1 row-start-1 ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-      <span className='row-span-1 row-start-1 ml-5 font-semibold overflow-hidden'>BIO Description (Optional)</span>
-      <div className='flex-grow' />
-    
-      <div className="grid row-span-4">
-      <div className=' flex sm:flex-row flex-col p-3'>
-      <textarea type='textarea' className='container text-left rounded-md mx-1 sm:w-96 w-auto bg-white border-gray-200 border-2 pr-2 pl-2 pb-1 pt-1 outline-none focus:outline-none hover:border-red-200 focus:border-red-500 cursor-auto focus:placeholder-transparent' 
-        placeholder='Write something about yourself...' 
-      ></textarea>
-      </div>
-    </div>
-    </div>
-  </div> */}
-
-  {/* Phone Part */}
-  {/* <div className='container shadow rounded-lg p-4 my-3 flex-col flex items-center cursor-default bg-white max-w-xl w-auto'>
-    <div className="container flex-row flex items-center">
-      <div className={`ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-      <span className='ml-5 font-semibold overflow-hidden'>Connected Phone:  {phoneNumber}</span>
-      <div className='flex-grow' />
-      <button className='text-center rounded-lg border-3 focus:outline-none outline-none border-black-700 bg-gray-300 text-gray-600 pr-2 pl-2 pb-1 pt-1 ml-5 font-semibold hover:bg-gray-600 hover:text-white '
-      onClick={this.handlePhoneExpand}><BiEdit className="inline pr-1" />Change</button>
-    </div>
-    { this.state.phoneShow &&
-      <div className='container flex-col flex items-center bg-white py-2'>
-      {
-        <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-          <div className={` ml-5 h-4 w-0.5 bg-${color}-500 ring-2 ring-${color}-500`}></div>
-          <label className="ml-5 font-medium overflow-hidden mr-2 w-60" for="curpwd">New Connected Phone</label>
-          <input className="border-2 rounded-md border-gray-300 ml-3 pl-2" placeholder={phoneNumber} id="curpwd" type="tel" name="curPwd"></input>
-        </div>
-      }
-      {
-        <div className="mr-auto ml-3">
-        <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md pl-2 pr-2 pt-1 pb-1 focus:outline-none my-3' onClick={this.handleSubmit}>
-          <span>Change</span>
-        </button>
-        </div>
-      }
-  </div>
-  }
-  </div> */}
+export default connect(mapStateToProps, mapDispatchToProps)(AccountContent);

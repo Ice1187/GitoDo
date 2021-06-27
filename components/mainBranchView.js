@@ -34,6 +34,15 @@ export default class MainBranchDisplay extends React.Component{
         <ListGroup>
           {children}
         </ListGroup>
+        {this.props.allLine.length <= 2 &&
+            <a href='/main/newbranch'>
+            <div className='container shadow rounded-lg flex-row py-5 my-3 px-5 flex items-center text-gray-700 bg-white cursor-pointer hover:bg-gray-50'>
+              <div className={`inline ml-5 h-4 w-0.5`}></div>
+              <span className='material-icons ring-2 ring-gray-700 rounded-full'>add</span>
+              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>Go add a branch!</span>
+            </div>
+            </a>
+          }
       </div>
     );
   }
