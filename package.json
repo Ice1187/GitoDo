@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "express-upload": "^0.1.0",
     "moment": "^2.29.1",
     "next": "^10.2.3",
     "next-redux-wrapper": "^7.0.0",
