@@ -110,7 +110,7 @@ class TaskItem extends React.Component {
 
   render() {
     let branchName = 'Main';
-    const {color_RGB, title} = this.props.line;
+    const { color_RGB, title } = this.props.line;
     branchName = title;
     const branch_color = color_RGB
       ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
@@ -168,7 +168,11 @@ class TaskItem extends React.Component {
                 xmlns='http://www.w3.org/2000/svg'
               >
                 <circle
-                  cx={this.rect !== undefined ? this.rect.x - 320 : '0'}
+                  cx={
+                    this.rect !== undefined
+                      ? this.rect.x - 280 + this.props.index * 40
+                      : '0'
+                  }
                   cy={this.rect !== undefined ? 75 : '0'}
                   r='8'
                   stroke={
@@ -191,7 +195,7 @@ class TaskItem extends React.Component {
                   }
                   strokeWidth='4'
                 />
-                {console.log(this.svg)}
+                {console.log(this.props.index)}
               </svg>
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}
@@ -463,7 +467,7 @@ class TaskItem extends React.Component {
     });
   }
 
-  handleTaskEdit () {
+  handleTaskEdit() {
     console.log('Edit: ' + this.props.task._id);
     // Dynamic Routing
     Router.push(

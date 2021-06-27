@@ -114,7 +114,7 @@ class SvgBranchView extends React.Component {
         is_main: line.Line.is_main,
         color: this.colorArrayToHex(line.Line.color_RGB),
         create_date: line.Line.create_date,
-        mother: line.mother._id,
+        //mother: line.mother._id,
       });
     }
     lines.sort((a, b) => -(a.create_date < b.create_date));
