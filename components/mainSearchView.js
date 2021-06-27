@@ -1,8 +1,8 @@
-import BranchItem from './ShareComponent/branchItem';
+import SearchBranchItem from './ShareComponent/searchBranchItem';
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 
-export default class MainBranchDisplay extends React.Component{
+export default class MainSearchDisplay extends React.Component{
   constructor(props) {
     super(props);
 
@@ -19,18 +19,16 @@ export default class MainBranchDisplay extends React.Component{
         <div></div>
       </ListGroupItem>
     );
-    if (allLine.length > 1) {
-      allLine.shift();
-      allLine.shift();
+    if (allLine.length > 0) {
       children = allLine.map((p, index) => (
-        <ListGroupItem key={p.Line._id} action>
-          <BranchItem {...p} index={index} userId={this.props.userId} onDraw={this.handleDraw}/>
+        <ListGroupItem key={p._id} action>
+          <SearchBranchItem {...p} index={index} userId={this.props.userId} onDraw={this.handleDraw}/>
         </ListGroupItem>
       ));
     }
 
     return (
-      <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-16 mr-1 p-5'>
+      <div className='sm:p-5'>
         <ListGroup>
           {children}
         </ListGroup>
@@ -40,8 +38,6 @@ export default class MainBranchDisplay extends React.Component{
 
   handleDraw(index, line_id, branch_color, x, y) {
     let allLine = [...this.props.allLine]
-    allLine.shift();
-    allLine.shift();
     this.props.onDraw(index, line_id, branch_color, x, y, allLine.length);
   }
 }

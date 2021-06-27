@@ -2,7 +2,6 @@ import React from 'react';
 import SubtaskList from '../AddTaskComponents/subtaskList';
 import Router from 'next/router'
 import { getNode, modifySubTask } from '../../api/node';
-import { connect } from 'react-redux';
 import { getNodesByLine, getShareProgress, setShareProgress} from '../../api/line';
 import { getUser } from '../../api/user';
 let qs = require('qs');
@@ -17,8 +16,11 @@ class TaskItem extends React.Component{
       subtask: [],
       index: -1,
       progress_users: [],
+      re: false,
+      achieved: false,
     }
 
+    this.handleDraw = this.handleDraw.bind(this);
     this.handleSubExpand = this.handleSubExpand.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
     this.handleSubDone = this.handleSubDone.bind(this);
@@ -27,8 +29,17 @@ class TaskItem extends React.Component{
   }
 
   componentDidMount() {
+    if(!this.state.re) {
+      const {color_RGB} = this.props.line;
+      const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
+      let rect = this.node.getBoundingClientRect()
+      this.setState({re: true}, () => {
+        this.handleDraw(this.props.index, this.props.task._id, branch_color, this.props.line._id, rect.x, rect.y)
+      })
+    }
     this.setState({ 
       subtask: this.props.task.subtask,
+      achieved: this.props.task.achieved,
     });
     getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
       const index = task.map((p) => {return p._id}).indexOf(this.props.task._id)
@@ -53,7 +64,6 @@ class TaskItem extends React.Component{
   render() {
     let branchName = 'Main';
     /* FIXME: fix the branchname and taskname overflow by server detecting */
-    /* TODO: three dots svg and multipleitems icon */
     const {color_RGB, title} = this.props.line;
     branchName = title;
     const branch_color = color_RGB ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2]) : '#ffffff';
@@ -84,20 +94,20 @@ class TaskItem extends React.Component{
       expire = true;
     }
     return(
-      <>
+      <div>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
           <div className={`container md:flex-row flex-col flex items-center ${(this.props.task.url || this.props.task.content || this.state.subtask) ? 'cursor-pointer' : 'cursor-default'} bg-white my-3`} onClick={this.handleSubExpand}>
             <div className='container flex flex-row items-center'>
-              <button type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.props.task.achieved == true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
+              <button ref={node => this.node = node} type='submit' className={`outline-none focus:outline-none ring-2 rounded-sm w-4 h-4`} style={this.state.achieved== true ? stylecomplete : stylebox} onClick={this.handleTaskDone}></button>
               <div className={`inline ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-              <span className='sm:ml-5 ml-3 font-semibold sm:w-36 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
+              <span className='sm:ml-5 ml-3 font-semibold md:w-36 sm:w-24 w-auto overflow-hidden' onClick={this.handleSubExpand}>{branchName}</span>
               <div className={`sm:ml-5 ml-3 h-4 w-0.5 bg-black ring-0.5 ring-black`}></div>
-              <span className='sm:ml-5 ml-3 font-semibold sm:w-40 w-auto overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
+              <span className='sm:ml-5 ml-3 font-semibold md:w-40 sm:w-24 w-auto overflow-hidden' onClick={this.handleSubExpand}>{this.props.task.title}</span>
               <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
             </div>
             <div className='md:flex-grow'  onClick={this.handleSubExpand}/>
             <div className='container flex flex-row items-center lg:justify-end justify-around'>
-              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm text-center font-normal lg:w-36 md:w-24 w-36  overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{moment(time).format('MM-DD ddd hh:mm')}</span>}
+              {this.props.task.due_date && <span className={`items-center sm:mx-2 mx-1 text-sm text-center font-normal md:w-24 w-36  overflow-hidde self-baseline pt-1 ${expire ? 'text-red-500' : 'text-gray-500 hover:text-blue-700'}`} onClick={this.handleSubExpand}>{moment(time).format('MM-DD ddd hh:mm')}</span>}
               {<span className='pt-1 sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4' onClick={this.handleSubExpand}>{importance[this.props.task.importance]}</span>}
               {this.state.progress_users && 
                 <div className='hover-trigger relative mr-3 w-5'>
@@ -116,17 +126,20 @@ class TaskItem extends React.Component{
             {
               this.props.task.url && 
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-                <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-                <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>URL</span>
-                <a target='_blank' rel='noreferrer' href={'//'+this.props.task.url}><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline'>{this.props.task.url}</span></a>
-                <div className='flex-grow'/>
+                <div className='container flex flex-row items-center justify-start ml-0'>
+                  <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
+                  <span className='ml-5 font-medium overflow-hidden mr-2'>URL</span>
+                </div>
+                <div className='container flex flex-row'>
+                  <a target='_blank' rel='noreferrer' href={'//'+this.props.task.url} className='mx-auto'><span className='font-normal overflow-scroll w-auto cursor-pointer text-blue-700 hover:underline text-center'>{this.props.task.url}</span></a>
+                </div>
               </div>
             }
             {
               this.props.task.content &&
               <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 sm:flex-row flex-col flex items-center cursor-default bg-white'>
-                <div className='container flex flex-row items-center justify-start ml-5'>
-                  <div className={`h-4 w-0.5 ring-2`} style={stylebranch}></div>
+                <div className='container flex flex-row items-center justify-start ml-0'>
+                  <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
                   <span className='ml-5 font-medium overflow-hidden w-32'>Content</span>
                 </div>
                 <div className='container flex flex-row items-center mx-auto justify-around'>
@@ -136,10 +149,12 @@ class TaskItem extends React.Component{
             }
             {
               this.state.subtask && 
-              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-row flex items-center cursor-default bg-white'>
-                <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-                <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Subtask</span>
-                <div className='container pr-2'>
+              <div className='container ring-2 ring-gray-200 rounded-lg p-3 px-4 my-2 flex-col sm:flex-row flex items-center cursor-default bg-white'>
+                <div className='container flex-row flex justify-start items-center ml-0'>
+                  <div className={`ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
+                  <span className='ml-5 font-medium overflow-hidden mr-2 w-32'>Subtask</span>
+                </div>
+                <div className='container pr-2 mt-1'>
                   <SubtaskList color={branch_color} subtask={this.state.subtask} DoneSub={this.handleSubDone} delete={false}></SubtaskList> 
                 </div>
               </div>
@@ -147,8 +162,12 @@ class TaskItem extends React.Component{
           </div>
           }   
         </div>
-      </>
+      </div>
     );
+  }
+
+  handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    this.props.onDraw(index, task_id, branch_color, mother_id, x, y);
   }
 
   handleSubExpand () {
@@ -158,9 +177,9 @@ class TaskItem extends React.Component{
   handleTaskDone(event) {
     event.cancelBubble = true;
     if(event.stopPropagation) event.stopPropagation();
-    if(this.props.task.achieved == true) {
-      this.props.onTaskUndone(this.props.task._id);
-
+    if(this.state.achieved == true) {
+      this.props.onTaskUndone(this.props.task._id, this.props.index);
+      this.setState({achieved: false})
       // if the line is shared!
       if(this.props.line.is_share) {
         getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
@@ -179,8 +198,8 @@ class TaskItem extends React.Component{
 
     } else {
       const now = new Date();
-      this.props.onTaskDone(this.props.task._id, now);
-      
+      this.props.onTaskDone(this.props.task._id, now, this.props.index);
+      this.setState({achieved: true})
       // if the line is shared!
       if(this.props.line.is_share) {
         getNodesByLine(this.props.line._id, 0, 1000, 0).then(task => {
@@ -246,12 +265,4 @@ class TaskItem extends React.Component{
   }
 }
 
-const mapStateToProps = state => ({
-  userId: state.login.userId
-});
-
-const mapDispatchToProps = {
-  
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TaskItem);
+export default (TaskItem);

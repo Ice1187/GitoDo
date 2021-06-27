@@ -19,8 +19,10 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { allLine: [] };
-
+    this.state = {allLine: [], position: []};
+    
+    this.handleStore = this.handleStore.bind(this);
+    this.handleDraw = this.handleDraw.bind(this);
     this.getAllBranches = this.getAllBranches.bind(this);
     this.checkLogin = this.checkLogin.bind(this);
 
@@ -62,43 +64,50 @@ class Home extends React.Component {
 
             <Footer></Footer>
           </div>
-        )}
+          <MainBranchDisplay userId={this.props.userId} onDraw={this.handleDraw} mainLine={this.props.mainLine} allLine={this.props.allLine}></MainBranchDisplay>
+        </main>
+  
+        <Footer></Footer>
+      </div>
+      }
       </>
     );
   }
 
-  checkLogin() {
-    if (this.props.userId == -1) {
-      Router.push(
-        {
-          pathname: '/login',
-          query: {},
-        },
-        `/login`
-      );
+  handleDraw(index, line_id, branch_color, x, y) {
+    let obj = {index:index, line_id: line_id, branch_color: branch_color, x: x, y: y};
+    setTimeout(() => {this.handleStore(obj)}, index * 3);
+  }
+
+  handleStore(obj) {
+    this.setState({position: [...this.state.position, obj]});
+  }
+
+  checkLogin(){
+    if(this.props.userId == -1){
+      Router.push({
+        pathname: '/login',
+        query: {},
+      }, `/login`);
     }
   }
 
   getAllBranches(LineObject, comtime, level) {
     if (LineObject == this.props.mainLine) {
       this.props.listAllLineClear();
-      this.props.listAllLineMore(LineObject, 'you', LineObject, comtime - 100);
+      this.props.listAllLineMore(LineObject, '0', 'you', LineObject, comtime - 100)
     }
-    getNodesByLine(LineObject._id, 0, 1000, 0).then((task) => {
-      for (let i = 0; i < task.length; i++) {
-        if (task[i].branch_line_id) {
-          getLine(task[i].branch_line_id[0]).then((Line) => {
-            getUser(Line.owner).then((res) => {
+    getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
+      for(let i = 0; i < task.length; i++) {
+        if(task[i].branch_line_id) {
+          let node = task[i]
+          getLine(task[i].branch_line_id[0]).then(Line => {
+            getUser(Line.owner).then(res => {
               let owner = res.name;
-              this.props.listAllLineMore(
-                Line,
-                owner,
-                LineObject,
-                comtime + i * Math.pow(1000, 1 - level)
-              );
-            });
-            if (Line.contain_branch > 0) {
-              this.getAllBranches(Line, comtime + 1, level + 1);
+              this.props.listAllLineMore(Line, node._id, owner, LineObject, comtime + i * Math.pow(1000, 1-level))
+            })
+            if(Line.contain_branch > 0) {
+              this.getAllBranches(Line, comtime + 1, level+1)
             }
           });
         }

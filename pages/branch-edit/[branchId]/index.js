@@ -23,7 +23,14 @@ class Home extends React.Component{
 
   componentDidMount() {
     this.checkLogin();
-    this.getData();
+    if(this.props.router.query.branchId){
+      this.getData();
+    } else{
+      Router.push({
+        pathname: '/main/branch',
+        query: {},
+      }, `/main/branch`);
+    }
   }
 
   render() {
@@ -36,7 +43,7 @@ class Home extends React.Component{
       console.log(this.state.line)
       children = this.state.line.map((p) => (
         <ListGroupItem key={p._id} action>
-          <EditBranchView {...p} />
+          <EditBranchView {...p} node_id={this.props.router.query.node_id}/>
         </ListGroupItem>
       ));
     }

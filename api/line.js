@@ -343,15 +343,39 @@ export function deleteLine(lineId) {
   };
   // console.log(url)
   // console.log(headers)
+  
+  return axios.delete(url, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
+}
 
-  return axios
-    .delete(url, {
-      headers: headers,
-    })
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
+// searchBranches
+// '/line/searchBranches/:string/:offset/:amount'
+// for instance
+// /line/searchBranches/SS/5/5
+// this will get you 5 matched data start from 5 of 'title' name contain 'SS'
+export function searchBranches(string, offset, amount) {
+  let url = `${postBaseUrl}/line/searchBranches/`;
+  url = url + string + '/' + offset + '/' + amount;
+  let headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+  console.log(url)
+  console.log(headers)
+  
+  return axios.get(url, {
+    headers: headers
+  })
+  .then((response) => {
+	return response.data;
+  })
+  .catch((error) => {
+	return error
+  });
 }

@@ -45,10 +45,14 @@ class ShareBlock extends React.Component {
             <span className='ml-5 font-semibold overflow-hidden'>Share with Others</span>
           </div>
           <div className='ml-5 flex sm:flex-row flex-col p-5 px-20 items-center'>
-            <span className='text-center'>Plan to Invite Users:&nbsp;&nbsp;</span>
-            {shareList}
+            <div className='w-60 flex-row flex'>
+              <span className='text-center w-48'>Plan to Invite Users:&nbsp;&nbsp;</span>
+            </div>
+            <div className='w-60 flex-row flex'>
+              {shareList}
+            </div>
             <div className='sm:flex-grow' />
-            <button onClick={this.handleShare} className='bg-gray-300 hover:bg-gray-600 text-gray-600 hover:text-white rounded-lg focus:outline-none w-auto p-3'>
+            <button onClick={this.handleShare} className='bg-gray-300 hover:bg-gray-600 text-gray-600 hover:text-white rounded-lg focus:outline-none w-auto p-3 py-1 my-1'>
                 <span>Invite</span>
             </button>
           </div>

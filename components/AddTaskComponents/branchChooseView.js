@@ -73,10 +73,11 @@ class BranchChooseView extends React.Component {
     getNodesByLine(LineObject._id, 0, 1000, 0).then(task => {
       for(let i = 0; i < task.length; i++) {
         if(task[i].branch_line_id) {
+          let node = task[i];
           getLine(task[i].branch_line_id[0]).then(Line => {
             getUser(Line.owner).then(res => {
               let owner = res.name;
-              this.props.listAllLineMore(Line, owner, LineObject)
+              this.props.listAllLineMore(Line, node._id, owner, LineObject)
               if(Line.contain_branch > 0) {
                 this.getAllBranches(Line)
               }
