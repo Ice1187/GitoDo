@@ -95,12 +95,9 @@ class BranchSvg extends React.Component {
       positionsObj === undefined
     )
       return;
-    //    console.log(tasksObj);
     let TOP = this.svg.current.getBoundingClientRect().top;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
 
-    //    this.getDataFromProps();
-    //    this.getDataFromProps(lines, tasks, positions);
     let lines = [];
     for (let line of linesObj) {
       lines.push({
@@ -125,9 +122,6 @@ class BranchSvg extends React.Component {
     for (let pos of positionsObj) {
       tasks[this.getIndexOfTaskById(tasks, pos.task_id)]['pos'] = pos;
     }
-
-    //    console.log('lines___', lines);
-    //    console.log('tasks___', tasks_);
 
     let x, y;
     let drawer = new Drawer(this.svg.current, BOTTOM);

@@ -56,6 +56,7 @@ class Home extends React.Component {
                 </div>
               </div>
               {this.props.allLine && (
+                //      <BranchSvg></BranchSvg>
                 <MainBranchDisplay
                   loading={this.props.branchLoading}
                   userId={this.props.userId}

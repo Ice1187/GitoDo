@@ -70,6 +70,11 @@ class Home extends React.Component {
                   <div className='flex-grow' />
                 </div>
               </div>
+              <BranchSvg
+                lines={this.state.all_line}
+                tasks={this.state.task}
+                positions={this.state.position}
+              ></BranchSvg>
               <MainTaskView
                 onTrigger={this.handleTrigger}
                 trigger={this.state.trigger}
@@ -124,6 +129,7 @@ class Home extends React.Component {
   }
 
   handleStore(index, obj) {
+    //    console.log(obj);
     if (this.state.position.length >= index) {
       let pos = this.state.position;
       pos[index] = obj;
