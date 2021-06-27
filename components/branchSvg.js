@@ -34,7 +34,7 @@ class Drawer {
 
   drawLine(line, x, y) {
     if (line.is_main) this.drawHorizontal(line, 0, x, y);
-    else this.drawHorizontal(line, LINE.begin_x, x, y);
+    else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
     this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
   }
 
@@ -100,12 +100,15 @@ class BranchSvg extends React.Component {
 
     let lines = [];
     for (let line of linesObj) {
+      //      console.log(line);
       lines.push({
-        _id: line._id,
-        is_main: line.is_main,
-        color: this.colorArrayToHex(line.color_RGB),
+        _id: line.Line._id,
+        is_main: line.Line.is_main,
+        color: this.colorArrayToHex(line.Line.color_RGB),
+        due_date: line.Node.due_date,
       });
     }
+    lines.sort((a, b) => -(a.due_date < b.due_date));
 
     let line_index = false;
     let tasks = [];
@@ -135,9 +138,23 @@ class BranchSvg extends React.Component {
       if (line.is_main) {
         drawer.drawLine(line, x, y);
         lines[i]['x'] = x;
+        x += LINE.space;
+        //y += NODE.space;
+        break;
       }
     }
 
+    for (let i = 0; i < lines.length; i++) {
+      line = lines[i];
+      if (line.is_main) continue;
+      drawer.drawLine(line, x, y);
+      lines[i]['x'] = x;
+      x += LINE.space;
+      //      y += NODE.space;
+    }
+    console.log(lines);
+
+    /*
     let task;
     for (let i = 0; i < tasks.length; i++) {
       task = tasks[i];
@@ -154,6 +171,7 @@ class BranchSvg extends React.Component {
         drawer.drawNode(task, lines[line_index]['x'], y);
       }
     }
+    */
   }
 
   getIndexOfTaskById(tasks, _id) {

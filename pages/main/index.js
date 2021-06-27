@@ -50,7 +50,6 @@ class Home extends React.Component {
   }
 
   render() {
-    console.log(this.state.task);
     return (
       <>
         {this.props.userId != -1 && (
@@ -115,6 +114,7 @@ class Home extends React.Component {
   }
 
   handleDraw(index, task_id, branch_color, mother_id, x, y) {
+    console.log('index', this.state.all_line);
     let obj = {
       index: index,
       task_id: task_id,
@@ -151,13 +151,13 @@ class Home extends React.Component {
     }
   }
 
-  getLinetoState(LineId) {
+  getLinetoState(LineId, node) {
     if (LineId == this.props.mainLine._id) {
       getNodesByLine(LineId, 0, 1000, 0)
         .then((task) => {
           for (let i = 0; i < task.length; i++) {
             if (task[i].branch_line_id) {
-              this.getLinetoState(task[i].branch_line_id[0]);
+              this.getLinetoState(task[i].branch_line_id[0], task[i]);
             }
           }
         })
@@ -169,14 +169,15 @@ class Home extends React.Component {
         .then((Line) => {
           this.setState(
             {
-              all_line: [...this.state.all_line, Line],
+              all_line: [...this.state.all_line, { Line: Line, Node: node }],
             },
             () => {
               getNodesByLine(Line._id, 0, 1000, 0).then((task) => {
                 for (let i = 0; i < task.length; i++) {
                   if (task[i].branch_line_id) {
-                    this.getLinetoState(task[i].branch_line_id[0]);
+                    this.getLinetoState(task[i].branch_line_id[0], task[i]);
                   }
+                  setTimeout(() => {}, 10);
                 }
               });
             }
@@ -246,7 +247,8 @@ class Home extends React.Component {
       },
       () => {
         for (let i = 0; i < this.state.all_line.length; i++) {
-          this.getTasktoState(this.state.all_line[i]);
+          this.getTasktoState(this.state.all_line[i].Line);
+          setTimeout(() => {}, 30);
         }
         this.setState({
           loading: false,
