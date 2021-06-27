@@ -6,7 +6,7 @@ const COLOR = {
 };
 const NODE = {
   space: 74,
-  radius: 12,
+  radius: 11,
   head_radius: 15,
 };
 const LINE = {
@@ -33,11 +33,14 @@ class Node {
   draw(solid = false, filter = null) {
     let node = this.snap.circle(this.x, this.y, this.radius);
     node.attr({ fill: this.color, filter: filter });
+    this.snap
+      .circle(this.x, this.y, this.radius * 0.7)
+      .attr({ fill: COLOR.white });
 
-    if (!solid) {
+    if (solid) {
       this.snap
-        .circle(this.x, this.y, this.radius * 0.7)
-        .attr({ fill: COLOR.white });
+        .circle(this.x, this.y, this.radius * 0.5)
+        .attr({ fill: this.color });
     }
 
     return this;
@@ -145,7 +148,7 @@ class Drawer {
   }
 
   drawNode(x, y, color, isDone) {
-    let node = new Node(this.snap, x, y, 10, color);
+    let node = new Node(this.snap, x, y, NODE.radius, color);
     node.draw(isDone);
   }
 }
