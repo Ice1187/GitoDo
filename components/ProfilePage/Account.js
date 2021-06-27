@@ -40,7 +40,7 @@ class Profile extends React.Component{
         >
         Upload
         </label>
-        <input id="filePicker" style={{visibility:"hidden"}} type={"file"} onChange={this.fileSelectedHandler}/>
+        <input id="filePicker" style={{visibility:"hidden"}} type={"file"}/>
         </div>   
       </div>
         
