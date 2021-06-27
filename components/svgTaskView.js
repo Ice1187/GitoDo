@@ -15,7 +15,7 @@ const LINE = {
   v_space: 20,
   width: 5,
   curve: NODE.space / 2,
-  opacity: 0.8,
+  opacity: 0.7,
   branchView_y_space: 0,
 };
 

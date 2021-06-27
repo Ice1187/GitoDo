@@ -195,7 +195,7 @@ class TaskItem extends React.Component {
                   }
                   strokeWidth='4'
                 />
-                {console.log(this.props.index)}
+                {console.log(this.props.depth)}
               </svg>
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}
