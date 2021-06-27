@@ -233,8 +233,11 @@ class Home extends React.Component {
       let state_i = 1;
       let action_i = 0;
       while (state_i < state_task.length || action_i < task.length) {
-        if(state_i >= state_task.length && action_i < task.length) {
-          task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
+        if (state_i >= state_task.length && action_i < task.length) {
+          task_new = [
+            ...task_new,
+            { task: task[action_i], line: LineObject, depth: index },
+          ];
           action_i++;
         } else if (state_i < state_task.length && action_i >= task.length) {
           task_new = [...task_new, state_task[state_i]];
@@ -246,7 +249,10 @@ class Home extends React.Component {
             task_new = [...task_new, state_task[state_i]];
             state_i++;
           } else {
-            task_new = [...task_new, {task:task[action_i], line:LineObject, depth: index}];
+            task_new = [
+              ...task_new,
+              { task: task[action_i], line: LineObject, depth: index },
+            ];
             action_i++;
           }
         }

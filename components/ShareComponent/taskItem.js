@@ -170,7 +170,7 @@ class TaskItem extends React.Component {
                 <circle
                   cx={
                     this.rect !== undefined
-                      ? this.rect.x - 280 + this.props.index * 40
+                      ? this.rect.x - 280 + this.props.depth * 40
                       : '0'
                   }
                   cy={this.rect !== undefined ? 75 : '0'}
@@ -195,7 +195,7 @@ class TaskItem extends React.Component {
                   }
                   strokeWidth='4'
                 />
-                {console.log(this.props.depth)}
+                {console.log('depth', this.props.depth)}
               </svg>
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}

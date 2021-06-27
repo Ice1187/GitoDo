@@ -24,8 +24,10 @@ export default class MainTaskView extends React.Component {
     );
     if (allTask.length > 1) {
       allTask.shift();
-      let task = allTask.filter(element => element.task.branch_line_id == null);
-      console.log(task)
+      let task = allTask.filter(
+        (element) => element.task.branch_line_id == null
+      );
+      console.log(task);
       children = task.map((p, index) => (
         <ListGroupItem key={p.task._id} action>
           <TaskItem
@@ -33,7 +35,7 @@ export default class MainTaskView extends React.Component {
             onTrigger={this.handleTrigger}
             trigger={this.props.trigger}
             userId={this.props.userId}
-            depth={index}
+            index={index}
             onDraw={this.handleDraw}
             onTaskDone={this.handleTaskDone}
             onTaskUndone={this.handleTaskUndone}
