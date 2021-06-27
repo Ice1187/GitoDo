@@ -55,7 +55,7 @@ class Home extends React.Component {
                   <h1 className='text-2xl font-semibold'>Branch</h1>
                 </div>
               </div>
-              <BranchSvg></BranchSvg>
+              {/*<BranchSvg></BranchSvg>*/}
               {this.props.allLine && (
                 <MainBranchDisplay
                   loading={this.props.branchLoading}

@@ -19,34 +19,7 @@ const LINE = {
   branchView_y_space: 0,
 };
 
-class Node {
-  constructor(snap, x, y, radius, color) {
-    this.snap = snap;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-
-    this.draw = this.draw.bind(this);
-  }
-
-  draw(solid = false, filter = null) {
-    let node = this.snap.circle(this.x, this.y, this.radius);
-    node.attr({ fill: this.color, filter: filter });
-    this.snap
-      .circle(this.x, this.y, this.radius * 0.7)
-      .attr({ fill: COLOR.white });
-
-    if (solid) {
-      this.snap
-        .circle(this.x, this.y, this.radius * 0.5)
-        .attr({ fill: this.color });
-    }
-
-    return this;
-  }
-}
-
+/*
 class Line {
   constructor(snap, x1, y1, x2, y2, color) {
     this.snap = snap;
@@ -124,32 +97,51 @@ class Line {
     this.nodes.push(node);
   }
 }
+*/
 
 class Drawer {
   constructor(svg, bottom) {
     this.snap = Snap(svg);
     this.bottom = bottom;
 
-    // Constants
-    this.radius = 10;
-
     this.snap.clear();
 
-    this.draw_line = this.drawLine.bind(this);
-    this.draw_node = this.drawNode.bind(this);
+    this.drawLine = this.drawLine.bind(this);
+    this.drawHorizontal = this.drawHorizontal.bind(this);
+    this.drawVertical = this.drawVertical.bind(this);
+    this.drawNode = this.drawNode.bind(this);
   }
 
-  drawLine(x, y, color, isMain = false) {
-    let line = new Line(this.snap, LINE.begin_x, y, x, this.bottom, color);
-    if (isMain) {
-      line = new Line(this.snap, 0, y, x, this.bottom, color);
+  drawLine(line, x, y) {
+    if (line.is_main) this.drawHorizontal(line, 0, x, y);
+    else this.drawHorizontal(line, LINE.begin_x, x, y);
+    this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
+  }
+
+  drawHorizontal(line, x1, x2, y) {
+    this.snap.line(x1, y, x2, y).attr({
+      stroke: line.color,
+      strokeWidth: LINE.width,
+      opacity: LINE.opacity,
+    });
+  }
+
+  drawVertical(line, x, y1, y2) {
+    this.snap.line(x, y1, x, y2).attr({
+      stroke: line.color,
+      strokeWidth: LINE.width,
+      opacity: LINE.opacity,
+    });
+  }
+
+  drawNode(node, x, y) {
+    console.log(node.color, x, y);
+    this.snap.circle(x, y, NODE.radius).attr({ fill: node.color });
+    this.snap.circle(x, y, NODE.radius * 0.7).attr({ fill: COLOR.white });
+
+    if (node.achieved) {
+      this.snap.circle(x, y, NODE.radius * 0.5).attr({ fill: node.color });
     }
-    line.draw();
-  }
-
-  drawNode(x, y, color, isDone) {
-    let node = new Node(this.snap, x, y, NODE.radius, color);
-    node.draw(isDone);
   }
 }
 class BranchSvg extends React.Component {
@@ -157,6 +149,13 @@ class BranchSvg extends React.Component {
     super(props);
 
     this.svg = React.createRef();
+    this.lines = [];
+    this.tasks = [];
+
+    this.getIndexOfTaskById = this.getIndexOfTaskById.bind(this);
+    this.getIndexOfLineById = this.getIndexOfLineById.bind(this);
+    this.getDataFromProps = this.getDataFromProps.bind(this);
+    this.colorArrayToHex = this.colorArrayToHex.bind(this);
   }
 
   componentDidMount() {
@@ -164,97 +163,101 @@ class BranchSvg extends React.Component {
     this.svgRender();
   }
   componentDidUpdate() {
+    const Snap = require('snapsvg-cjs');
     this.svgRender();
   }
 
   svgRender() {
+    let TOP = this.svg.current.getBoundingClientRect().top;
     let BOTTOM = this.svg.current.getBoundingClientRect().bottom;
 
+    this.getDataFromProps();
+
+    //    console.log('lines___', lines);
+    //    console.log('tasks___', tasks_);
+
+    let x, y;
+    let drawer = new Drawer(this.svg.current, BOTTOM);
+
+    // Draw Main Line
+    x = LINE.begin_x;
+    y = LINE.begin_y;
+    let line;
+    for (let i = 0; i < this.lines.length; i++) {
+      line = this.lines[i];
+      if (line.is_main) {
+        drawer.drawLine(line, x, y);
+        this.lines[i]['x'] = x;
+      }
+    }
+
+    let task;
+    for (let i = 0; i < this.tasks.length; i++) {
+      task = this.tasks[i];
+      if (task.pos === undefined) continue;
+
+      let line_index = this.getIndexOfLineById(task.line_id);
+      y = task.pos.y - TOP + NODE.radius - 2;
+      if (this.lines[line_index]['x'] === undefined) {
+        x = x + LINE.space;
+        drawer.drawLine(this.lines[line_index], x, y);
+        this.lines[line_index]['x'] = x;
+      }
+      if (task.pos !== undefined) {
+        drawer.drawNode(task, x, y);
+      }
+    }
+  }
+
+  getDataFromProps() {
     //    console.log('lines', this.props.lines);
     //    console.log('tasks', this.props.tasks);
     //    console.log('positions', this.props.positions);
 
-    let lines_ = {};
+    this.lines = [];
     for (let line of this.props.lines) {
-      lines_[line._id] = {
+      this.lines.push({
         _id: line._id,
         is_main: line.is_main,
-        color: colorArrayToHex(line.color_RGB),
-      };
+        color: this.colorArrayToHex(line.color_RGB),
+      });
     }
 
-    let tasks_ = {};
+    let line_index = false;
+    this.tasks = [];
     for (let task of this.props.tasks) {
       if (task._id === '0' || task.task.branch_line_id !== null) continue;
-      tasks_[task.task._id] = {
+      line_index = this.getIndexOfLineById(task.task.mother_line_id);
+      this.tasks.push({
+        _id: task.task._id,
         line_id: task.task.mother_line_id,
+        color: line_index !== null ? this.lines[line_index].color : COLOR.white,
         achieved: task.task.achieved,
-      };
+      });
     }
 
     for (let pos of this.props.positions) {
-      console.log(tasks_);
-      tasks_[pos.task_id]['pos'] = pos;
+      console.log(this.tasks);
+      this.tasks[this.getIndexOfTaskById(pos.task_id)]['pos'] = pos;
+      console.log(this.tasks);
     }
+  }
 
-    console.log('lines___', lines_);
-    console.log('tasks___', tasks_);
-
-    let x = LINE.begin_x,
-      y = LINE.begin_y;
-    let is_main = true;
-    let tasks = this.props.tasks;
-    let lines = {};
-
-    let drawer = new Drawer(this.svg.current, BOTTOM);
-    for (let task of tasks) {
-      // Skip head node
-      if (
-        task._id == '0' ||
-        task.line.color_RGB == null ||
-        task.task.achieved_at == null
-      )
-        continue;
-
-      // Draw line if haven't
-      let color = colorArrayToHex(task.line.color_RGB);
-      let line_id = task.line._id;
-      let line = lines[line_id];
-      if (line == null) {
-        // TODO: change is_main type to bool
-        is_main = task.line.is_main === 'true';
-        drawer.drawLine(x, y - NODE.radius / 2, color, is_main);
-        line = lines[line_id] = {
-          x: x,
-          color: color,
-        };
-        if (is_main) {
-          y = y + NODE.space;
-          is_main = false;
-        }
-        x = x + LINE.space;
-        // Branch view don't draw nodes
-        if (this.props.isBranchView) {
-          y = y + NODE.space;
-        }
-      }
-      // Branch view don't draw nodes
-      if (this.props.isBranchView) {
-        continue;
-      }
-
-      // Draw node
-      drawer.drawNode(line.x, y, color, task.task.achieved);
-      y = y + NODE.space;
-    }
-
-    function colorArrayToHex(arr) {
-      let hex =
-        '#' +
-        arr.map((c) => ('0' + (c & 0xff).toString(16)).slice(-2)).join('');
-      //      console.log(colorCode);
-      return hex;
-    }
+  getIndexOfTaskById(_id) {
+    for (let i = 0; i < this.tasks.length; i++)
+      if (this.tasks[i]._id === _id) return i;
+    return null;
+  }
+  getIndexOfLineById(_id) {
+    for (let i = 0; i < this.lines.length; i++)
+      if (this.lines[i]._id === _id) return i;
+    return null;
+  }
+  colorArrayToHex(arr) {
+    let hex =
+      '#' + arr.map((c) => ('0' + (c & 0xff).toString(16)).slice(-2)).join('');
+    //      console.log(colorCode);
+    return hex;
   }
 
   render() {
