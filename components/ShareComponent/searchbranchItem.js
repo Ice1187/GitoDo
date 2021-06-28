@@ -29,7 +29,7 @@ export default class SearchBranchItem extends React.Component {
       <>
         <div className='container shadow rounded-lg p-3 py-5 px-4 my-3 flex-row flex items-center cursor-pointer bg-white'>
           <div ref={node => this.node = node} className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-          <span className='ml-5 font-semibold overflow-hidden sm:text-lg text-sm'>{title}</span>
+          <span className='ml-5 font-semibold overflow-hidden sm:text-lg text-sm sm:w-60 w-32'>{title}</span>
           <div className='hover-trigger relative sm:mx-2 mx-1 pt-2'>
             <span className='material-icons text-green-600'>attribution</span>
             <span className='backdrop-filter backdrop-blur-sm bg-opacity-90 rounded-lg p-1 px-2 text-sm bg-gray-800 text-white absolute top-10 right-2 text-center z-10 hover-target'>Owner{' ' + this.state.owner}</span>

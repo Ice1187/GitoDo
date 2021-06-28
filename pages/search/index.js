@@ -56,36 +56,23 @@ class Home extends React.Component {
         <Header></Header>
 
         <main className={styles.main + ' bg-gray-100 relative'}>
-          <div className='sm:top-28 top-24 right-8 lg:left-80 md:left-20 left-8 px-10 absolute w-auto'>
+          <div className='sm:top-28 top-24 px-10 absolute w-auto container'>
             <div className='container flex flex-row mx-auto items-center'>
               <h1 className='text-2xl font-semibold'>
                 {this.state.allLine.length} branch results
               </h1>
-              <div className='flex-grow' />
             </div>
             <hr className='my-2'></hr>
+          </div>
+          {this.state.allLine && (
             <MainSearchDisplay
               userId={this.props.userId}
               onDraw={this.handleDraw}
               mainLine={this.props.mainLine}
               allLine={this.state.allLine}
-            ></MainSearchDisplay>
-            {this.state.loading == true && (
-              <div className='flex flex-row container justify-center w-16 h-8 items-center fixed bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-md '>
-                <div
-                  className={`h-2 w-2 bg-white ring-2 ring-green-500 animate-bounce200 rounded-full mr-2`}
-                ></div>
-                <div
-                  className={`h-2 w-2 bg-white ring-2 ring-red-500 animate-bounce400 rounded-full mr-2`}
-                ></div>
-                <div
-                  className={`h-2 w-2 bg-white ring-2 ring-blue-500 animate-bounce100 rounded-full`}
-                ></div>
-              </div>
-            )}
-          </div>
+            ></MainSearchDisplay>)}
         </main>
-
+              
         <Footer></Footer>
       </div>
     );

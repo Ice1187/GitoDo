@@ -1,4 +1,4 @@
-import SearchBranchItem from './ShareComponent/searchBranchItem';
+import SearchBranchItem from './ShareComponent/searchbranchItem';
 import React from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 
@@ -28,7 +28,7 @@ export default class MainSearchDisplay extends React.Component{
     }
 
     return (
-      <div className='sm:p-5'>
+      <div className='pt-40 mx-auto p-5'>
         <ListGroup>
           {children}
         </ListGroup>
