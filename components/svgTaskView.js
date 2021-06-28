@@ -9,10 +9,10 @@ const NODE = {
   head_radius: 15,
 };
 const LINE = {
-  begin_x: 40,
+  begin_x: 30,
   begin_y: 11,
   space: 40,
-  v_space: 20,
+  v_space: 15,
   width: 5,
   curve: NODE.space / 2,
   opacity: 0.9,
@@ -76,8 +76,12 @@ class SvgTaskView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      screen_wide: false,
+    };
     this.svg = React.createRef();
 
+    this.handleResize = this.handleResize.bind(this);
     this.getIndexOfTaskById = this.getIndexOfTaskById.bind(this);
     this.getIndexOfLineById = this.getIndexOfLineById.bind(this);
     //    this.getDataFromProps = this.getDataFromProps.bind(this);
@@ -85,6 +89,8 @@ class SvgTaskView extends React.Component {
   }
 
   componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize)
     const Snap = require('snapsvg-cjs');
     let { lines, tasks, positions } = this.props;
     this.svgRender(lines, tasks, positions);
@@ -93,6 +99,10 @@ class SvgTaskView extends React.Component {
     const Snap = require('snapsvg-cjs');
     let { lines, tasks, positions } = this.props;
     this.svgRender(lines, tasks, positions);
+  }
+
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.handleResize())
   }
 
   svgRender(linesObj, tasksObj, positionsObj) {
@@ -123,7 +133,7 @@ class SvgTaskView extends React.Component {
 
     // Draw Main Line
     x = LINE.begin_x;
-    y = LINE.begin_y;
+    y = LINE.begin_y + 30;
     let line;
 
     let node = { color: '#000000', achieved: true };
@@ -131,14 +141,16 @@ class SvgTaskView extends React.Component {
     line = { is_host: true, color: '#000000' };
     drawer.drawLine(line, x, y);
     x += LINE.space;
-    y += LINE.v_space;
+    y += LINE.v_space * 3;
 
-    for (let i = 0; i < lines.length; i++) {
-      line = lines[i];
-      drawer.drawLine(line, x, y);
-      lines[i]['x'] = x;
-      x += LINE.space;
-      y += LINE.v_space;
+    if(this.state.screen_wide) {
+      for (let i = 0; i < lines.length; i++) {
+        line = lines[i];
+        drawer.drawLine(line, x, y);
+        lines[i]['x'] = x;
+        x += LINE.space;
+        y += LINE.v_space;
+      }
     }
 
     //    console.log(lines);
@@ -167,13 +179,27 @@ class SvgTaskView extends React.Component {
     return (
       <svg
         ref={this.svg}
-        className='top-24 left-0 h-5/6 absolute w-1/5'
+        className='top-5 left-0 h-5/6 absolute w-1/5'
         xmlns='http://www.w3.org/2000/svg'
         lines={this.props.lines}
         tasks={this.props.tasks}
         positions={this.props.positions}
       />
     );
+  }
+
+  handleResize() {
+    if(window.innerWidth >= 1024) {
+      this.setState({screen_wide: true}, () => {
+        const Snap = require('snapsvg-cjs');
+        this.svgRender();
+      })
+    } else {
+      this.setState({screen_wide: false}, () => {
+        const Snap = require('snapsvg-cjs');
+        this.svgRender();
+      })
+    }
   }
 }
 

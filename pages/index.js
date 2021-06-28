@@ -3,10 +3,10 @@ import Router from 'next/router';
 export default function Home() {
   Router.push(
     {
-      pathname: '/login',
+      pathname: '/main',
       query: {},
     },
-    `/login`
+    `/main`
   );
   return <></>;
 }

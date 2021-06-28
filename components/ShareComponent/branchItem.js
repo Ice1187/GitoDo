@@ -58,13 +58,13 @@ class BranchItem extends React.Component {
     return (
       <>
         <div className='container shadow rounded-lg p-3 py-5 px-4 my-3 sm:flex-row flex-col flex items-center cursor-pointer bg-white' onClick={this.handleBranch}>
-          <div className='container flex-row flex items-center'>
-            <div ref={node => this.node = node} className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch}></div>
-            <span className='ml-5 font-semibold overflow-hidden text-lg'>{title}</span>
+          <div className='container flex-row flex items-center' onClick={this.handleBranch}>
+            <div ref={node => this.node = node} className={`sm:ml-5 h-4 w-0.5 ring-2`} style={stylebranch} onClick={this.handleBranch}></div>
+            <span className='ml-5 font-semibold overflow-hidden text-lg' onClick={this.handleBranch}>{title}</span>
           </div>
-          <div className='sm:flex-grow'/>
+          <div className='sm:flex-grow' onClick={this.handleBranch}/>
           <div className='container flex-row flex items-center mr-0'>
-          <div className='flex-grow'/>
+          <div className='flex-grow'onClick={this.handleBranch}/>
           {
             this.state.shareder ?
             (this.state.shareder.length >= 1 && 

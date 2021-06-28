@@ -30,7 +30,7 @@ export default class MainBranchDisplay extends React.Component{
     }
 
     return (
-      <div className='pt-40 lg:ml-80 lg:mr-10 md:ml-20 ml-16 mr-1 p-5'>
+      <div className='pt-40 md:ml-80 lg:mr-10 ml-16 mr-1 p-5'>
         <ListGroup>
           {children}
         </ListGroup>

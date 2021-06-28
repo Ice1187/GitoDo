@@ -45,7 +45,7 @@ export default class AddTaskView extends React.Component{
     return(
       <>
         <form>
-          <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
+          <div className='sm:pt-28 pt-10 mx-4 sm:mx-10 p-5 sm:mt-0 mt-24 pl-5'>
             <h1 className='text-2xl'>Add a new task</h1>
             <p className='text-gray-500'>A task contains notes, due dates, and sub-tasks ... etc.</p>
             <hr className='my-2'></hr>

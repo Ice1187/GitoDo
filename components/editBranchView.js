@@ -58,7 +58,7 @@ class EditBranchView extends React.Component{
     return(
       <>
         <form onSubmit={this.handleSubmit}>
-          <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
+          <div className='sm:pt-28 pt-10 mx-5 sm:mx-10 p-5 sm:mt-0 mt-24'>
             <div className='flex flex-row justify-between'>
               <div>
                 <h1 className='text-2xl'>Edit branch</h1>

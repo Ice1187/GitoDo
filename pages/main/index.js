@@ -21,10 +21,8 @@ class Home extends React.Component {
       task: [],
       position: [],
       loading: false,
-      trigger: false,
     };
 
-    this.handleTrigger = this.handleTrigger.bind(this);
     this.handleStore = this.handleStore.bind(this);
     this.handleDraw = this.handleDraw.bind(this);
     this.getAllLines = this.getAllLines.bind(this);
@@ -61,7 +59,7 @@ class Home extends React.Component {
             <Header></Header>
 
             <main className={styles.main + ' bg-gray-100 relative'}>
-              <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 md:left-20 left-10 px-10 absolute w-auto'>
+              <div className='sm:top-28 top-24 lg:right-7 right-2 lg:left-80 left-10 px-10 absolute w-auto'>
                 <div className='container flex flex-row mx-auto items-center'>
                   <h1 className='text-2xl font-semibold'>Task</h1>
                   <div className='flex-grow' />
@@ -73,8 +71,6 @@ class Home extends React.Component {
                 positions={this.state.position}
               ></SvgTaskView>
               <MainTaskView
-                onTrigger={this.handleTrigger}
-                trigger={this.state.trigger}
                 userId={this.props.userId}
                 loading={this.state.loading}
                 onDraw={this.handleDraw}
@@ -102,13 +98,6 @@ class Home extends React.Component {
         )}
       </>
     );
-  }
-
-  handleTrigger() {
-    this.setState({ trigger: true });
-    setTimeout(() => {
-      this.setState({ trigger: false });
-    }, 30);
   }
 
   handleDraw(index, task_id, branch_color, mother_id, x, y) {

@@ -9,7 +9,7 @@ const NODE = {
   head_radius: 15,
 };
 const LINE = {
-  begin_x: 40,
+  begin_x: 30,
   begin_y: 11,
   space: 40,
   v_space: 90,
@@ -27,19 +27,24 @@ class Drawer {
     this.snap.clear();
 
     this.drawLine = this.drawLine.bind(this);
+    this.drawLine = this.drawLine.bind(this);
     this.drawHorizontal = this.drawHorizontal.bind(this);
     this.drawVertical = this.drawVertical.bind(this);
     this.drawNode = this.drawNode.bind(this);
   }
 
-  drawLine(line, x, y) {
+  drawLine(state, line, x, y) {
     if (line.is_host === true)
       this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
     else {
       if (line.is_main)
-        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
-      else this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
-      this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
+        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, state ? x :LINE.begin_x + LINE.width / 2 + 20, y);
+      else this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, state ? x :LINE.begin_x + LINE.width / 2 + 20, y);
+      if(state) {
+        this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
+        let node = { color: line.color, achieved: true };
+        this.drawNode(node, x, y);
+      }
     }
   }
 
@@ -73,8 +78,13 @@ class SvgBranchView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      screen_wide: false,
+    };
+    
     this.svg = React.createRef();
 
+    this.handleResize = this.handleResize.bind(this);
     this.getIndexOfTaskById = this.getIndexOfTaskById.bind(this);
     this.getIndexOfLineById = this.getIndexOfLineById.bind(this);
     //    this.getDataFromProps = this.getDataFromProps.bind(this);
@@ -82,6 +92,8 @@ class SvgBranchView extends React.Component {
   }
 
   componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize)
     const Snap = require('snapsvg-cjs');
     let { lines } = this.props;
     this.svgRender(lines);
@@ -90,6 +102,10 @@ class SvgBranchView extends React.Component {
     const Snap = require('snapsvg-cjs');
     let { lines } = this.props;
     this.svgRender(lines);
+  }
+
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.handleResize())
   }
 
   svgRender(linesObj) {
@@ -118,18 +134,18 @@ class SvgBranchView extends React.Component {
 
     // Draw Main Line
     x = LINE.begin_x;
-    y = LINE.begin_y;
+    y = LINE.begin_y + 30;
     let line;
 
     let node = { color: '#000000', achieved: true };
     drawer.drawNode(node, x, y);
     line = { is_host: true, color: '#000000', x: x };
     //    drawer.drawLine(line, 0, x, y);
-    drawer.drawLine(line, x, y);
+    drawer.drawLine(this.state.screen_wide, line, x, y);
     x += LINE.space;
-    y += LINE.v_space;
+    y += this.state.screen_wide ? LINE.v_space : LINE.v_space + 20;
 
-    y += 10;
+    y += 70;
     for (let i = 0; i < lines.length; i++) {
       line = lines[i];
       //            console.log(line.mother);
@@ -141,10 +157,14 @@ class SvgBranchView extends React.Component {
       //        x,
       //        y
       //      );
-      drawer.drawLine(line, x, y);
+      if(!this.state.screen_wide) {
+        let node = { color: line.color, achieved: true };
+        drawer.drawNode(node, LINE.begin_x + LINE.width / 2 + 20, y);
+      }
+      drawer.drawLine(this.state.screen_wide, line, x, y);
       lines[i]['x'] = x;
       x += LINE.space;
-      y += LINE.v_space;
+      y += this.state.screen_wide ? LINE.v_space : LINE.v_space + 20;
     }
     //    console.log(lines);
   }
@@ -172,13 +192,27 @@ class SvgBranchView extends React.Component {
     return (
       <svg
         ref={this.svg}
-        className='top-24 left-0 h-5/6 absolute w-1/5'
+        className='top-5 left-0 h-5/6 absolute sm:w-2/5 w-1/5'
         xmlns='http://www.w3.org/2000/svg'
         lines={this.props.lines}
         tasks={this.props.tasks}
         positions={this.props.positions}
       />
     );
+  }
+
+  handleResize() {
+    if(window.innerWidth >= 768) {
+      this.setState({screen_wide: true}, () => {
+        const Snap = require('snapsvg-cjs');
+        this.svgRender();
+      })
+    } else {
+      this.setState({screen_wide: false}, () => {
+        const Snap = require('snapsvg-cjs');
+        this.svgRender();
+      })
+    }
   }
 }
 

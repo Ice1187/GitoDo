@@ -22,8 +22,10 @@ class TaskItem extends React.Component {
       progress_users: [],
       re: false,
       achieved: false,
+      screen_wide: false,
     };
 
+    this.handleResize = this.handleResize.bind(this);
     this.handleDraw = this.handleDraw.bind(this);
     this.handleSubExpand = this.handleSubExpand.bind(this);
     this.handleTaskDone = this.handleTaskDone.bind(this);
@@ -32,26 +34,10 @@ class TaskItem extends React.Component {
     this.RGBToHex = this.RGBToHex.bind(this);
   }
 
-  componentDidUpdate() {
-    if (this.props.trigger) {
-      const { color_RGB } = this.props.line;
-      const branch_color = color_RGB
-        ? this.RGBToHex(color_RGB[0], color_RGB[1], color_RGB[2])
-        : '#ffffff';
-      let rect = this.node.getBoundingClientRect();
-      this.rect = rect;
-      this.handleDraw(
-        this.props.index,
-        this.props.task._id,
-        branch_color,
-        this.props.line._id,
-        rect.x,
-        rect.y
-      );
-    }
-  }
 
   componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize)
     if (!this.state.re) {
       const { color_RGB } = this.props.line;
       const branch_color = color_RGB
@@ -108,6 +94,10 @@ class TaskItem extends React.Component {
     });
   }
 
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.handleResize())
+  }
+
   render() {
     let branchName = 'Main';
     const { color_RGB, title } = this.props.line;
@@ -142,6 +132,69 @@ class TaskItem extends React.Component {
     return (
       <div>
         <div className='container shadow rounded-lg flex-col my-3 px-5 flex items-center cursor-default bg-white'>
+          <svg
+            ref={(svg) => {
+              this.svg = svg;
+            }}
+            className='absolute left-0'
+            xmlns='http://www.w3.org/2000/svg'
+            onClick={this.handleResize}
+          >
+            <circle
+              className='cursor-pointer'
+              onClick={this.handleTaskDone}
+              cx={
+                this.rect !== undefined
+                  ? (this.state.screen_wide ? this.props.depth * 40 + 40 + 30 : 30)
+                  : '0'
+              }
+              cy={this.rect !== undefined ? 35 : '0'}
+              r='8'
+              stroke={
+                this.props.line.color_RGB !== undefined
+                  ? this.RGBToHex(
+                      this.props.line.color_RGB[0],
+                      this.props.line.color_RGB[1],
+                      this.props.line.color_RGB[2]
+                    )
+                  : ''
+              }
+              fill={
+                '#ffffff'
+              }
+              strokeWidth='2.5'
+            />
+            <circle
+              className='cursor-pointer'
+              onClick={this.handleTaskDone}
+              cx={
+                this.rect !== undefined
+                  ? (this.state.screen_wide ? this.props.depth * 40 + 40 + 30 : 30)
+                  : '0'
+              }
+              cy={this.rect !== undefined ? 35 : '0'}
+              r='5'
+              stroke={
+                this.props.line.color_RGB !== undefined
+                  ? this.RGBToHex(
+                      this.props.line.color_RGB[0],
+                      this.props.line.color_RGB[1],
+                      this.props.line.color_RGB[2]
+                    )
+                  : ''
+              }
+              fill={
+                this.state.achieved
+                  ? this.RGBToHex(
+                      this.props.line.color_RGB[0],
+                      this.props.line.color_RGB[1],
+                      this.props.line.color_RGB[2]
+                    )
+                  : '#ffffffff'
+              }
+              strokeWidth='0'
+            />
+          </svg>
           <div
             className={`container md:flex-row flex-col flex items-center ${
               this.props.task.url ||
@@ -160,43 +213,6 @@ class TaskItem extends React.Component {
                 style={this.state.achieved == true ? stylecomplete : stylebox}
                 onClick={this.handleTaskDone}
               ></button>
-              <svg
-                ref={(svg) => {
-                  this.svg = svg;
-                }}
-                className='absolute left-0'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <circle
-                  cx={
-                    this.rect !== undefined
-                      ? this.rect.x - 280 + this.props.depth * 40
-                      : '0'
-                  }
-                  cy={this.rect !== undefined ? 75 : '0'}
-                  r='8'
-                  stroke={
-                    this.props.line.color_RGB !== undefined
-                      ? this.RGBToHex(
-                          this.props.line.color_RGB[0],
-                          this.props.line.color_RGB[1],
-                          this.props.line.color_RGB[2]
-                        )
-                      : ''
-                  }
-                  fill={
-                    this.state.achieved
-                      ? this.RGBToHex(
-                          this.props.line.color_RGB[0],
-                          this.props.line.color_RGB[1],
-                          this.props.line.color_RGB[2]
-                        )
-                      : '#ffffffff'
-                  }
-                  strokeWidth='4'
-                />
-                {console.log('depth', this.props.depth)}
-              </svg>
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}
                 style={stylebranch}
@@ -344,13 +360,20 @@ class TaskItem extends React.Component {
     );
   }
 
+  handleResize() {
+    if(window.innerWidth >= 1024) {
+      this.setState({screen_wide: true})
+    } else {
+      this.setState({screen_wide: false})
+    }
+  }
+
   handleDraw(index, task_id, branch_color, mother_id, x, y) {
     this.props.onDraw(index, task_id, branch_color, mother_id, x, y);
   }
 
   handleSubExpand() {
     this.setState({ open: !this.state.open });
-    this.props.onTrigger();
   }
 
   handleTaskDone(event) {
