@@ -1,6 +1,7 @@
 import React from 'react';
+import {connect} from 'react-redux';
 
-export default class NavAdd extends React.Component{
+class NavAdd extends React.Component{
   constructor(props) {
     super(props);
 
@@ -36,7 +37,7 @@ export default class NavAdd extends React.Component{
     return(
       <>
         <div className='mr-3 relative'>
-          <button className={'p-1 pt-2 text-gray-500 hover:text-black focus:outline-none outline-none transform delay-70 transition-all origin-center'+ (this.state.dropdown ? ' rotate-45' : ' rotate-0')} onClick={this.openMenu}>
+          <button className={'p-1 pt-2 text-gray-500 hover:text-black focus:outline-none outline-none transform delay-70 transition-all origin-center'+ (this.state.dropdown && this.props.userId != '-1' ? ' rotate-45' : ' rotate-0')} onClick={this.openMenu}>
             <span className='material-icons pt-1'>add</span>
           </button>
 
@@ -53,3 +54,14 @@ export default class NavAdd extends React.Component{
   }
   
 }
+
+const mapStateToProps = state => ({
+  userId: state.login.userId,
+  avatar: state.login.avatar_uri,
+});
+
+const mapDispatchToProps = {
+  
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NavAdd);

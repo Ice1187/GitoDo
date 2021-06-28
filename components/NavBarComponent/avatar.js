@@ -81,4 +81,4 @@ const mapDispatchToProps = {
   
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Avatar);  // handleSubmit(event) {
+export default connect(mapStateToProps, mapDispatchToProps)(Avatar); 
