@@ -4,8 +4,11 @@ import BranchColor from '../components/ShareComponent/branchColor';
 import React from 'react';
 import Link from 'next/link';
 import { withRouter } from "next/router"
-import { modifyLine, getLine, deleteBranch } from '../api/line';
+import { deleteNode, getNode } from '../api/node';
+import { modifyLine, getNodesByLine, deleteBranch } from '../api/line';
 import Router from 'next/router';
+import { connect } from 'react-redux'
+import {endListAllLineClear, endListTaskClear} from '../redux/actions/branchActions';
 
 let qs = require('qs');
 class EditBranchView extends React.Component{
@@ -55,27 +58,27 @@ class EditBranchView extends React.Component{
     return(
       <>
         <form onSubmit={this.handleSubmit}>
-          <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
+          <div className='sm:pt-28 pt-10 mx-5 sm:mx-10 p-5 sm:mt-0 mt-24'>
             <div className='flex flex-row justify-between'>
               <div>
                 <h1 className='text-2xl'>Edit branch</h1>
                 <p className='text-gray-500'>A branch contains many tasks, can also include multiple branches.</p>
               </div>
               <div className='relative hover-trigger flex flex-row cursor-pointer' onClick={this.handleBranchDelete}>
-                <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-10 right-7'>Delete</span>
+                <span className='hover-target rounded-md p-1 bg-opacity-90 bg-gray-800 text-white text-sm absolute top-10 right-7'>Delete (Delete&nbsp;branch&nbsp;will&nbsp;also&nbsp;delete&nbsp;all&nbsp;tasks)</span>
                 <span className='pt-5 material-icons text-md transform scale-90 text-gray-400 hover:text-red-500'>delete</span>
               </div>
             </div>
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleTitleChange}></AddTitle>
-              <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
+              <Permission color={this.state.branchColor} id={this.props._id} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
             </div>
             <button type='submit' className='ring-2 ring-green-600 bg-green-200 hover:bg-green-600 text-green-800 hover:text-white rounded-lg shadow-md p-2 focus:outline-none my-3'>
               <span>Save Change</span>
             </button>
-            <Link href='/main'>
+            <Link href='/main/branch'>
               <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow-md py-2 px-2.5 focus:outline-none my-3 ml-5'>
                 <a>
                   <span>Discard</span>
@@ -104,8 +107,38 @@ class EditBranchView extends React.Component{
   }
 
   handleBranchDelete() {
-    // TODO: link api with fixed deleteBranch
-    console.log('delete');
+    this.props.listAllLineClear();
+    this.props.listTaskClear();
+    if(this.state.contain_branch == 0) {
+      deleteBranch(this.props.node_id, this.props._id)
+      getNode(this.props.node_id).then(node => {
+        deleteNode(node.mother_line_id, this.props.node_id)
+      })
+      Router.push({
+        pathname: '/main',
+        query: {},
+      }, `/main`);
+    } else {
+      getNodesByLine(this.props._id, 0, 1000, 0).then(task => {
+        for(let i = 0; i < task.length; i++){
+          if(task[i].branch_line_id){
+            let node = task[i];
+            deleteBranch(node._id, node.branch_line_id[0])
+            getNode(this.props.node_id).then(node => {
+              deleteNode(node.mother_line_id, this.props.node_id)
+            })
+          }
+        }
+        deleteBranch(this.props.node_id, this.props._id)
+        getNode(this.props.node_id).then(node => {
+          deleteNode(node.mother_line_id, this.props.node_id)
+        })
+      })
+      Router.push({
+        pathname: '/main',
+        query: {},
+      }, `/main`);
+    }
   }
 
   handleColorChange(color) {
@@ -146,4 +179,13 @@ class EditBranchView extends React.Component{
   }
 }
 
-export default withRouter(EditBranchView);
+const mapStateToProps = state => ({
+  userId: state.login.userId,
+});
+
+const mapDispatchToProps = {
+  listAllLineClear: endListAllLineClear,
+  listTaskClear: endListTaskClear,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(EditBranchView));

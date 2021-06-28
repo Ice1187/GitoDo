@@ -14,7 +14,6 @@ export default class BranchColor extends React.Component {
       '--tw-ring-color': this.props.color
     }
     return (
-      /* TODO: make all color bar have same color but use redux to manage state*/
       <>
         <div className={`container shadow rounded-lg p-4 my-3 flex-col items-center cursor-default bg-white`}>
           <div className='container items-center flex'>
@@ -23,7 +22,6 @@ export default class BranchColor extends React.Component {
           </div>
           <div className='container flex items-center mt-8 mb-4 md:ml-10 p-0 ml-5 mr-5 ring-gray-500'>
             <CirclePicker color={this.props.color} width={''} circleSize={20} onChangeComplete={ this.handleChangeComplete }/>
-            {/*<span className='ml-5'>{this.state.color}</span>*/}
           </div>
         </div>
       </>

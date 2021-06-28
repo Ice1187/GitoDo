@@ -1,7 +1,6 @@
 import React from 'react';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
-/* TODO: need link api*/
 export default class Permission extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +13,7 @@ export default class Permission extends React.Component {
   }
 
   render() {
-    let Link = 'http://gitodo.com/shared/mapping/16ddfw4';
+    let Link = 'gitodo.com/import/' + this.props.id;
     const stylebar = {
       backgroundColor: this.props.color,
       '--tw-ring-color': this.props.color
@@ -40,20 +39,21 @@ export default class Permission extends React.Component {
             <div className='ml-5  container'>
               <span className='block font-semibold overflow-hidden'>Public</span>
               <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>Anyone on the internet can see and copy this branch. You can choose who can collaborate with.</p>
-              {this.props.value == true && <div className='container flex items-center mt-2 mb-2 mr-10 w-auto'>
+              {this.props.view != 'add' && this.props.value == true && <div className='container flex items-center mt-2 mb-2 mr-10 w-auto'>
                 <span className='bg-green-100 text-green-800 p-2 rounded-md w-9 sm:w-auto overflow-scroll text-sm'>{Link}</span>
                 <CopyToClipboard text={Link} onCopy={() => this.setState({copied: true})}>
-                  <button className='sm:ml-5 ml-2 bg-blue-100 text-blue-800 text-sm rounded-md p-2 focus:outline-none hover:bg-blue-600 hover:text-white'>
+                  <button onClick={() => {event.preventDefault();}} className='sm:ml-5 ml-2 bg-blue-100 text-blue-800 text-sm rounded-md p-2 focus:outline-none hover:bg-blue-600 hover:text-white'>
                   {this.state.copied ? 'Copied' : 'Copy link'}
                   </button>
                 </CopyToClipboard>
               </div>}
-              {this.state.copied && this.props.value == true && <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>* You can let others copy this branch once you have created it.</p>}
+              {this.state.copied && this.props.value == true && <p className='block w-auto mr-10 text-gray-500 overflow-hidden'>* You can let others copy this branch once its permission is public.</p>}
             </div>
           </div>
         </div>
       </>
   )}
+
 
   handleChange (event) {
     this.props.permissionChange(event.target.value == 'true' ? true : false);

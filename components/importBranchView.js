@@ -40,7 +40,7 @@ class ImportBranchView extends React.Component{
     return(
       <>
         <form>
-          <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-2'>
+          <div className='pt-28 mx-5 sm:mx-10 p-5 sm:mt-0 mt-2'>
             <h1 className='text-2xl'>Import a branch</h1>
             <p className='text-gray-500'>Import an existing branch, adjust it to your special branch or collaborate with others.</p>
             <hr className='my-2'></hr>
@@ -53,7 +53,7 @@ class ImportBranchView extends React.Component{
                 </div>
               }
               {this.state.branchState == 'copy' && <AddTitle color={this.state.branchColor} name='Branch' value={this.state.branchName} titleChange={this.handleBranchNameChange}></AddTitle>}
-              {this.state.branchState == 'copy' && <Permission color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>}
+              {this.state.branchState == 'copy' && <Permission view={'add'} color={this.state.branchColor} value={this.state.permission} permissionChange={this.handlePermissionChange}></Permission>}
               <BranchColor onColorChange={this.handleColorChange} color={this.state.branchColor}></BranchColor>
               {this.state.branchState == 'false' && <ShareBlock color={this.state.branchColor}></ShareBlock>}
             </div>
@@ -63,7 +63,7 @@ class ImportBranchView extends React.Component{
             {this.state.branchState == 'collaborate' && <button type='submit' className='ring-2 ring-green-600 text-green-800 bg-green-200 hover:bg-green-600 hover:text-white rounded-lg shadow p-2 focus:outline-none my-3 mr-5'>
               <span>Collaborate</span>
             </button>}
-            <Link href='/'>
+            <Link href='/main'>
               <button className='ring-2 ring-red-600 text-red-800 bg-red-200 hover:bg-red-600 hover:text-white rounded-lg shadow py-2 px-2.5 focus:outline-none mt-3'>
                 <a>
                   <span>Discard</span>
@@ -86,8 +86,8 @@ class ImportBranchView extends React.Component{
         if(this.state.branchId){
           if(this.state.branchId.length == 24){
             getLine(this.state.branchId).then(line => {
-              // console.log(line)
-              if(line.color_RGB){
+               console.log(line)
+              if(line.color_RGB && line.permission){
                 getUser(line.owner).then(owner => {
                   this.setState({branchItem: {Line: line, owner: owner.name}})
                 })
@@ -122,7 +122,6 @@ class ImportBranchView extends React.Component{
   }
   
   handleSubmit(event) {
-    /* TODO: add redirect after submit*/
     if(this.state.branchName == '' || this.state.permission == null || this.state.branchItem == null)
       alert('You should enter a title, choose a due time, and choose the branch to add.');
     else {

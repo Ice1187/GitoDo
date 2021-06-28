@@ -45,13 +45,12 @@ export default class AddTaskView extends React.Component{
     return(
       <>
         <form>
-          <div className='sm:pt-28 pt-10 lg:ml-80 lg:mr-20 sm:ml-40 ml-5 mr-1 p-5 sm:mt-0 mt-24'>
+          <div className='sm:pt-28 pt-10 mx-4 sm:mx-10 p-5 sm:mt-0 mt-24 pl-5'>
             <h1 className='text-2xl'>Add a new task</h1>
             <p className='text-gray-500'>A task contains notes, due dates, and sub-tasks ... etc.</p>
             <hr className='my-2'></hr>
             <div className='container flex-col'>
               <AddTitle color={this.state.branchColor} name='Task' value={this.state.taskName} titleChange={this.handleTitleChange}></AddTitle>
-              {/* TODO: insert branch item and edit func */}
               <BranchChooseView view={'task'} color={this.state.branchColor} branchTitle={this.state.branchTitle} branchId={this.state.branchId} ChooseBranch={this.handleBranchChoose}></BranchChooseView>
               <DateItem color={this.state.branchColor} dueDate={this.state.dueDateJSON} datePick={this.handleDatePick}></DateItem>
               <ImportanceItem color={this.state.branchColor} importance={this.state.importance} importPick={this.handleImportPick}></ImportanceItem>
@@ -121,12 +120,10 @@ export default class AddTaskView extends React.Component{
   }
   
   handleSubmit(event) {
-    /* TODO: add redirect after submit*/
     console.log(this.state.taskName, this.state.dueDateJSON, this.state.branchId)
     if(this.state.taskName == '' || !this.state.dueDateJSON || this.state.branchId == '')
       alert('You should enter a title, choose a due time, and choose the branch to add. If you do not have a branch, please add a branch first.');
     else {
-      /* TODO: add subtask data & importance and content*/
       const now = new Date();
       let data = qs.stringify({
         'mother_line_id': this.state.branchId,
@@ -136,7 +133,7 @@ export default class AddTaskView extends React.Component{
         'url': `${this.state.url ? `"${this.state.url}"` : null}`,
         'content': `${this.state.note ? `"${this.state.note}"` : null}`,
         'importance': this.state.importance,
-        'is_main': 'true' 
+        'is_main': true
       })
       addNode(data).then(node => {
         for(let i = 0; i < this.state.subtask.length; i++){

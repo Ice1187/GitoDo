@@ -4,7 +4,7 @@
   justify-content: center;
   align-items: center;
   margin-top: 3.5rem;
-  min-height: 77vh;
+  min-height: 77.6vh;
   position: relative;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .footer {
-  min-height: 13vh;
+  max-height: 5vh;
 }
 
 .title a {

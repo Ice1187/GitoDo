@@ -25,7 +25,7 @@ class Profile extends React.Component{
     return(
       <>
       <div className="lg:ml-40 md:ml-28">
-        <div className="lg:ml-40 sm:ml-32 mx-20 w-auto xs:px-10 pt-28 container flex-col flex">
+        <div className="mx-5 sm:mx-10 w-auto xs:px-10 pt-28 container flex-col flex">
           <AccountContent></AccountContent>
         </div>   
       </div>
