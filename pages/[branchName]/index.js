@@ -131,11 +131,11 @@ class Home extends React.Component {
                   </button>
                 </div>
                 {this.state.share_open &&
-                  (this.state.shareLineId == this.state._id || !this.state.shareLineId) && (
+                  (this.state.shareLineId == this.props.router.query.id || !this.state.shareLineId) && (
                     <ShareBlock
                       color={this.state.color}
                       branchName={this.state.title}
-                      lineId={this.state._id}
+                      lineId={this.props.router.query.id}
                     ></ShareBlock>
                   )}
               </div>
@@ -256,6 +256,9 @@ class Home extends React.Component {
       () => {
         this.getLinetoState(this.props.router.query.id,
           { 'due_date': '2021-01-01T18:50:21.000Z' });
+        getLine(this.props.router.query.id).then(line => {
+          this.setState({shareLineId: line.shareLineId})
+        })
         setTimeout(() => {
           this.getAllTasks();
         }, 1000);
