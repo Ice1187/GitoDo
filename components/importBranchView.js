@@ -151,6 +151,7 @@ class ImportBranchView extends React.Component{
           'owner': `${this.props.userId}`,
           'permission': `${this.state.permission}`,
           'color_RGB': `[${this.state.colorRGB['r']},${this.state.colorRGB['g']},${this.state.colorRGB['b']}]`,
+          'is_main': true,
         })
         modifyLine(line._id, data).then(line => {
           console.log('ml',line)
