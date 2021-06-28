@@ -41,7 +41,7 @@ class SignupView extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <div className='sm:pt-12 sm:mx-20 mx-1 p-5'>
+          <div className='sm:pt-12 xl:mx-96 sm:mx-20 mx-1 p-5'>
             <div className='container flex flex-col shadow bg-white rounded-lg py-5'>
               <h1 className='text-2xl font-semibold mx-auto my-5'>Get yourself an account!</h1>
               <div className='container flex flex-col ring-2 ring-gray-200 mx-auto sm:w-96 w-auto rounded-lg p-2 mb-5'>

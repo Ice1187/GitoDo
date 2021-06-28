@@ -42,7 +42,7 @@ class LoginView extends React.Component{
               <div className='flex-grow' />
             </div>
           </div>
-          <div className='sm:pt-12 sm:mx-20 mx-1 p-5'>
+          <div className='sm:pt-12 xl:mx-96 sm:mx-20 mx-1 p-5'>
             <div className='container flex flex-col shadow bg-white rounded-lg py-5'>
               <h1 className='text-2xl font-semibold mx-auto mt-5'>Welcome Back.</h1>
               <h1 className='text-md font-normal mx-auto my-2 text-gray-500'>*Login to use everything.</h1>

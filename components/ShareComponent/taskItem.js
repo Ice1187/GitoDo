@@ -136,7 +136,7 @@ class TaskItem extends React.Component {
             ref={(svg) => {
               this.svg = svg;
             }}
-            className='absolute left-0'
+            className='absolute left-0 z-10'
             xmlns='http://www.w3.org/2000/svg'
             onClick={this.handleResize}
           >
@@ -196,7 +196,7 @@ class TaskItem extends React.Component {
             />
           </svg>
           <div
-            className={`container md:flex-row flex-col flex items-center ${
+            className={`container md:flex-row flex-col flex items-center relative z-20 ${
               this.props.task.url ||
               this.props.task.content ||
               this.state.subtask
@@ -216,10 +216,10 @@ class TaskItem extends React.Component {
               <div
                 className={`inline ml-5 h-4 w-0.5 ring-2`}
                 style={stylebranch}
+                onClick={this.handleTaskDone}
               ></div>
               <span
                 className='sm:ml-5 ml-3 font-semibold md:w-36 sm:w-24 w-auto overflow-hidden'
-                onClick={this.handleSubExpand}
               >
                 {branchName}
               </span>
@@ -228,13 +228,12 @@ class TaskItem extends React.Component {
               ></div>
               <span
                 className='sm:ml-5 ml-3 font-semibold md:w-40 sm:w-24 w-auto overflow-hidden'
-                onClick={this.handleSubExpand}
               >
                 {this.props.task.title}
               </span>
-              <div className='md:flex-grow' onClick={this.handleSubExpand} />
+              <div className='md:flex-grow' />
             </div>
-            <div className='md:flex-grow' onClick={this.handleSubExpand} />
+            <div className='md:flex-grow' />
             <div className='container flex flex-row items-center lg:justify-end justify-around'>
               {this.props.task.due_date && (
                 <span
@@ -243,7 +242,6 @@ class TaskItem extends React.Component {
                       ? 'text-red-500'
                       : 'text-gray-500 hover:text-blue-700'
                   }`}
-                  onClick={this.handleSubExpand}
                 >
                   {moment(time).format('MM-DD ddd hh:mm')}
                 </span>
@@ -251,9 +249,13 @@ class TaskItem extends React.Component {
               {
                 <span
                   className='pt-1 sm:mr-3 mr-1 text-md font-semibold text-blue-700 overflow-hidde self-baseline w-4'
-                  onClick={this.handleSubExpand}
                 >
                   {importance[this.props.task.importance]}
+                </span>
+              }
+              {
+                <span className={'material-icons text-xs transform scale-100 pt-1' + ((this.props.task.url ||this.props.task.content ||this.state.subtask) ? ' hover:text-gray-600 text-gray-400' : ' text-white')}>
+                expand_more
                 </span>
               }
               {this.state.progress_users && (

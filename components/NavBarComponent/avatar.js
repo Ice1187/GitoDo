@@ -7,7 +7,6 @@ class Avatar extends React.Component{
     super(props);
 
     this.state = {
-      dropdown: false,
       name: '',
     };
 
@@ -20,32 +19,10 @@ class Avatar extends React.Component{
           console.error('Error while getUser', err);
       });
     }
-    
+
     this.openMenu = this.openMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
   }
-
-  componentWillUnmount() {
-    window.removeEventListener('click', this.closeMenu)
-  }
-
-  openMenu(syntheticEvent){
-    syntheticEvent.stopPropagation()
-    this.setState({dropdown: !this.state.dropdown}, () => {
-      if(this.state.dropdown) {
-        window.addEventListener('click', this.closeMenu)
-      }
-    });
-  }
-
-  closeMenu() {
-    this.setState({dropdown: false}, () => {
-      window.removeEventListener('click', this.closeMenu)
-    });
-  }
-
   
-
   render() {
     let url = this.props.avatar;
     if(!this.props.avatar) {
@@ -58,7 +35,7 @@ class Avatar extends React.Component{
           { <img src={url} className="ring-2 ring-gray-300 inline shadow-sm rounded-full h-6 w-6 overflow-hidden"></img>}
         </button>
 
-          {(this.state.dropdown && this.props.userId != '-1') ? (
+          {(this.props.dropdown && this.props.userId != '-1') ? (
             <div className='absolute top-15 right-0 bg-white shadow-lg py-3 pt-1 my-6 mx-4 rounded-lg text-black ring-2 ring-red-500 text-sm w-32'>
               <div className='px-4 py-1 border-b-2 border-red-300'>Hello, {this.state.name}</div>
               <a href='/profile/account'><div className='pt-2 px-4 py-1 hover:bg-red-500 hover:text-white'>Settings</div></a>
@@ -69,7 +46,10 @@ class Avatar extends React.Component{
       </>
     );
   }
-  
+
+  openMenu(syntheticEvent){
+    this.props.onOpen(syntheticEvent, 'avatar')
+  }
 }
 
 const mapStateToProps = state => ({
