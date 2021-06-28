@@ -118,9 +118,10 @@ class BranchItem extends React.Component {
   }
 
   handleBranch () {
+    console.log(this.props.Line.sharerLineId)
     Router.push({
       pathname: '/[branchName]',
-      query: { branchName: this.props.Line.title, id: this.props.Line._id, node_id: this.props.node_id },
+      query: { branchName: this.props.Line.title, id: this.props.Line._id, node_id: this.props.node_id, sharerLineId: this.props.Line.sharerLineId },
     }, `/${this.props.Line.title}`);
   }
 

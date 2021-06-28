@@ -63,7 +63,6 @@ class Home extends React.Component {
   }
 
   render() {
-    console.log(this.state.all_line)
     return (
       <>
         {this.props.userId != -1 && this.props.router.query.id && (
@@ -88,7 +87,7 @@ class Home extends React.Component {
                     Branch - {this.props.router.query.branchName}
                   </h1>
                   <div className='flex-grow' />
-                  {(this.state.shareLineId == this.state._id || !this.state.shareLineId) && (
+                  {(this.props.router.query.sharerLineId === this.props.router.query._id || !this.props.router.query.sharerLineId) && (
                     <div
                       className='relative hover-trigger flex flex-row cursor-pointer mr-5'
                       onClick={this.handleShareOpen}
@@ -131,7 +130,7 @@ class Home extends React.Component {
                   </button>
                 </div>
                 {this.state.share_open &&
-                  (this.state.shareLineId == this.props.router.query.id || !this.state.shareLineId) && (
+                  (this.props.router.query.sharerLineId === this.props.router.query.id || !this.props.router.query.sharerLineId) && (
                     <ShareBlock
                       color={this.state.color}
                       branchName={this.state.title}
