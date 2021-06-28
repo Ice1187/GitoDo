@@ -130,7 +130,7 @@ class Home extends React.Component {
               );
             });
             if (Line.contain_branch > 0) {
-              this.getAllBranches(Line, comtime + 1, level + 1);
+              this.getAllBranches(Line, comtime + i * Math.pow(1000, 1 - level), level + 1);
             }
           });
         }
