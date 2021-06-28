@@ -32,12 +32,12 @@ class Drawer {
     this.drawNode = this.drawNode.bind(this);
   }
 
-  drawLine(line, x, y) {
+  drawLine(line, xb, x, y) {
     if (line.is_host === true) this.drawVertical(line, x, y, this.bottom);
     else {
       if (line.is_main)
-        this.drawHorizontal(line, LINE.begin_x + LINE.width / 2, x, y);
-      else this.drawHorizontal(line, x - LINE.space + LINE.width / 2, x, y);
+        this.drawHorizontal(line, xb, x, y);
+      else this.drawHorizontal(line, xb, x, y);
       this.drawVertical(line, x, y - LINE.width / 2, this.bottom);
     }
   }
@@ -139,15 +139,21 @@ class SvgTaskView extends React.Component {
     let node = { color: '#000000', achieved: true };
     drawer.drawNode(node, x, y);
     line = { is_host: true, color: '#000000' };
-    drawer.drawLine(line, x, y);
+    drawer.drawLine(line, 0, x, y);
     x += LINE.space;
     y += LINE.v_space * 3;
 
     if(this.state.screen_wide) {
+      let last_x = LINE.begin_x
       for (let i = 0; i < lines.length; i++) {
         line = lines[i];
-        drawer.drawLine(line, x, y);
+        drawer.drawLine(line, last_x, x, y);
         lines[i]['x'] = x;
+        if(i + 1 < lines.length) {
+          let line_next = lines[i+1]
+          if(line_next.is_main)last_x = LINE.begin_x;
+          else if(!line_next.is_main && line.is_main) last_x = x
+        }
         x += LINE.space;
         y += LINE.v_space;
       }

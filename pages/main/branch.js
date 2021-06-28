@@ -55,9 +55,10 @@ class Home extends React.Component {
                   <h1 className='text-2xl font-semibold'>Branch</h1>
                 </div>
               </div>
-              <SvgBranchView lines={this.props.allLine}></SvgBranchView>
+              <SvgBranchView lines={this.props.allLine} className='sm:w-2/5 w-1/5'></SvgBranchView>
               {this.props.allLine && (
                 <MainBranchDisplay
+                  className='w-4/5'
                   loading={this.props.branchLoading}
                   userId={this.props.userId}
                   onDraw={this.handleDraw}

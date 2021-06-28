@@ -63,6 +63,7 @@ class Home extends React.Component {
   }
 
   render() {
+    console.log(this.state.all_line)
     return (
       <>
         {this.props.userId != -1 && this.props.router.query.id && (
@@ -253,9 +254,8 @@ class Home extends React.Component {
         loading: true,
       },
       () => {
-        this.getLinetoState(this.props.router.query.id, {
-          Node: { due_date: '1989-01-01T00:00:00.000Z' },
-        });
+        this.getLinetoState(this.props.router.query.id,
+          { 'due_date': '2021-01-01T18:50:21.000Z' });
         setTimeout(() => {
           this.getAllTasks();
         }, 1000);
@@ -341,15 +341,10 @@ class Home extends React.Component {
           achieved_at: time,
         });
         modifyNode(id, data).then(() => {
-          this.getAllTasks();
-          let task =
-            ([...this.state.task],
-            () => {
-              console.log(task);
-              task[index].task.achieved = true;
-              task[index].task.achieved_at = time;
-              this.setState({ task: task });
-            });
+          let task = this.state.task;
+          task[index + 1].task.achieved = true;
+          task[index + 1].task.achieved_at = time;
+          this.setState({ task: task });
         });
         this.setState({
           loading: false,
@@ -366,18 +361,13 @@ class Home extends React.Component {
       () => {
         let data = qs.stringify({
           achieved: false,
-          achieved_at: null,
+          achieved_at: 'null',
         });
         modifyNode(id, data).then(() => {
-          this.getAllTasks();
-          let task =
-            ([...this.state.task],
-            () => {
-              console.log(task);
-              task[index].task.achieved = false;
-              task[index].task.achieved_at = null;
-              this.setState({ task: task });
-            });
+          let task = this.state.task;
+          task[index + 1].task.achieved = false;
+          task[index + 1].task.achieved_at = null;
+          this.setState({ task: task });
         });
         this.setState({
           loading: false,
